@@ -1,0 +1,35 @@
+{
+  "name": "okie-prototype-20150312",
+  "version": "0.0.1",
+  "authors": [
+    "jayaregalinada <jayaregalinada@gmail.com>"
+  ],
+  "description": "OKIE Online website prototype",
+  "keywords": [
+    "okie"
+  ],
+  "license": "MIT",
+  "homepage": "okie.website",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap": "~3.3.2"
+  },
+  "dependencies": {
+    "animate.css": "~3.2.3",
+    "angular-material": "~0.8.3",
+    "angular-bootstrap": "~0.12.1",
+    "textAngular": "~1.3.7",
+    "animateCSS": "~1.1.5",
+    "angular-route": "~1.3.14",
+    "angular-cookies": "~1.3.14",
+    "nprogress": "~0.1.6"
+  }
+}

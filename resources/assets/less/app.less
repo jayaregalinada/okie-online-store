@@ -1,0 +1,30 @@
+@import "../../../vendor/bootstrap/less/bootstrap";
+@import "variables";
+@import "bootswatch";
+@import url("animate.min.css");
+
+@btn-font-weight: 300;
+@font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
+@icon-font-path: "../vendor/bootstrap/fonts/";
+@color-facebook: #3B5998;
+
+body, label, .checkbox label {
+	font-weight: 300;
+}
+body {
+    padding-top: 70px;
+}
+
+.navbar-right .user-avatar > img {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+.facebook {
+    &.color {
+        color: @color-facebook;
+    }
+    &.background {
+        background-color: @color-facebook;
+    }
+}
