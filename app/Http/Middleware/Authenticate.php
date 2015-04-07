@@ -16,9 +16,10 @@ class Authenticate {
 	 * Create a new filter instance.
 	 *
 	 * @param  Guard  $auth
+	 * 
 	 * @return void
 	 */
-	public function __construct(Guard $auth)
+	public function __construct( Guard $auth )
 	{
 		$this->auth = $auth;
 	}
@@ -28,23 +29,36 @@ class Authenticate {
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Closure  $next
+	 * 
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next)
+	public function handle( $request, Closure $next )
 	{
-		if ($this->auth->guest())
+		$code = 401;
+		if ( $this->auth->guest() )
 		{
-			if ($request->ajax())
+			if ( $request->ajax() )
 			{
-				return response('Unauthorized.', 401);
+				$response = [ 'error' => [
+					'message' => 'Unathorized. Please login first',
+					'redirect_link' => url('auth/login'),
+					'request' => [
+						'url' => $request->fullUrl(),
+						'path' => $request->path(),
+						'method' => $request->method()
+					]
+				]
+				];
+
+				return response()->json( $response, $code )->setCallback( $request->input( 'callback' ) );
 			}
 			else
 			{
-				return redirect()->guest('auth/login');
+				return redirect()->guest( 'auth/login' );
 			}
 		}
 
-		return $next($request);
+		return $next( $request );
 	}
 
 }
