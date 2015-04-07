@@ -3,9 +3,10 @@
 return [
 
 	'title' => 'Okie Online Store',
+
 	'logo' => [
 		'img' => '',
-		'name' => 'OKIE'
+		'name' => 'OKIE STORE'
 	],
 
 	/*
@@ -32,7 +33,7 @@ return [
 	|
 	*/
 
-	'url' => env('APP_URL', 'http://www.okie.website'),
+	'url' => env('APP_URL', 'https://www.okie.website'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -156,7 +157,11 @@ return [
 		 */
 		'Laravel\Socialite\SocialiteServiceProvider',
 		'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
-
+		'Intervention\Image\ImageServiceProvider',
+		'Illuminate\Html\HtmlServiceProvider',
+		'Orangehill\Iseed\IseedServiceProvider',
+		'Clockwork\Support\Laravel\ClockworkServiceProvider'
+		
 	],
 
 	/*
@@ -206,6 +211,9 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
 
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
+		'Image'     => 'Intervention\Image\Facades\Image',
+		'Html'      => 'Illuminate\Html\HtmFacade',
+		'Form'      => 'Illuminate\Html\FormFacade'
 
 	],
 

@@ -109,7 +109,7 @@ return [
 	|
 	*/
 
-	'cookie' => 'laravel_session',
+	'cookie' => env('APP_NAMESPACE') . '_session',
 
 	/*
 	|--------------------------------------------------------------------------
