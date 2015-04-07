@@ -1,0 +1,90 @@
+.profile-container {
+    .profile-photo {
+        width: 150px;
+        height: 150px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        img {
+            border: 5px solid #FFF;
+            box-shadow: 0 0 5px @gray;
+            width: 150px;
+            height: 150px;
+        }
+    }
+    .profile-full-name {
+        @media (min-width: @screen-md-min) {
+            text-align: left;
+            padding-top: @padding-base-horizontal;
+            padding-left: percentage((3 / @grid-columns));
+            margin-bottom: -@profile-name-height;
+        }
+        text-align: center;
+        height: @profile-name-height;
+        font-size: @font-size-h3;
+        position: relative;
+        font-weight: 500;
+        > span, small {
+            font-weight: 300;
+        }
+        > .small, small {
+            color: @headings-small-color;
+            line-height: 1;
+        }
+    }
+    .profile-nav-icon {
+        width: 16px;
+        margin-right: 10px;
+        text-align: center;
+        display: inline-block;
+    }
+    .profile-content {
+        @media (min-width: @screen-md-min) {
+            margin-top: @profile-name-height + 10;
+        }
+        padding-top: 10px;
+    }
+    .profile-navigation {
+        min-width: 207px;
+        > .panel-group {
+            min-width: 207px;
+            &.affix {
+                position: relative!important;
+                @media (min-width: @screen-lg-min) {
+                    position: fixed!important;
+                    top: @navbar-height + 10px;
+                    width: percentage((3 / @grid-columns));
+                    padding-right: @grid-gutter-width + 8px;
+                }
+            }
+        }
+        .panel + .panel {
+            border-top: 0;
+            margin-top: 0;
+        }
+        .create-new {
+            background-color: @brand-success;
+            color: #FFF;
+        }
+        .panel-heading {
+            a {
+                display: block;
+                text-decoration: none;
+            }
+        }
+        .panel-collapse {
+            .panel-body {
+                padding: 0;
+            }
+            .list-group {
+                margin-bottom: 0;
+                a {
+                    border-top: 0;
+                    border-left: 0;
+                    border-right: 0;
+                    padding-left: @padding-large-horizontal;
+                }
+            }
+        }
+    }
+}

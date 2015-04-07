@@ -1,0 +1,36 @@
+#footer {
+    background-color: @navbar-default-bg;
+    border-top: 5px solid @gray-light;
+    padding-top: @padding-base-horizontal;
+    margin-top: @padding-large-horizontal;
+    .recent-items {
+        // .panel-variant(transparent; transparent; @navbar-default-bg; transparent);
+        background-color: transparent;
+        border-color: transparent;
+        .panel-heading {
+            background-color: transparent;
+            color: @navbar-default-color;
+        }
+        .panel-body {
+            background-color: transparent;
+        }
+        ul {
+            .clearfix();
+            text-align: center;
+            height: 126px;
+            overflow: hidden;
+        }
+        li {
+            display: inline-block;
+            a {
+                display: block;
+                padding: 4px;
+                margin-bottom: 3px;
+                border: 1px solid @gray-lighter;
+                &:hover {
+                    border-color: @link-hover-color;
+                }
+            }
+        }
+    }
+}

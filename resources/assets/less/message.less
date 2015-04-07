@@ -1,0 +1,206 @@
+.msg-container {
+    .msg-nav-icon {
+        width: 16px;
+        margin-right: 10px;
+        text-align: center;
+        display: inline-block;
+    }
+    .messages-container {
+        .messages-header {
+            font-size: @font-size-h1;
+        }
+        .messages-controls {
+            padding: 10px 20px;
+            border-top: 1px solid @gray-lighter;
+            border-bottom: 1px solid @gray-lighter;
+            margin-top: 9px;
+            .control {
+                width: 80px;
+            }
+        }
+    }
+}
+
+.message-container {
+    &.messages, &.inbox {
+        .message {
+            padding: @message-padding;
+            height: @message-image-size + ( @message-padding * 2 );
+            background-color: @message-background;
+            border: @message-border;
+            &:hover {
+                cursor: pointer;
+                border: @message-border-hover;
+            }
+            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+                .transition-delay( .1s );
+            }
+            &.ng-enter, &.ng-leave, &.ng-move {
+                .transition( all .3s );
+            }
+            &.ng-enter-stagger {
+                .transition-duration( 0s );
+            }
+            &.ng-enter {
+                opacity: 0;
+                .translate3d(0, 10%, 0);
+                &.ng-enter-active {
+                    opacity: 1;
+                    transform: none;
+                    -webkit-transform: none;
+                }
+            }
+            &.ng-leave {
+                opacity: 1;
+                .animation( fadeOut 1s );
+                &.ng-leave-active {
+                    .transition( all 1s );
+                    opacity: 0;
+                }
+            }
+            .media-left {
+                a {
+                    display: block;
+                }
+                img {
+                    width: @message-image-size + 10px;
+                    height: @message-image-size + 10px;
+                    margin-left: -5px;
+                    margin-top: -5px;
+                }
+            }
+            .media-body {
+                .message-body {
+                    font-family: @font-family-descriptive;
+                }
+            }
+        }
+    }
+    &.conversation {
+
+        .message {
+            padding: @message-conversation-padding;
+            &:last-child {
+                margin-bottom: @padding-large-horizontal;
+            }
+            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+                .transition-delay( .1s );
+            }
+            &.ng-enter, &.ng-leave, &.ng-move {
+                .transition( all .3s );
+            }
+            &.ng-enter-stagger {
+                .transition-duration( 0s );
+            }
+            &.ng-enter {
+                opacity: 0;
+                .translate3d(0, 10%, 0);
+                &.ng-enter-active {
+                    opacity: 1;
+                    transform: none;
+                    -webkit-transform: none;
+                }
+            }
+            &.ng-leave {
+                opacity: 1;
+                .animation( fadeOut 1s );
+                &.ng-leave-active {
+                    .transition( all 1s );
+                    opacity: 0;
+                }
+            }
+            &.message-type-reply {
+                .media-body {
+                    .message-body {
+                        background: darken( @message-conversation-body-background, 10% )!important;
+                    }
+                }
+                
+            }
+            .media-left {
+                img {
+                    width: @message-conversation-image-size;
+                    height: @message-conversation-image-size;
+                }
+            }
+            .media-body {
+                .message-body {
+                    font-family: @font-family-descriptive;
+                    padding: @message-conversation-padding-body;
+                    background: @message-conversation-body-background;
+                    border-radius: @message-conversation-body-border-radius;
+                    word-break: break-word;
+                    .time {
+                        color: @gray-light;
+                        font-size: ceil((@font-size-base * 0.7));
+                    }
+                }
+            }
+        }
+
+        .message-reply {
+            padding-top: @padding-base-horizontal;
+            margin-top: @padding-base-horizontal;
+            border-top: 1px solid @gray-lighter;
+            .buttons {
+                margin-top: @padding-base-vertical;
+            }
+            .ta-editor {
+                min-height: 100px;
+            }
+            .ta-scroll-window.form-control {
+                min-height: 100px;
+            }
+            .ta-scroll-window > .ta-bind {
+                min-height: 100px;
+            }
+            .placeholder-text {
+                color: @gray-light;
+            }
+            .btn-group {
+                font-family: @font-family-descriptive;
+            }
+            .ta-toolbar {
+                margin-left: 0;
+                background-color: @btn-default-bg;
+                > .btn-group {
+                    margin-left: 0;
+                    .btn {
+                        // .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+                        .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+                        // .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+                    }
+                }
+            }
+        }
+    }
+    &.create {
+        .placeholder-text {
+            color: @gray-light;
+        }
+        .search {
+            position: absolute;
+            width: 100%;
+            z-index: 9999;
+            li {
+                &:hover {
+                    cursor: pointer;
+                    background-color: @brand-primary;
+                    color: #FFF;
+                }
+            }
+        }
+        .ta-toolbar {
+            margin-left: 0;
+            background-color: @btn-default-bg;
+            > .btn-group {
+                margin-left: 0;
+                .btn {
+                    // .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+                    // .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+                    // .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+                }
+            }
+        }
+    }
+}

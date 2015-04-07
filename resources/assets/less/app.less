@@ -1,24 +1,123 @@
-@import "../../../vendor/bootstrap/less/bootstrap";
+@import "../../../vendor/bower_components/bootstrap/less/bootstrap";
+@import "../../../vendor/bower_components/font-awesome/less/variables";
 @import "variables";
 @import "bootswatch";
-@import url("animate.min.css");
+@import "badges";
+@import "home";
+@import "message";
+@import "profile";
+@import "product";
+@import "item";
+@import "footer";
+@import url("vendor.css");
+@import url("//fonts.googleapis.com/css?family=Lato:300,400");
 
-@btn-font-weight: 300;
-@font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
-@icon-font-path: "../vendor/bootstrap/fonts/";
-@color-facebook: #3B5998;
+// @btn-font-weight: 300;
+// @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
+@icon-font-path:            "../vendor/bootstrap/fonts/";
+@color-facebook:            #3B5998;
+@profile-name-height:       50px;
+@font-family-descriptive:   "Lato", sans-serif;
+// MESSAGES
+@message-image-size:        100px;
+@message-padding:           5px;
+@message-background:        #FFF;
+@message-border:            1px solid #FFF;
+@message-border-hover:      1px solid @gray-lighter;
+// MESSAGES CONVERSATION
+@conversation-image-size:   50px;
+@conversation-padding:      0;
+@conversation-padding-body: 5px 10px 10px 10px;
+@conversation-background:   @gray;
+@conversation-body-background: #FFF;
+@conversation-body-border-radius: 3px;
+// [DEPRECATED]
+@message-conversation-image-size: 50px;
+@message-conversation-padding: 0;
+@message-conversation-padding-body: 5px 10px 10px 10px;
+@message-conversation-background: @gray;
+@message-conversation-body-background: #FFF;
+@message-conversation-body-border-radius: 3px;
+
+// PRODUCTS
+@product-item-background: #FFF;
+@product-item-color: @link-color;
+
+
+
 
 body, label, .checkbox label {
-	font-weight: 300;
+	font-weight: 400;
+}
+.font-light {
+    font-weight: 300;
+}
+.font-bold {
+    font-weight: 700;
+}
+.font-normal {
+    font-weight: 400;
 }
 body {
-    padding-top: 70px;
+    padding-top: @navbar-height;
 }
 
-.navbar-right .user-avatar > img {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
+.content-description {
+    font-family: @font-family-descriptive;
+}
+
+.content-container {
+    padding-top: 20px;
+}
+
+.navbar-brand {
+    img {
+        height: 100%;
+        width: auto;
+        display: inline;
+        margin-top: -5px;
+    }
+}
+
+.navbar-right {
+    .user-avatar > img {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+    }
+    .with-notification {
+        a {
+            &:hover {
+                background-color: transparent!important;
+                color: @gray-lighter!important;
+            }
+        }
+        .badge {
+            position: absolute;
+            margin-top: -5px;
+            margin-right: -5px;
+        }
+    }
+    .dropdown-header {
+        text-align: center;
+        font-size: 10px;
+    }
+    .dropdown {
+        .icon-up {
+            display: none;
+        }
+        .icon-down {
+            display: inline-block;
+        }
+        &.open {
+            .icon-up {
+                display: inline-block;;
+            }
+            .icon-down {
+                display: none;
+            }
+        }
+    }
 }
 .facebook {
     &.color {
@@ -28,3 +127,88 @@ body {
         background-color: @color-facebook;
     }
 }
+
+.login-with-facebook {
+    &:hover {
+        .facebook {
+            background-color: darken(@color-facebook, 10%);
+        }
+    }
+    .facebook {
+        color: #FFF;
+        cursor: pointer;
+    }
+    span {
+        border-right: 0;
+        border-bottom: 1px solid @gray-dark;
+        border-top: 1px solid @gray-dark;
+        border-left: 1px solid @gray-dark;
+    }
+    a {
+        padding-left: 0;
+        border-left: 0;
+        border-bottom: 1px solid @gray-dark;
+        border-top: 1px solid @gray-dark;
+        border-right: 1px solid @gray-dark;
+    }
+}
+
+.badge {
+    &.badge-delete {
+        background-color: @brand-danger;
+        &:hover {
+            background-color: darken( @brand-danger, 20% );
+        }
+    }
+    &.badge-edit {
+        background-color: @brand-info;
+        &:hover {
+            background-color: darken( @brand-info, 20% );
+        }
+    }
+}
+
+/* Have to set height explicity on ui-view 
+to prevent collapsing during animation*/
+// .ui-view-container {
+//   position: relative;
+//   height: 65px;
+// }
+
+// [ui-view].ng-enter, [ui-view].ng-leave {
+//   position: absolute;
+//   left: 0;
+//   right: 0;
+//   -webkit-transition:all .5s ease-in-out;
+//     -moz-transition:all .5s ease-in-out;
+//     -o-transition:all .5s ease-in-out;
+//     transition:all .5s ease-in-out;
+// }
+
+// [ui-view].ng-enter {
+//   opacity: 0;
+//   -webkit-transform:scale3d(0.5, 0.5, 0.5);
+//   -moz-transform:scale3d(0.5, 0.5, 0.5);
+//   transform:scale3d(0.5, 0.5, 0.5);
+// }
+
+// [ui-view].ng-enter-active {
+//   opacity: 1;
+//   -webkit-transform:scale3d(1, 1, 1);
+//   -moz-transform:scale3d(1, 1, 1);
+//   transform:scale3d(1, 1, 1);
+// }
+
+// [ui-view].ng-leave {
+//   opacity: 1; 
+//   -webkit-transform:translate3d(0, 0, 0);
+//   -moz-transform:translate3d(0, 0, 0);
+//   transform:translate3d(0, 0, 0);
+// }
+
+// [ui-view].ng-leave-active {
+//   opacity: 0;
+//   -webkit-transform:translate3d(100px, 0, 0);
+//   -moz-transform:translate3d(100px, 0, 0);
+//   transform:translate3d(100px, 0, 0);
+// }

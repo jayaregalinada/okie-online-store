@@ -1,0 +1,177 @@
+.product-container {
+    .product-item {
+        margin-bottom: @padding-small-horizontal;
+        padding-left: @padding-small-vertical;
+        padding-right: @padding-small-vertical;
+        position: relative;
+        &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+            .transition-delay( .1s );
+            // .animation-delay( .5s );
+        }
+        &.ng-enter, &.ng-leave, &.ng-move {
+            .transition( all .3s );
+        }
+        &.ng-enter-stagger {
+            .transition-duration( 0s );
+        }
+        &.ng-enter {
+            opacity: 0;
+            .translate3d(0, 10%, 0);
+            &.ng-enter-active {
+                opacity: 1;
+                transform: none;
+                -webkit-transform: none;
+            }
+        }
+        &.ng-leave {
+            opacity: 1;
+            .animation( fadeOut 1s );
+            &.ng-leave-active {
+                .transition( all 1s );
+                opacity: 0;
+            }
+        }
+    }
+    .product-item-container {
+        // POLAROID EFFECTS
+        background-color: @product-item-background;
+        .box-shadow( 0 2px 5px @gray-light );
+        .transition( all .5s );
+        &:hover {
+            .box-shadow( 0 2px 7px @gray );
+            cursor: pointer;
+            .description {
+                border-bottom-color: @gray;
+            }
+        }
+        .description {
+            padding: @padding-base-vertical;
+            border-bottom: 2px solid @gray-lighter;
+            max-height: 43px;
+            overflow: hidden;
+            color: @product-item-color;
+        }
+        .img {
+            @media (min-width: @screen-lg-min) {
+                max-width: 217px;
+                max-height: 217px;
+            }
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            > img {
+                width: 100%;
+            }
+        }
+    }
+    form {
+        .control-label {
+            text-align: left;
+        }
+    }
+    .product-left {
+        .product-description {
+            font-size: @font-size-small;
+        }
+        .edit-mode {
+            li {
+                padding: 0;
+                input {
+                    border: 0;
+                    padding: 10px 15px;
+                    height: 41px;
+                }
+            }
+        }
+        .panel-title {
+            button {
+                position: absolute;
+                right: 30px;
+                margin-top: -6px;
+                height: 30px;
+                width: 40px;
+            }
+        }
+    }
+    .dropzone {
+        border: 4px dashed @gray-light;
+        border-radius: 10px;
+        padding: @padding-base-vertical;
+        min-height: 10px;
+        &.no-item {
+            font-size: 3em;
+        }
+        font-size: 1.3em;
+        transition: all .4s;
+        &.dz-drag-hover {
+            border-color: @gray;
+            background-color: @gray-lighter;
+            box-shadow: 0 0 20px @gray-light;
+        }
+        .dz-progress {
+            .dz-upload {
+                background: @brand-primary;
+            }
+        }
+        .dz-image {
+            border-radius: 0;
+        }
+    }
+    .product-images {
+        .product-image {
+            float: left;
+            position: relative;
+            width: 20%;
+            padding-bottom: 20%;
+            background-color: #FFF;
+            border: 1px solid @gray-lighter;
+            margin-right: @padding-small-vertical;
+            margin-bottom: @padding-small-vertical;
+            &.ng-enter {
+                transition: all 1s;
+                opacity: 0;
+                top: 20px;
+                left: 0;
+                &.ng-enter-active {
+                    top: 0;
+                    left: 0;
+                    opacity: 1;
+                }
+            }
+            &.ng-leave {
+                top: 5px;
+                left: 0;
+                opacity: 1;
+                &.ng-leave-active {
+                    top: 0;
+                    left: 0;
+                    opacity: 0;
+                }
+            }
+            a {
+                position: absolute;
+                left: 5px;
+                right: 5px;
+                top: 5px;
+                bottom: 5px;
+                overflow: hidden;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+            // &:hover {
+            //     img {
+            //         box-shadow: 0 0 10px @gray-light;
+            //     }
+            // }
+        }
+    }
+    .product-categories {
+        .category {
+            margin-right: @padding-small-vertical;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+    }
+}
