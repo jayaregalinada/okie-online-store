@@ -4,3 +4,6 @@
 /nbproject/private
 /public/vendor
 /.idea
+/vendor/bower_components
+/public/uploads
+ide-helper.php
