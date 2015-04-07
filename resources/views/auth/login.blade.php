@@ -1,14 +1,17 @@
 @extends('app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid content-container">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
-				<div class="panel-heading">Login</div>
+				<div class="panel-heading"><h4>Login</h4></div>
 				<div class="panel-body">
 					@if (count($errors) > 0)
-						<div class="alert alert-danger">
+						<div class="alert alert-danger fade in alert-dismissable">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
 							<strong>Whoops!</strong> There were some problems with your input.<br><br>
 							<ul>
 								@foreach ($errors->all() as $error)
@@ -24,14 +27,14 @@
 						<div class="form-group">
 							<label class="col-md-4 control-label">E-Mail Address</label>
 							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
+								<input required type="email" class="form-control" name="email" value="{{ old('email') }}" />
 							</div>
 						</div>
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Password</label>
 							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
+								<input required type="password" class="form-control" name="password" />
 							</div>
 						</div>
 
@@ -53,6 +56,15 @@
 							</div>
 						</div>
 					</form>
+				</div>
+				<div class="panel-footer">
+					<div class="login-with-facebook col-xs-4 col-md-offset-4">
+						<div class="input-group ">
+							<span class="facebook background input-group-addon"><i class="fa fa-facebook"></i></span>
+							<a class="form-control facebook background btn" href="{{ route( 'login.provider', ['provider' => 'facebook'] ) }}">LOGIN WITH FACEBOOK</a>	
+						</div>
+					</div>
+					<div class="clearfix"></div>
 				</div>
 			</div>
 		</div>
