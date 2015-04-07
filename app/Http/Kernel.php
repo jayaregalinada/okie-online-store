@@ -16,6 +16,7 @@ class Kernel extends HttpKernel {
 		'Illuminate\Session\Middleware\StartSession',
 		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		'Okie\Http\Middleware\VerifyCsrfToken',
+		'Clockwork\Support\Laravel\ClockworkMiddleware',
 	];
 
 	/**
@@ -24,9 +25,10 @@ class Kernel extends HttpKernel {
 	 * @var array
 	 */
 	protected $routeMiddleware = [
-		'auth' => 'Okie\Http\Middleware\Authenticate',
-		'auth.basic' => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
-		'guest' => 'Okie\Http\Middleware\RedirectIfAuthenticated',
+		'auth'          => 'Okie\Http\Middleware\Authenticate',
+		'auth.basic'    => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
+		'guest'         => 'Okie\Http\Middleware\RedirectIfAuthenticated',
+		'admin'         => 'Okie\Http\Middleware\AdminMiddleware',
 	];
 
 }
