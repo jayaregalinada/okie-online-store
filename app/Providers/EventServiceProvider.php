@@ -11,15 +11,20 @@ class EventServiceProvider extends ServiceProvider {
 	 * @var array
 	 */
 	protected $listen = [
-		'event.name' => [
-			'EventListener',
-		],
+		// 'event.name' => [
+		// 	'EventListener',
+		// ],
+		'Okie\Events\MessageEvent' => [
+			'Okie\Handlers\Events\UnreadMessagesHandler',
+			'Okie\Handlers\Events\CreateThreadHandler',
+		]
 	];
 
 	/**
 	 * Register any other events for your application.
 	 *
 	 * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+	 * 
 	 * @return void
 	 */
 	public function boot(DispatcherContract $events)
