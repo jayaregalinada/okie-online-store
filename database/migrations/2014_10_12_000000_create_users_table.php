@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration {
 			$table->string('provider');
 			$table->string('provider_id')->unique();
 			$table->string('password', 60)->nullable();
-			$table->boolean('active')->default(true);
+			$table->boolean('verified')->default( true );
 			$table->string('gender')->nullable();
 			$table->string('link');
 			$table->rememberToken();

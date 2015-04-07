@@ -1,5 +1,9 @@
 <?php namespace Okie\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Auth;
+use Okie\MessageStatus;
+
 class HomeController extends Controller {
 
 	/*
@@ -20,7 +24,7 @@ class HomeController extends Controller {
 	 */
 	public function __construct()
 	{
-		$this->middleware('auth');
+		$this->middleware( 'auth' );
 	}
 
 	/**
@@ -30,10 +34,51 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home');
+		return view( 'home' );
 	}
 
+	/**
+	 * Get Profile information
+	 *
+	 * @param  Request $request
+	 *
+	 * @return mixed
+	 */
+	public function profile( Request $request )
+	{
+		if( $request->ajax() )
+			return $this->getResponseProfile();
 
+		return view( 'profile.index' );
+	}
+
+	/**
+	 * Get message view
+	 *
+	 * @return \Illuminate\View\View
+	 */
+	public function messages()
+	{
+		return view( 'messages.messages' );
+	}
+
+	/**
+	 * Profile information in array
+	 *
+	 * @return array
+	 */
+	private function getResponseProfile()
+	{
+		$response = [
+			'user' => Auth::user(),
+		];
+		if( Auth::user()->isAdmin() )
+			return array_add( $response, 'messages', MessageStatus::countUnreadMessages() );
+		else
+			return array_add( $response, 'messages', MessageStatus::countUnreadReplyMessages( Auth::user()->id ) );
+
+		return $response;
+	}
 
 
 }

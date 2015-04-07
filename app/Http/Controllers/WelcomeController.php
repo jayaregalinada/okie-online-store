@@ -1,17 +1,9 @@
 <?php namespace Okie\Http\Controllers;
 
-class WelcomeController extends Controller {
+use Illuminate\Http\Request;
+use Okie\Product;
 
-	/*
-	|--------------------------------------------------------------------------
-	| Welcome Controller
-	|--------------------------------------------------------------------------
-	|
-	| This controller renders the "marketing page" for the application and
-	| is configured to only allow guests. Like most of the other sample
-	| controllers, you are free to modify or remove it as you desire.
-	|
-	*/
+class WelcomeController extends Controller {
 
 	/**
 	 * Create a new controller instance.
@@ -20,17 +12,27 @@ class WelcomeController extends Controller {
 	 */
 	public function __construct()
 	{
-		$this->middleware('guest');
+		// $this->middleware('guest');
 	}
 
 	/**
 	 * Show the application welcome screen to the user.
 	 *
-	 * @return Response
+	 * @return \Illuminate\View\View
 	 */
-	public function index()
+	public function index( Request $request )
 	{
-		return view('welcome');
+		return view( 'home' )->with( 'products', Product::latest()->take( 12 )->get() );
+	}
+
+	/**
+	 * Get index view
+	 *
+	 * @return \Illuminate\View\View
+	 */
+	public function getIndexView()
+	{
+		return view( 'index' );
 	}
 
 }
