@@ -1,4 +1,145 @@
 (function() {
+  _okie.controller('DeliverController', function(DeliverFactory, textAngularManager, $timeout, $log, $window, $scope, $state, $stateParams, $rootScope) {
+    $scope.heading = 'Delivered';
+    $scope.factory = DeliverFactory;
+    $scope.deliveries = [];
+    $scope.deliverState = false;
+    $scope.deliverErrorState = false;
+    $scope.deliverConversations = [];
+    $scope.alerts = [];
+    $scope.replySubmitButton = {
+      state: false
+    };
+
+    /**
+     * Change the heading
+     *
+     * @param  {string} heading
+     *
+     * @return {void}
+     */
+    $scope.changeHeading = function(heading, prepend) {
+      $scope.heading = heading;
+      $('.profile-container .profile-full-name').text(heading);
+      $('.profile-container .profile-full-name').prepend(prepend);
+    };
+
+    /**
+     * Close the alert
+     *
+     * @param  {integer} index
+     *
+     * @return {void}
+     */
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
+    $scope.getAllDeliver = function(pageNumber) {
+      var page;
+      $scope.deliveries = [];
+      page = pageNumber ? pageNumber : 1;
+      $scope.changeHeading('Delivered');
+      $scope.deliverState = true;
+      $scope.deliverLoadingState = true;
+      $scope.deliverErrorState = false;
+      DeliverFactory.getAll(page).success(function(data, xhr) {
+        $log.log('DeliverController.getAllDeliver::data', data);
+        $scope.deliverErrorState = false;
+        if (Boolean(data.next_page_url)) {
+          $scope.getAllDeliver(data.current_page + 1);
+        }
+      }).error(function(data, xhr) {
+        $log.error('DeliverController.getAllDeliver::data', data);
+        $scope.deliverErrorState = true;
+        $scope.deliverLoadingState = false;
+        $scope.deliverErrorMessage = data.error.message.replace('[DELIVER] ', '');
+      }).then(function(data, xhr) {
+        return $scope.pushToDeliveries(data.data.data);
+      });
+    };
+    $scope.pushToDeliveries = function(data) {
+      angular.forEach(data, function(value, key) {
+        $scope.deliveries.push(value);
+      });
+      $scope.deliverLoadingState = false;
+      $timeout(function() {
+        $scope.deliverState = false;
+        $scope.deliverErrorState = false;
+      }, 3000);
+    };
+    $scope.getToConversation = function(deliverId, pageNumber) {
+      $scope.deliverConversations = [];
+      $scope.changeHeading('Loading conversations');
+      $scope.deliverState = true;
+      DeliverFactory.getConversations(deliverId, pageNumber).success(function(data, xhr) {
+        $log.log('DeliverController.getToConversation::data', data);
+        $scope.changeHeading(data.deliver.title, '<span>DELIVERED: &nbsp;</span>');
+        $scope.deliverErrorState = false;
+        if (Boolean(data.conversations.next_page_url)) {
+          $scope.getToConversation($rootScope.$stateParams.deliverId, data.conversations.current_page + 1);
+        }
+      }).error(function(data, xhr) {
+        $scope.deliverErrorState = true;
+        $log.error('DeliverController.getToConversation::data', data);
+        $scope.changeHeading('ERROR');
+        $scope.deliverErrorMessage = data.error.deliverErrorMessage;
+      }).then(function(data, xhr) {
+        angular.forEach(data.data.conversations.data, function(value, key) {
+          $scope.deliverConversations.push(value);
+        });
+        $scope.deliverInfo = data.data.deliver;
+        $scope.backToTextArea();
+        $timeout(function() {
+          return $scope.deliverState = false;
+        }, 3000);
+      });
+    };
+
+    /**
+     * Back to Text Area
+     *
+     * @param  {integer} delayTime
+     * @param  {integer} animateTime
+     *
+     * @return {void}
+     */
+    $scope.backToTextArea = function(delayTime, animateTime) {
+      $timeout(function() {
+        return $('body,html').animate({
+          scrollTop: $('#reply').offset().top + $('#reply').outerHeight(true) - $(window).height() + 20
+        }, animateTime ? animateTime : 1000);
+      }, delayTime ? delayTime : 1500);
+    };
+    $scope.replySubmit = function(event, form) {
+      var data, tA;
+      event.preventDefault();
+      $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+      tA = textAngularManager.retrieveEditor('reply');
+      data = {
+        deliver: $rootScope.$stateParams.deliverId,
+        message: form.reply.$modelValue
+      };
+      DeliverFactory.reply(data).success(function(response, xhr) {
+        $log.log('DeliverController.replySubmit::response', response);
+        tA.scope.$parent.reply = '';
+        $scope.deliverConversations.push(response.success.data);
+      }).error(function(response, xhr) {
+        $scope.alerts.push(response.error);
+        $timeout(function() {
+          $scope.alerts = [];
+          $scope.getToConversation($rootScope.$stateParams.deliverId);
+          $scope.replySubmitButton.state = false;
+        }, 4000);
+      }).then(function(response) {
+        $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+        $scope.backToTextArea();
+      });
+    };
+  });
+
+}).call(this);
+
+(function() {
   _okie.controller('ImageController', function($scope, $window, Lightbox, $rootScope, $http, localStorageService) {
     $scope.productKey = 'product_info';
     $scope.product = {};
@@ -76,7 +217,7 @@
 }).call(this);
 
 (function() {
-  _okie.controller('ProductController', function($rootScope, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory) {
+  _okie.controller('ProductController', function($rootScope, $log, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory) {
     $scope.info = 'Product Information';
     $scope.header = null;
     $scope.title = null;
@@ -120,7 +261,7 @@
     };
     $scope.getTitle = function() {
       if ($window.location.pathname === $scope.path + '/create') {
-        console.log('Create Product');
+        $log.log('Create Product');
       }
     };
     $scope.openLightboxModal = function(index) {
@@ -406,6 +547,67 @@
         dropzone.on(event, handler);
       });
     };
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('DeliverFactory', function($http, $window) {
+    var _d;
+    _d = {};
+    _d.availableMethod = ['GET', 'POST'];
+
+    /**
+     * @param  {int} pageNumber
+     * @param  {string} url
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _d.getAll = function(pageNumber, url, method) {
+      return $http({
+        url: url ? url : $window._url.deliver.all,
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+
+    /**
+     * @param  {int} id
+     * @param  {int} pageNumber
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _d.getConversations = function(id, pageNumber, method) {
+      return $http({
+        url: $window._url.deliver.conversations.replace('_DELIVER_ID', id),
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+
+    /**
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+     */
+    _d.reply = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.deliver.reply,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+    return _d;
   });
 
 }).call(this);

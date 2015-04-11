@@ -4542,7 +4542,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   padding: 8px 15px;
   margin-bottom: 21px;
   list-style: none;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   border-radius: 0;
 }
 .breadcrumb > li {
@@ -6732,12 +6732,12 @@ a.list-group-item-danger.active:focus {
 }
 .home-container .item-container .product-item-container {
   background-color: #ffffff;
-  background-image: linear-gradient(to bottom, #d6d6d6 0%, #ffffff 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd6d6d6', endColorstr='#ffffffff', GradientType=0);
   display: block;
-  box-shadow: 0 3px 5px #999999;
+  box-shadow: 0 0 1px #999999;
   cursor: pointer;
+}
+.home-container .item-container .product-item-container:hover {
+  box-shadow: 0 0 3px #999999;
 }
 .home-container .item-container .product-item-container:hover .description {
   border-bottom-color: #555555;
@@ -6816,12 +6816,12 @@ a.list-group-item-danger.active:focus {
 .message-container.messages .message.ng-leave,
 .message-container.inbox .message.ng-leave {
   opacity: 1;
-  -webkit-animation: fadeOut 1s;
-  animation: fadeOut 1s;
+  -webkit-animation: fadeOut 0.3s;
+  animation: fadeOut 0.3s;
 }
 .message-container.messages .message.ng-leave.ng-leave-active,
 .message-container.inbox .message.ng-leave.ng-leave-active {
-  transition: all 1s;
+  transition: all 0.3s;
   opacity: 0;
 }
 .message-container.messages .message .media-left a,
@@ -6871,14 +6871,14 @@ a.list-group-item-danger.active:focus {
 }
 .message-container.conversation .message.ng-leave {
   opacity: 1;
-  -webkit-animation: fadeOut 1s;
-  animation: fadeOut 1s;
+  -webkit-animation: fadeOut 0.3s;
+  animation: fadeOut 0.3s;
 }
 .message-container.conversation .message.ng-leave.ng-leave-active {
-  transition: all 1s;
+  transition: all 0.3s;
   opacity: 0;
 }
-.message-container.conversation .message.message-type-reply .media-body .message-body {
+.message-container.conversation .message.message-mine .media-body .message-body {
   background: #e6e6e6 !important;
 }
 .message-container.conversation .message .media-left img {
@@ -6895,6 +6895,10 @@ a.list-group-item-danger.active:focus {
 .message-container.conversation .message .media-body .message-body .time {
   color: #999999;
   font-size: 11px;
+}
+.message-container.conversation .message .media-body .message-body img {
+  max-width: 100%;
+  height: auto;
 }
 .message-container.conversation .message-reply {
   padding-top: 18px;
@@ -6920,6 +6924,7 @@ a.list-group-item-danger.active:focus {
   font-family: "Lato", sans-serif;
 }
 .message-container.conversation .message-reply .ta-toolbar {
+  display: none;
   margin-left: 0;
   background-color: #222222;
 }
@@ -6967,7 +6972,7 @@ a.list-group-item-danger.active:focus {
 }
 .profile-container .profile-full-name {
   text-align: center;
-  height: 50px;
+  min-height: 50px;
   font-size: 26px;
   position: relative;
   font-weight: 500;
@@ -7169,25 +7174,37 @@ a.list-group-item-danger.active:focus {
   margin-right: 5px;
   margin-bottom: 5px;
 }
+.product-container .product-images .product-image.ng-enter-stagger,
+.product-container .product-images .product-image.ng-leave-stagger,
+.product-container .product-images .product-image.ng-move-stagger {
+  transition-delay: 0.1s;
+}
+.product-container .product-images .product-image.ng-enter,
+.product-container .product-images .product-image.ng-leave,
+.product-container .product-images .product-image.ng-move {
+  transition: all 0.3s;
+}
+.product-container .product-images .product-image.ng-enter-stagger {
+  transition-duration: 0s;
+}
 .product-container .product-images .product-image.ng-enter {
-  transition: all 1s;
   opacity: 0;
-  top: 20px;
-  left: 0;
+  -webkit-transform: translate3d(0, 10%, 0);
+  transform: translate3d(0, 10%, 0);
 }
 .product-container .product-images .product-image.ng-enter.ng-enter-active {
-  top: 0;
-  left: 0;
   opacity: 1;
+  -ms-transform: none;
+      transform: none;
+  -webkit-transform: none;
 }
 .product-container .product-images .product-image.ng-leave {
-  top: 5px;
-  left: 0;
   opacity: 1;
+  -webkit-animation: fadeOut 1s;
+  animation: fadeOut 1s;
 }
 .product-container .product-images .product-image.ng-leave.ng-leave-active {
-  top: 0;
-  left: 0;
+  transition: all 1s;
   opacity: 0;
 }
 .product-container .product-images .product-image a {
@@ -7442,6 +7459,14 @@ a.list-group-item-danger.active:focus {
 #item_container .item-carousel .carousel-control.left span:before {
   content: "\f104";
 }
+@media (min-width: 992px) {
+  #item_container .item-info .item-inquire a {
+    padding: 18px 30px;
+    font-size: 19px;
+    line-height: 1.3333333;
+    border-radius: 0;
+  }
+}
 #item_container .item-inquire .ta-editor {
   min-height: 300px;
   height: auto;
@@ -7454,8 +7479,14 @@ a.list-group-item-danger.active:focus {
   color: #999999;
 }
 #item_container .item-inquire .ta-toolbar {
+  display: none;
   margin-left: 0;
   background-color: #222222;
+}
+@media (min-width: 992px) {
+  #item_container .item-inquire .ta-toolbar {
+    display: block;
+  }
 }
 #item_container .item-inquire .ta-toolbar > .btn-group {
   margin-left: 0;
@@ -7512,6 +7543,10 @@ a.list-group-item-danger.active:focus {
 }
 #footer .recent-items li a:hover {
   border-color: #165ba8;
+}
+.settings-container {
+  padding: 30px;
+  background-color: #FFF;
 }
 body,
 label,
@@ -7609,6 +7644,10 @@ body {
 }
 .badge.badge-edit:hover {
   background-color: #071e37;
+}
+#nprogress .bar,
+#loading-bar .bar {
+  height: 3px;
 }
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/

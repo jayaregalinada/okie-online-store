@@ -1,5 +1,5 @@
 (function() {
-  _okie.controller('MessageController', function($scope, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory) {
+  _okie.controller('MessageController', function($scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory) {
     $scope.heading = 'Messages';
     $scope.messages = [];
     $scope.conversation = [];
@@ -12,6 +12,20 @@
       state: false
     };
     $scope.threadInquiries = [];
+    $scope.inquiries = [];
+    $scope.inquiryConversations = [];
+    $scope.inquiryInfo = {};
+    $scope.inquiryState = false;
+    $scope.inquiryLoadingState = false;
+    $scope.inquiryErrorState = false;
+    $scope.inquiriesKey = 'inquiries';
+    $scope.inbox = [];
+    $scope.inboxConversations = [];
+    $scope.inboxInfo = {};
+    $scope.inboxState = false;
+    $scope.inboxLoadingState = false;
+    $scope.inboxErrorState = false;
+    $scope.inboxKey = 'inbox';
     $scope.threadDeliveries = [];
     $scope.threadInboxes = [];
     $scope.intervalSeconds = 3000;
@@ -19,6 +33,8 @@
     $scope.message = {};
     $scope.search = [];
     $scope.searchError = false;
+    $scope.url = $window._url;
+    $scope.storage = localStorageService;
 
     /**
      * Change the heading
@@ -27,9 +43,38 @@
      *
      * @return {void}
      */
-    $scope.changeHeading = function(heading) {
+    $scope.changeHeading = function(heading, prepend) {
       $scope.heading = heading;
       $('.profile-container .profile-full-name').text(heading);
+      $('.profile-container .profile-full-name').prepend(prepend);
+    };
+
+    /**
+     * Store to localStorage in JSON.stringify
+     *
+     * @param  {string} key
+     * @param  {object|array} data
+     *
+     * @return {void}
+     */
+    $scope.store = function(key, data) {
+      $scope.storage.set(key, JSON.stringify(data));
+    };
+
+    /**
+     * Back to Text Area
+     *
+     * @param  {integer} delayTime
+     * @param  {integer} animateTime
+     *
+     * @return {void}
+     */
+    $scope.backToTextArea = function(delayTime, animateTime) {
+      $timeout(function() {
+        return $('body,html').animate({
+          scrollTop: $('#reply').offset().top + $('#reply').outerHeight(true) - $(window).height() + 20
+        }, animateTime ? animateTime : 1000);
+      }, delayTime ? delayTime : 1500);
     };
 
     /**
@@ -40,30 +85,207 @@
      * @return {void}
      */
     $scope.getAllInquiries = function(page) {
+      $scope.inquiries = [];
       $scope.changeHeading('Inquiries');
-      $scope.messages = [];
-      MessageFactory.getInquiryMessages(page).success(function(data, xhr) {
+      page = page ? page : 1;
+      $scope.inquiryState = true;
+      $scope.inquiryLoadingState = true;
+      $scope.inquiryErrorState = false;
+      $scope.inquiryConversations = [];
+      InquiryFactory.getAllInquiries(page).success(function(data, xhr) {
         $log.log('getAllInquiries::data', data);
+        $scope.inquiryErrorState = false;
         if (Boolean(data.next_page_url)) {
           $scope.getAllInquiries(data.current_page + 1);
         }
+      }).error(function(data, xhr) {
+        $scope.inquiryErrorState = true;
+        $scope.inquiryLoadingState = false;
+        $scope.inquiryErrorMessage = data.error.message.replace('[INQUIRY] ', '');
       }).then(function(data, xhr) {
-        angular.forEach(data.data.data, function(value, key) {
-          $scope.messages.push(value);
-          return $scope.threadInboxes.push(value);
-        });
+        $scope.pushToInquiries(data.data.data);
       });
     };
-    $scope.stopLatestMessage = function() {
-      var stop;
-      $log.info('Stopping latest messages trolling');
-      if (angular.isDefined(stop)) {
-        $interval.cancel(stop);
-        stop = void 0;
-      }
+
+    /**
+     * Push data to $scope.inquiries
+     *
+     * @param  {array} data
+     *
+     * @return {void}
+     */
+    $scope.pushToInquiries = function(data) {
+      angular.forEach(data, function(value, key) {
+        $scope.inquiries.push(value);
+      });
+      $scope.inquiryLoadingState = false;
+      $timeout(function() {
+        $scope.inquiryState = false;
+        return $scope.inquiryErrorState = false;
+      }, 3000);
     };
-    $scope.changeHeadingWhenInquiring = function(product_name, name) {
-      $('.profile-container .profile-full-name').html('Inquiring for ' + product_name + ' <small>by ' + name + '</small>');
+
+    /**
+     * Push data to $scope.inbox
+     *
+     * @param  {array} data
+     *
+     * @return {void}
+     */
+    $scope.pushToInbox = function(data) {
+      angular.forEach(data, function(value, key) {
+        $scope.inbox.push(value);
+      });
+      $scope.inboxLoadingState = false;
+      return $timeout(function() {
+        return $scope.inboxState = false;
+      }, 3000);
+    };
+
+    /**
+     * All shortcuts
+     * instead of refreshing the whole page
+     * just alt + r
+     *
+     * @return {void}
+     */
+    $scope.keyBinder = function() {
+      $document.bind('keyup', function(event) {
+        if (event.keyCode === 82 && event.altKey) {
+          event.preventDefault();
+          switch ($state.current.name) {
+            case 'messages.inquiries':
+              if (!$scope.inquiryState) {
+                $scope.inquiries = [];
+                return $scope.getAllInquiries();
+              }
+              break;
+            case 'messages.viewInquiry':
+              if (!$scope.inquiryState) {
+                $scope.inquiryConversations = [];
+                return $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId);
+              }
+              break;
+            case 'messages.inbox':
+              if (!$scope.inboxState) {
+                $scope.inbox = [];
+                return $scope.getAllInboxes();
+              }
+              break;
+            case 'messages.viewInbox':
+              if (!$scope.inboxState) {
+                $scope.inboxConversations = [];
+                return $scope.getToInboxMessages($rootScope.$stateParams.inboxId, 1);
+              }
+          }
+        }
+      });
+    };
+
+    /**
+     * Reply on inquiry
+     *
+     * @param  {object} event
+     * @param  {object} form
+     *
+     * @return {mixed}
+     */
+    $scope.inquiryReplySubmit = function(event, form) {
+      var data, tA;
+      event.preventDefault();
+      $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+      tA = textAngularManager.retrieveEditor('reply');
+      data = {
+        message: form.reply.$modelValue,
+        item: $scope.inquiryInfo.product_id,
+        inquisition: $scope.inquiryInfo.inquisition_id,
+        inquiry: $rootScope.$stateParams.inquiryId
+      };
+      InquiryFactory.replyInquiry(data).success(function(d, xhr) {
+        $log.log('inquiryReplySubmit::data', d);
+        tA.scope.$parent.reply = '';
+        $scope.inquiryConversations.push(d.success.data);
+      }).error(function(data, xhr) {
+        $scope.alerts.push(data.error);
+        $timeout(function() {
+          $scope.alerts = [];
+          $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId);
+          $scope.replySubmitButton.state = false;
+        }, 4000);
+      }).then(function(d) {
+        $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+        $scope.backToTextArea(500);
+        tA.scope.displayElements.text.trigger('focus');
+      });
+    };
+
+    /**
+     * Reply on Inbox
+     *
+     * @param  {object} event
+     * @param  {object} form
+     *
+     * @return {mixed}
+     */
+    $scope.inboxReplySubmit = function(event, form) {
+      var data, tA;
+      event.preventDefault();
+      $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+      tA = textAngularManager.retrieveEditor('reply');
+      data = {
+        message: form.reply.$modelValue,
+        inbox: $scope.inboxInfo.id
+      };
+      InboxFactory.reply(data).success(function(d, xhr) {
+        $log.log('inboxReplySubmit::data', d);
+        tA.scope.$parent.reply = '';
+        $scope.inboxConversations.push(d.success.data);
+      }).error(function(data, xhr) {
+        $scope.alerts.push(data.error);
+        $timeout(function() {
+          $scope.alerts = [];
+          $scope.getToInboxMessages($rootScope.$stateParams.inboxId);
+        }, 4000);
+      }).then(function(d) {
+        $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
+        $scope.backToTextArea(500);
+        tA.scope.displayElements.text.trigger('focus');
+      });
+    };
+
+    /**
+     * Get to INQUIRY conversation
+     *
+     * @param  {integer} inquiryId
+     * @param  {integer} pageNumber
+     *
+     * @return {mixed}
+     */
+    $scope.getToInquiryMessages = function(inquiryId, pageNumber) {
+      $scope.changeHeading('Loading conversations');
+      $scope.inquiryState = true;
+      InquiryFactory.getConversations(inquiryId, pageNumber).success(function(data, xhr) {
+        $log.log('getToInquiryMessages::data', data);
+        $scope.changeHeading(data.inquiry.title, '<span>INQUIRY: &nbsp;</span>');
+        $scope.inquiryErrorState = false;
+        if (Boolean(data.conversations.next_page_url)) {
+          $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId, data.conversations.current_page + 1);
+        }
+      }).error(function(data, xhr) {
+        $scope.inquiryErrorState = true;
+        $log.error('getToInquiryMessages::data', data);
+        $scope.changeHeading('ERROR');
+        $scope.inquiryErrorMessage = data.error.message;
+      }).then(function(data, xhr) {
+        angular.forEach(data.data.conversations.data, function(value, key) {
+          $scope.inquiryConversations.push(value);
+        });
+        $scope.inquiryInfo = data.data.inquiry;
+        $scope.backToTextArea();
+        $timeout(function() {
+          return $scope.inquiryState = false;
+        }, 3000);
+      });
     };
     $scope.getToConversation = function(thread_id, pageNumber) {
       $scope.conversation = [];
@@ -102,6 +324,14 @@
         }
       });
     };
+
+    /**
+     * Close the alert
+     *
+     * @param  {integer} index
+     *
+     * @return {void}
+     */
     $scope.closeAlert = function(index) {
       $scope.alerts.splice(index, 1);
     };
@@ -126,72 +356,68 @@
         }, 5000);
       }).then(function(data) {
         $scope.replySubmitButton.state = !$scope.replySubmitButton.state;
-        $timeout(function() {
-          return $('body,html').animate({
-            scrollTop: $('#reply').offset().top
-          }, 1000);
-        }, 2000);
-      });
-    };
-    $scope.getAllDeliveries = function(page) {
-      $log.info('Getting all deliveries');
-      $scope.changeHeading('Delivered');
-      $scope.messages = [];
-      MessageFactory.getDeliveryMessages(page).success(function(data, xhr) {
-        $log.log('getAllDeliveries::data', data);
-        if (Boolean(data.next_page_url)) {
-          $scope.getAllDeliveries(data.current_page + 1);
-        }
-      }).then(function(data, xhr) {
-        angular.forEach(data.data.data, function(value, key) {
-          $scope.messages.push(value);
-          $scope.threadDeliveries.push(value);
-        });
+        $scope.backToTextArea();
+        tA.scope.displayElements.text.trigger('focus');
       });
     };
     $scope.moveToDelivered = function() {
-      MessageFactory.updateToDeliver($rootScope.$stateParams.threadId).success(function(data, xhr) {
+      InquiryFactory.markAsDeliver({
+        inquiry: $rootScope.$stateParams.inquiryId
+      }).success(function(data, xhr) {
         $log.log('moveToDelivered::data', data);
-        UserFactory.getNotify();
-        $state.go('messages.inquiries');
+        return $log.info('moveToDelivered()::Checkuser', $rootScope.user.is_permitted);
       });
     };
-    $scope.getLatestMessages = function(conversationLength, dataTotal) {
-      $log.log('conversationLength: ', conversationLength);
-      $log.log('dataTotal:', dataTotal);
-      if (conversationLength > dataTotal) {
-        $scope.getMessagesByOffset(conversationLength, 15);
-      }
-    };
-    $scope.getMessagesByOffset = function(offset, take) {
-      var thread;
-      thread = $rootScope.$stateParams.threadId;
-      MessageFactory.getMessageOffset(thread, offset, take).success(function(data, xhr) {
-        $log.log('getMessagesByOffset::data', data);
-        angular.forEach(data.messages, function(value, key) {
-          $scope.messages.unshift(value);
-        });
-      });
-    };
+
+    /**
+     * Create INBOX
+     *
+     * @return {void}
+     */
     $scope.createMessage = function() {
+      var name;
       $log.info('Create a message');
       $scope.changeHeading('Create');
-      $scope.message.subject = 'Message from ' + $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name;
+      name = $rootScope.me.user.is_permitted ? $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name : 'You';
+      $scope.message.subject = 'Message from ' + name;
     };
+
+    /**
+     * Searching the user in INBOX
+     *
+     * @param  {object} event
+     *
+     * @return {void}
+     */
     $scope.getUser = function(event) {
-      if (event.keyCode === 13) {
-        $log.log(event.target.value);
-        $scope.search = [];
-        $scope.searchUserByFilter(event.target.value);
-      }
-      event.preventDefault();
-    };
-    $scope.sendWithUser = function(user) {
       $scope.search = [];
-      $scope.message.user = user.id;
+      $scope.message.recipient = null;
+      if (Boolean($scope.message.send)) {
+        $scope.searchUserByFilter($scope.message.send);
+      }
+    };
+
+    /**
+     * The user Searched in INBOX
+     *
+     * @param  {object} user
+     *
+     * @return {void}
+     */
+    $scope.sendWithUser = function(user) {
+      $scope.message.recipient = user.id;
       $scope.message.send = user.full_name;
+      $scope.search = [];
       $log.log($scope.message);
     };
+
+    /**
+     * Search user in INBOX now on progress
+     *
+     * @param  {string} value
+     *
+     * @return {void}
+     */
     $scope.searchUserByFilter = function(value) {
       var param, v;
       $log.log('searchUserByFilter::ifElse', Boolean(value.substr(0, value.indexOf(":"))));
@@ -236,29 +462,89 @@
     $scope.submitNewMessage = function(event, form) {
       event.preventDefault();
       $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state;
-      MessageFactory.sendMessage(event.target.action, $scope.message).success(function(data, xhr) {
+      $scope.alerts = [];
+      InboxFactory.createMessage(event.target.action, $scope.message).success(function(data, xhr) {
         $log.log('submitNewMessage::data', data);
         $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state;
-        $scope.message.body = '';
-        $state.go('messages.thread', {
-          threadId: data.success.data.thread.id
+        $state.go('messages.viewInbox', {
+          inboxId: data.success.data.inbox.id
         });
+      }).error(function(data, xhr) {
+        $scope.message.recipient = null;
+        $scope.message.send = null;
+        $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state;
+        $scope.alerts.push(data.error);
       });
     };
+
+    /**
+     * Get all INBOX
+     *
+     * @param  {integer} page
+     *
+     * @return {void}
+     */
     $scope.getAllInboxes = function(page) {
-      $scope.changeHeading('Inbox');
       $scope.inbox = [];
-      $scope.threadInboxes = [];
-      MessageFactory.getInboxMessages(page).success(function(data, xhr) {
+      $scope.changeHeading('Inbox');
+      page = page ? page : 1;
+      $scope.inboxState = true;
+      $scope.inboxLoadingState = true;
+      $scope.inboxErrorState = false;
+      $scope.inboxConversations = [];
+      InboxFactory.getAllInbox(page).success(function(data, xhr) {
         $log.log('getAllInboxes::data', data);
+        $scope.inboxErrorState = false;
         if (Boolean(data.next_page_url)) {
           $scope.getAllInboxes(data.current_page + 1);
         }
+      }).error(function(data, xhr) {
+        $scope.inboxErrorState = true;
+        $scope.inboxLoadingState = false;
+        $scope.inboxErrorMessage = data.error.message.replace('[INBOX] ', '');
       }).then(function(data, xhr) {
         angular.forEach(data.data.data, function(value, key) {
           $scope.inbox.push(value);
-          $scope.threadInboxes.push(value);
         });
+        $scope.inboxLoadingState = false;
+        $scope.inboxState = false;
+        $scope.inboxErrorState = false;
+      });
+    };
+
+    /**
+     * Get INBOX Conversation
+     *
+     * @param  {integer} inboxId
+     * @param  {integer} pageNumber
+     *
+     * @return {void}
+     */
+    $scope.getToInboxMessages = function(inboxId, pageNumber) {
+      $scope.inboxConversations = [];
+      $scope.changeHeading('Loading conversations');
+      $scope.inboxState = true;
+      InboxFactory.getConversations(inboxId, pageNumber).success(function(data, xhr) {
+        $log.log('getToInboxMessages::data', data);
+        $scope.changeHeading(data.inbox.title, '<span>INBOX: &nbsp;</span>');
+        $scope.inboxErrorState = false;
+        if (Boolean(data.conversations.next_page_url)) {
+          $scope.getToInboxMessages($rootScope.$stateParams.inboxId, data.conversations.current_page + 1);
+        }
+      }).error(function(data, xhr) {
+        $scope.inboxErrorState = true;
+        $log.error('getToInboxMessages::data', data);
+        $scope.changeHeading('ERROR');
+        $scope.inboxErrorMessage = data.error.message;
+      }).then(function(data, xhr) {
+        angular.forEach(data.data.conversations.data, function(value, key) {
+          $scope.inboxConversations.push(value);
+        });
+        $scope.inboxInfo = data.data.inbox;
+        $scope.backToTextArea();
+        $timeout(function() {
+          return $scope.inboxState = false;
+        }, 3000);
       });
     };
   });
@@ -278,7 +564,197 @@
 }).call(this);
 
 (function() {
-  _okie.controller('UserSettingsController', function($scope, $http, $state, $stateParams, $rootScope) {});
+  _okie.controller('UserSettingsController', function($scope, $http, $state, $stateParams, $rootScope, $log, UserSettingsFactory) {
+    $scope.alerts = [];
+    $scope.email = /^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/;
+    $scope.emails = [];
+    $scope.settings = {};
+
+    /**
+     * Close the alert
+     *
+     * @param  {integer} index
+     *
+     * @return {void}
+     */
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
+    $scope.getEmailSubscribe = function() {
+      $scope.emails = [];
+      UserSettingsFactory.getEmailSubscribe('/newsletter').success(function(response, xhr) {
+        $log.info('UserSettingsController.getEmailSubscribe::response', response);
+        angular.forEach(response.success.data, function(value, key) {
+          $scope.emails.push(value);
+        });
+      }).error(function(response, xhr) {
+        $scope.alerts.push(response.error);
+      });
+    };
+    $scope.subscribeNewsletter = function(event, form) {
+      event.preventDefault();
+      $log.log('event', event);
+      $log.log('form', form);
+      UserSettingsFactory.subscribeToNewsletter($scope.settings, event.target.action).success(function(response, xhr) {
+        $log.log('UserSettingsController.subscribeNewsletter::response', response);
+        $scope.emails = [];
+        angular.forEach(response.success.emails, function(value, key) {
+          $scope.emails.push(value);
+        });
+      }).error(function(response, xhr) {
+        var res;
+        $log.error('UserSettingsController.subscribeNewsletter::response', response);
+        if (response.email) {
+          res = {
+            message: response.email.join(' | '),
+            raw: response
+          };
+          $scope.alerts.push(res);
+        } else {
+          $scope.alerts.push(response.error);
+        }
+      }).then(function(data, xhr) {
+        $scope.settings.email = null;
+      });
+    };
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('InboxFactory', function($http, $rootScope, $window) {
+    var _i;
+    _i = {};
+    _i.createMessage = function(url, data, method) {
+      return $http({
+        url: url,
+        data: data,
+        method: method ? method : "POST"
+      });
+    };
+    _i.getAllInbox = function(pageNumber, method) {
+      return $http({
+        url: $window._url.inbox.all,
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+    _i.getConversations = function(id, pageNumber, method) {
+      return $http({
+        url: $window._url.inbox.conversations.replace('_INQUIRY_ID_', id),
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+    _i.reply = function(data, url, method, params) {
+      url = url ? url : $window._url.inbox.reply;
+      return $http({
+        url: url,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+    return _i;
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('InquiryFactory', function($http, $window) {
+    var _i;
+    _i = {};
+    _i.availableMethod = ['GET', 'POST'];
+
+    /**
+     * @param  {integer} id
+     * @param  {integer} pageNumber
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _i.getInquiry = function(id, pageNumber, method) {
+      return $http({
+        url: $window._url.inquiry.find.replace('_INQUIRY_ID_', id),
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+
+    /**
+     * @param  {integer} pageNumber
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _i.getAllInquiries = function(pageNumber, method) {
+      return $http({
+        url: $window._url.inquiry.all,
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber ? pageNumber : 1
+        }
+      });
+    };
+
+    /**
+     * @param  {integer} id
+     * @param  {integer} pageNumber
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _i.getConversations = function(id, pageNumber, method) {
+      return $http({
+        url: $window._url.inquiry.conversations.replace('_INQUIRY_ID_', id),
+        method: method ? method : "GET",
+        params: {
+          page: pageNumber
+        }
+      });
+    };
+
+    /**
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {data} params
+     *
+     * @return {$http}
+     */
+    _i.replyInquiry = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.inquiry.reply,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+
+    /**
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+     */
+    _i.markAsDeliver = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.inquiry.delivered,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+    return _i;
+  });
 
 }).call(this);
 
@@ -378,6 +854,41 @@
       });
     };
     return _m;
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('UserSettingsFactory', function($http) {
+    var _u;
+    _u = {};
+
+    /**
+     * HTTP Post request to subscribe email newsletter
+     *
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+     */
+    _u.subscribeToNewsletter = function(data, url, method, params) {
+      return $http({
+        url: url,
+        method: method ? method : "POST",
+        data: data,
+        params: params
+      });
+    };
+    _u.getEmailSubscribe = function(url, method, params) {
+      return $http({
+        url: url,
+        method: method ? method : "GET",
+        params: params
+      });
+    };
+    return _u;
   });
 
 }).call(this);

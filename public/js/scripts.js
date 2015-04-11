@@ -109,18 +109,11 @@
     }).state('messages.inquiries', {
       parent: 'messages',
       url: '^/inquiries',
-      templateUrl: '/views/messages/messages.html',
+      templateUrl: '/views/messages/inquiries.html',
       controller: function($scope) {
         $scope.header = 'Inquiries';
         $scope.getAllInquiries();
-      }
-    }).state('messages.delivered', {
-      parent: 'messages',
-      url: '^/delivered',
-      templateUrl: '/views/messages/messages.html',
-      controller: function($scope) {
-        $scope.header = 'Delivered';
-        $scope.getAllDeliveries();
+        $scope.keyBinder();
       }
     }).state('messages.create', {
       parent: 'messages',
@@ -137,14 +130,15 @@
       controller: function($scope) {
         $scope.header = 'Inbox';
         $scope.getAllInboxes();
+        $scope.keyBinder();
       }
     }).state('messages.viewInbox', {
       parent: 'messages',
-      url: '^/inbox/:msgId',
+      url: '^/inbox/view/:inboxId',
       templateUrl: '/views/messages/conversation_inbox.html',
       controller: function($scope, $stateParams) {
-        $scope.getToInboxConversation($stateParams.msgId);
-        $scope.msgId = $stateParams.msgId;
+        $scope.getToInboxMessages($stateParams.inboxId, 1);
+        $scope.keyBinder();
       }
     }).state('messages.thread', {
       parent: 'messages',
@@ -154,13 +148,46 @@
         $scope.getToConversation($stateParams.threadId);
         $scope.threadId = $stateParams.threadId;
       }
-    }).state('messages.threaddeliver', {
+    }).state('messages.viewInquiry', {
       parent: 'messages',
-      url: '^/deliver/:threadId',
-      templateUrl: '/views/messages/conversation_delivered.html',
+      url: '^/inquiry/read/:inquiryId',
+      templateUrl: '/views/messages/conversation_inquiry.html',
       controller: function($scope, $stateParams) {
-        $scope.getToConversation($stateParams.threadId);
-        $scope.threadId = $stateParams.threadId;
+        $scope.getToInquiryMessages($stateParams.inquiryId, 1);
+        $scope.keyBinder();
+      }
+    });
+    $stateProvider.state('delivered', {
+      abstract: true,
+      controller: 'DeliverController',
+      template: '<ui-view/>',
+      url: '/deliver'
+    }).state('delivered.all', {
+      parent: 'delivered',
+      url: '/all',
+      templateUrl: '/views/messages/deliver.html',
+      controller: function($scope) {
+        $scope.getAllDeliver();
+      }
+    }).state('delivered.viewDeliver', {
+      parent: 'delivered',
+      url: '/read/:deliverId',
+      templateUrl: '/views/messages/conversation_deliver.html',
+      controller: function($scope, $stateParams) {
+        $scope.getToConversation($stateParams.deliverId, 1);
+      }
+    });
+    $stateProvider.state('settings', {
+      abstract: true,
+      controller: 'UserSettingsController',
+      template: '<ui-view/>',
+      url: '/settings'
+    }).state('settings.newsletter', {
+      parent: 'settings',
+      url: '^/newsletter',
+      templateUrl: '/views/settings/newsletter.html',
+      controller: function($scope) {
+        $scope.getEmailSubscribe();
       }
     });
     $urlRouterProvider.otherwise('/');
@@ -169,7 +196,7 @@
 }).call(this);
 
 (function() {
-  _okie.controller('ItemController', function($scope, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout) {
+  _okie.controller('ItemController', function($scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout) {
     $scope.items = [];
     $scope.item = {};
     $scope.carouselInterval = 3000;
@@ -181,8 +208,16 @@
       state: false,
       success: false
     };
+    $scope.inquireResponseTime = 5000;
+    $scope.backToHeader = function(delayTime, animateTime) {
+      $timeout(function() {
+        return $('body,html').animate({
+          scrollTop: $('#header').offset().top - $('#navigation').outerHeight(true)
+        }, animateTime ? animateTime : 1000);
+      }, delayTime ? delayTime : 500);
+    };
     $scope.checkState = function() {
-      console.log('Checking State: ', $state.current);
+      $log.info('ItemController.checkState()', $state.current);
       switch ($state.current.name) {
         case 'item':
           $scope.getItem($stateParams.itemId);
@@ -196,7 +231,7 @@
     };
     $scope.inquireItem = function() {
       $scope.inquireState = !$scope.inquireState;
-      console.log('Inquiring item', $stateParams.itemId);
+      $log.log('Inquiring item', $stateParams.itemId);
     };
     $scope.inquireSubmit = function(e) {
       e.preventDefault();
@@ -207,7 +242,7 @@
         item: $stateParams.itemId,
         message: $scope.inquire
       }).success(function(data, xhr) {
-        console.log(data);
+        $scope.backToHeader();
         $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state;
         $scope.inquire = '';
         $scope.inquireMessages.push({
@@ -215,16 +250,15 @@
           message: data.success.message
         });
       }).error(function(data, xhr) {
-        console.error(data);
         $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state;
         $scope.inquireMessages.push({
           type: 'danger',
           message: data.error.message
         });
       }).then(function(data) {
-        return $timeout(function() {
+        $timeout(function() {
           return $scope.inquireMessages.splice(0, $scope.inquireMessages.length);
-        }, 3000);
+        }, $scope.inquireResponseTime);
       });
     };
     $scope.closeInquireMessage = function(index) {
@@ -255,7 +289,7 @@
     $scope.getItem = function(id) {
       ItemFactory.getItem(id).success(function(data, xhr) {
         $scope.item = data;
-        console.log('item: ', $scope.item);
+        $log.log('item: ', $scope.item);
       });
     };
     $scope.redirectInItem = function() {
@@ -384,7 +418,7 @@
 }).call(this);
 
 (function() {
-  _okie.factory('UserFactory', function($http, $state, $stateParams, $rootScope, localStorageService) {
+  _okie.factory('UserFactory', function($http, $state, $stateParams, $rootScope, localStorageService, $window, $log) {
     var _u, ids;
     _u = {};
     ids = {
@@ -393,13 +427,19 @@
       inbox: '[data-notify=inbox]',
       inquiry: '[data-notify=inquiry]'
     };
+    _u.route = {
+      index: '/',
+      messages: '/me/messages',
+      settings: '/me/settings',
+      products: '/me/products'
+    };
     _u.messages = 0;
     _u.redirectInItem = function() {
-      return console.info('RedirectInItem', $stateParams.itemId);
+      return $log.info('RedirectInItem', $stateParams.itemId);
     };
     _u.checkRedirectItem = function() {
       if (localStorageService.get('redirect_to_item')) {
-        console.log('Now redirecting to ' + localStorageService.get('redirect_to_item'));
+        $log.log('Now redirecting to ' + localStorageService.get('redirect_to_item'));
         $state.go('item', {
           itemId: localStorageService.get('redirect_to_item')
         });
@@ -426,7 +466,7 @@
         _u.checkUnreadMessages(ids.delivered, counts.delivered);
       }
       _u.checkUnreadMessages(ids.inquiry, counts.inquiry);
-      return _u.checkUnreadMessages(ids.inbox, counts.inbox);
+      _u.checkUnreadMessages(ids.inbox, counts.inbox);
     };
     _u.checkIfUnreadMessages = function(messages) {
       if (messages) {
@@ -450,11 +490,10 @@
         url: '/me',
         ignoreLoadingBar: true
       }).success(function(data, xhr) {
-        console.log('getNotify::data', data);
+        $log.log('getNotify::data', data);
         $rootScope.me = data;
-        _u.checkIfUnreadMessages(data.messages.all);
+        _u.checkState();
         _u.checkRedirectItem();
-        _u.notifyToBadges(data.messages);
       });
     };
     _u.getUser = function() {
@@ -462,6 +501,21 @@
         url: '/me',
         ignoreLoadingBar: true
       });
+    };
+    _u.checkState = function() {
+      $log.info('UserFactory::checkState()', $window.location.pathname);
+      switch ($window.location.pathname) {
+        case _u.route.messages:
+          if ($state.current.name === 'index') {
+            $state.go('messages.inquiries');
+          }
+          break;
+        case _u.route.products:
+          if ($state.current.name === 'index') {
+            $state.go('products.all');
+          }
+          break;
+      }
     };
     return _u;
   });
