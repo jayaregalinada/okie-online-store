@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMessagesTable extends Migration {
+class CreateConversationsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,15 +12,15 @@ class CreateMessagesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('messages', function(Blueprint $table)
+		Schema::create('conversations', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('type');
 			$table->integer('user_id')->unsigned();
-			$table->integer('product_id')->unsigned()->nullable();
 			$table->longText('body');
+			$table->morphs('taggable');
 			$table->softDeletes();
 			$table->timestamps();
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 		});
 	}
 
@@ -31,7 +31,7 @@ class CreateMessagesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('messages');
+		Schema::drop('conversations');
 	}
 
 }
