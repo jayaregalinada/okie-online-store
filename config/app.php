@@ -151,6 +151,7 @@ return [
 		'Okie\Providers\ConfigServiceProvider',
 		'Okie\Providers\EventServiceProvider',
 		'Okie\Providers\RouteServiceProvider',
+		'Okie\Providers\ObserverServiceProvider',
 
 		/*
 		 * Third party Service Providers...
