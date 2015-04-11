@@ -2,6 +2,23 @@
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Okie\Image
+ *
+ * @property integer $id 
+ * @property string $sizes 
+ * @property integer $product_id 
+ * @property string $caption 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
+ * @property-read \Okie\Product $product 
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereSizes($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereProductId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereCaption($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Image whereUpdatedAt($value)
+ */
 class Image extends Model {
 
 	/**

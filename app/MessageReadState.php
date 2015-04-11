@@ -2,6 +2,10 @@
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Okie\MessageReadState
+ *
+ */
 class MessageReadState extends Model {
 
 	/**

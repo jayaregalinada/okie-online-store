@@ -2,6 +2,15 @@
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Okie\MessageStatus
+ *
+ * @property-read \Okie\Message $messages 
+ * @property-read \Okie\User $user 
+ * @method static \Okie\MessageStatus countUnreadMessages()
+ * @method static \Okie\MessageStatus countUnreadReplyMessages($user_id)
+ * @method static \Okie\MessageStatus getReplyOnType($type)
+ */
 class MessageStatus extends Model {
 
 	/**

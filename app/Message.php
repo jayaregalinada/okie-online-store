@@ -4,6 +4,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
+/**
+ * Okie\Message
+ *
+ * @property-read \Okie\User $user 
+ * @property-read \Okie\Product $product 
+ * @property-read mixed $time 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Thread[] $thread 
+ * @method static \Okie\Message inquiriesObject()
+ * @method static \Okie\Message inquiries()
+ * @method static \Okie\Message messagesByProduct($product_id, $user_id)
+ */
 class Message extends Model {
 
 	use SoftDeletes;

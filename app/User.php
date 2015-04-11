@@ -6,6 +6,44 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+/**
+ * Okie\User
+ *
+ * @property integer $id 
+ * @property string $first_name 
+ * @property string $last_name 
+ * @property string $email 
+ * @property string $avatar 
+ * @property string $provider 
+ * @property string $provider_id 
+ * @property string $password 
+ * @property boolean $verified 
+ * @property string $gender 
+ * @property string $link 
+ * @property string $remember_token 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
+ * @property integer $permission 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Message[] $messages 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Product[] $products 
+ * @property-read mixed $full_name 
+ * @property-read mixed $is_permitted 
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereFirstName($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereLastName($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereAvatar($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereProvider($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereProviderId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User wherePassword($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereVerified($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereGender($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereLink($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\User wherePermission($value)
+ */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
@@ -29,7 +67,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $hidden = [ 'password', 'remember_token' ];
+	protected $hidden = [ 'password', 'remember_token', 'created_at', 'updated_at', 'provider', 'provider_id' ];
 
 	/**
 	 * Cast attributes for returning data with type in HHVM
@@ -45,7 +83,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * @type array
 	 */
-	protected $appends = [ 'full_name' ];
+	protected $appends = [ 'full_name', 'is_permitted', 'facebook_id' ];
 
 	/**
 	 * This are all available permissions
@@ -108,6 +146,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return true;
 	}
 
+	/**
+	 * @return boolean
+	 */
 	public function isPermitted()
 	{
 		if( $this->permission != array_search( 'user', $this->permissions ) )
@@ -132,9 +173,28 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $this->attributes['first_name'] .' '. $this->attributes['last_name'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getFullNameAttribute()
 	{
 		return $this->attributes['first_name'] .' '. $this->attributes['last_name'];
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getIsPermittedAttribute()
+	{
+		return $this->isPermitted();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFacebookIdAttribute()
+	{
+		return $this->provider_id;
 	}
 
 }

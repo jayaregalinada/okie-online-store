@@ -3,6 +3,15 @@
 use Illuminate\Database\Eloquent\Model;
 
 
+/**
+ * Okie\Thread
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Message[] $messages 
+ * @property-read \Okie\User $user 
+ * @property-read \Okie\Product $product 
+ * @property-read mixed $latest 
+ * @method static \Okie\Thread checkInquiryThreads($product_id, $user_id)
+ */
 class Thread extends Model {
 
 	/**
@@ -27,11 +36,6 @@ class Thread extends Model {
 	 * @var array
 	 */
 	protected $types = [ 'inquiry', 'deliver', 'inbox' ];
-
-	/**
-	 * @var integer
-	 */
-	protected $perPage = 5;
 
 	/**
 	 * @type array

@@ -3,6 +3,36 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Okie\Product
+ *
+ * @property integer $id 
+ * @property string $name 
+ * @property string $code 
+ * @property string $description 
+ * @property float $price 
+ * @property integer $unit 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
+ * @property integer $user_id 
+ * @property integer $thumbnail_id 
+ * @property \Carbon\Carbon $deleted_at 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Image[] $images 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Okie\Category[] $categories 
+ * @property-read \Okie\User $user 
+ * @property-read mixed $thumbnail 
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereCode($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereDescription($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product wherePrice($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereUnit($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereThumbnailId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Okie\Product whereDeletedAt($value)
+ */
 class Product extends Model {
 
 	use SoftDeletes;
