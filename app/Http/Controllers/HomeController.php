@@ -80,5 +80,16 @@ class HomeController extends Controller {
 		return $response;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getAllRoutes()
+	{
+		$obj = new \stdClass;
+		$obj->inquiry = route( 'inquiry', null );
+
+		return $this->responseInJSON( $obj );
+	}
+
 
 }

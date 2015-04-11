@@ -1,5 +1,5 @@
 <?php namespace Okie\Http\Controllers;
-
+// TODO: This is DEPRECATED
 use Okie\Http\Requests;
 use Okie\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,9 +17,9 @@ class ThreadController extends Controller {
 	 */
 	public function index()
 	{
-		return Thread::with( [ 'messages' => function ( $q ) {
+		return $this->responseInJSON( Thread::with( [ 'messages' => function ( $q ) {
 			$q->latest();
-		}, 'user' ])->paginate();
+		}, 'user' ])->paginate() );
 	}
 
 	/**
@@ -31,7 +31,7 @@ class ThreadController extends Controller {
 	 */
 	public function show( $id )
 	{
-		return Thread::with( [ 'user', 'messages' ] )->find( $id );
+		return $this->responseInJSON( Thread::with( [ 'user', 'messages' ] )->find( $id ) );
 	}
 
 	/**

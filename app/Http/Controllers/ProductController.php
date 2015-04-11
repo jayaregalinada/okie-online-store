@@ -59,7 +59,7 @@ class ProductController extends Controller {
 	{
 		$item = $product->execute( $request->except( [ 'ajax', '_token' ] ) );
 		if ( $request->input( 'ajax' ) )
-			return $item;
+			return $this->responseInJSON( $item );
 
 		return redirect()->route( 'product.show', $item['id'] )->with([
 			'success' => [
@@ -92,12 +92,9 @@ class ProductController extends Controller {
 	{
 		$find = Product::with( [ 'images', 'categories' ] )->orderBy('created_at', 'desc')->find( $id );
 		if( $request->input( 'ajax' ) )
-			return response()->json( $find )
-							 ->setCallback( $request->input( 'callback' ) );
-			
-		return view( 'product.addimage' )
-			->with( 'product', $find )
-			->with( 'category', Category::lists('id', 'name') );
+			return $this->responseInJSON( $find );
+
+		return view( 'product.addimage' )->with( 'product', $find )->with( 'category', Category::lists('id', 'name') );
 	}
 
 	/**
@@ -120,7 +117,7 @@ class ProductController extends Controller {
 			'caption' => $productInstance->name
 		]);
 
-		return $productInstance->images()->save( $imageInstance );
+		return $this->responseInJSON( $productInstance->images()->save( $imageInstance ) );
 	}
 
 	/**
@@ -132,7 +129,7 @@ class ProductController extends Controller {
 	 */
 	public function showImagesPaginate( $id )
 	{
-		return Image::whereProductId( $id )->paginate(10);
+		return $this->responseInJSON( Image::whereProductId( $id )->paginate() );
 	}
 
 	/**
@@ -149,13 +146,13 @@ class ProductController extends Controller {
 		$take = ( $request->get('take') ) ?: 10;
 		$skip = ( $request->get('skip') ) ?: 0;
 
-		return [
-			'total' => $find->count(),
+		return $this->responseInJSON( [
+			'total'    => $find->count(),
 			'per_page' => (int) $take,
-			'from' => $skip + 1,
-			'to' => $skip + $take,
-			'data' => $find->take( $take )->skip( $skip )->get()
-		];
+			'from'     => $skip + 1,
+			'to'       => $skip + $take,
+			'data'     => $find->take( $take )->skip( $skip )->get()
+		] );
 	}
 
 	/**
@@ -170,12 +167,12 @@ class ProductController extends Controller {
 	{
 		$find = Product::find( $id );
 		if( $find->update( $request->all() ) )
-			return $find;
+			return $this->responseInJSON( $find );
 
-		return response(['error' => [
+		return $this->responseInJSON( ['error' => [
 			'message' => 'Something went wrong on updating'
 			]
-		], 500);
+		], 500 );
 	}
 
 	/**
@@ -187,11 +184,10 @@ class ProductController extends Controller {
 	 */
 	public function index( Request $request )
 	{
-		if( $request->input( 'json' ) )
-			return Product::with( [ 'images', 'categories' ])->orderBy('created_at', 'desc')->paginate()->appends( [ 'json' => true ] );
+		if( $request->input( 'json' ) || $request->ajax() )
+			return $this->responseInJSON( Product::with( [ 'images', 'categories' ])->orderBy('created_at', 'desc')->paginate()->appends( [ 'json' => true ] ) );
 
-		return view( 'product.index' )
-			->with( 'category', Category::lists('id', 'name') );
+		return view( 'product.index' )->with( 'category', Category::lists('id', 'name') );
 	}
 
 	/**
@@ -206,7 +202,7 @@ class ProductController extends Controller {
 		$find = Product::with('categories')->find( $request->input( 'id' ) );
 		$find->categories()->sync( $request->input( 'categories' ) );
 
-		return Product::with('categories')->find( $request->input( 'id' ) );
+		return $this->responseInJSON( Product::with('categories')->find( $request->input( 'id' ) ) );
 	}
 
 	/**
@@ -224,20 +220,20 @@ class ProductController extends Controller {
 		{
 			$response = [
 				'success' => [
-					'message' => 'Successfully deleted product ' . $id 
+					'message' => 'Successfully deleted product ' . $id
 				]
 			];
 			if( $request->ajax() )
 			{
-				return response( $response );
+				return $this->responseInJSON( $response );
 			}
 			return redirect( route('product.index') . '#/all')->with( $response );
 		}
 
-		return response(['error' => [
+		return $this->responseInJSON( ['error' => [
 			'message' => 'Something went wrong on deleting product '. $id
 			]
-		], 500);
+		], 500 );
 	}
 
 	/**
@@ -276,16 +272,16 @@ class ProductController extends Controller {
 			];
 			if( $request->ajax() )
 			{
-				return response( $response );
+				return $this->responseInJSON( $response );
 			}
 
 			return redirect( route('product.show', [ $request->input('product_id') ]) )->with( $response );
 		}
 
-		return response(['error' => [
+		return $this->responseInJSON( ['error' => [
 			'message' => 'Something went wrong on updating thumbnail'
 			]
-		], 500);
+		], 500 );
 	}
 
 	/**
@@ -308,16 +304,16 @@ class ProductController extends Controller {
 			];
 			if( $request->ajax() )
 			{
-				return response( $response );
+				return $this->responseInJSON( $response );
 			}
 
 			return redirect( route('product.show', [ $request->input('product_id') ]) )->with( $response );
 		}
 
-		return response(['error' => [
+		return $this->responseInJSON( ['error' => [
 			'message' => 'Something went wrong on deleting image '. $id
 			]
-		], 500);
+		], 500 );
 	}
 
 	/**
@@ -330,12 +326,10 @@ class ProductController extends Controller {
 	 */
 	public function inquireItem( Request $request, $id )
 	{
-		$response = [
-			'id' => $id,
+		return $this->responseInJSON( [
+			'id'      => $id,
 			'request' => $request
-		];
-		return response()->json( $response )
-						 ->setCallback( $request->input( 'callback' ) );
+		] );
 	}
 
 }

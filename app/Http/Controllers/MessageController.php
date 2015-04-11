@@ -1,5 +1,5 @@
 <?php namespace Okie\Http\Controllers;
-
+// TODO: This is DEPRECATED
 use Okie\Http\Requests;
 use Okie\Http\Controllers\Controller;
 use Okie\Message;
@@ -81,18 +81,6 @@ class MessageController extends Controller {
 			'message' => 'Successfully replied',
 			'data' => $message ]
 		]);
-	}
-
-	/**
-	 * Filter the message body
-	 *
-	 * @param  string $strings
-	 *
-	 * @return string
-	 */
-	private function filterBody( $strings )
-	{
-		return strip_tags( $strings, '<p><b><strong><em><i><u><br>' );
 	}
 
 	/**

@@ -29,11 +29,11 @@ class CategoryController extends Controller {
 	 */
 	public function getCategories( Request $request )
 	{
-		switch ( key( $request->input() ) )
+		switch ( key( $request->query() ) )
 		{
 			case 'json':
 			case 'all':
-				return $this->responseInJSON( Category::all() );
+				return $this->responseInJSON( $this->responseInJSON( Category::all() ) );
 			break;
 
 			case 'find':

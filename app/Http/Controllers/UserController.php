@@ -19,6 +19,9 @@ class UserController extends Controller {
 		$this->middleware( 'auth' );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getPermission()
 	{
 		return [
@@ -39,10 +42,10 @@ class UserController extends Controller {
 	public function getUserInfo( Request $request )
 	{
 		if ( $request->ajax() )
-			return response()->json( [
+			return $this->responseInJSON( [
 				'user'     => Auth::user(),
-				'messages' => $this->userMessages( Auth::user() ),
-			] )->setCallback( $request->input( 'callback' ) );
+				//'messages' => $this->userMessages( Auth::user() ),
+			] );
 		
 		return view( 'profile.index' );
 	}
@@ -72,6 +75,9 @@ class UserController extends Controller {
 		return $object;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getFriendsList()
 	{
 		if( Auth::user()->isAdmin() )
@@ -79,7 +85,5 @@ class UserController extends Controller {
 
 		// return $this->responseInJSON( [ ] );
 	}
-
-
 
 }

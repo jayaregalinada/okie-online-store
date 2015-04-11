@@ -1,12 +1,10 @@
 <?php namespace Okie\Http\Controllers;
 
-use Okie\Http\Requests;
-use Okie\Http\Controllers\Controller;
-
-use Illuminate\Http\Request;
 use Okie\Category;
 use Okie\Product;
-use Okie\Image;
+use Okie\Http\Requests;
+use Illuminate\Http\Request;
+use Okie\Http\Controllers\Controller;
 
 class ItemController extends Controller {
 
@@ -15,12 +13,11 @@ class ItemController extends Controller {
 	 *
 	 * @param  \Illuminate\Http\Request $request
 	 *
-	 * @return mixed
+	 * @return mixed|\Okie\Product
 	 */
 	public function index( Request $request )
 	{
-		return response()->json( Product::with( [ 'images', 'categories' ] )->orderBy('created_at', 'desc')->paginate() )
-						 ->setCallback( $request->input( 'callback' ) );
+		return $this->responseInJSON( Product::with( [ 'images', 'categories' ] )->latest( 'created_at' )->paginate() );
 	}
 
 	/**
@@ -44,26 +41,24 @@ class ItemController extends Controller {
 	}
 
 	/**
-	 * Show Item by id
+	 * @param \Illuminate\Http\Request $request
+	 * @param                          $id
 	 *
-	 * @param  Request $request
-	 * @param  integer  $id
-	 *
-	 * @return \Illuminate\Http\Response
+	 * @return mixed
 	 */
 	public function show( Request $request, $id )
 	{
-		return response()->json( Product::with([ 'categories', 'images' ])->find( $id ) )
-						 ->setCallback( $request->input( 'callback' ) );
+		return $this->responseInJSON( Product::with([ 'categories', 'images' ])->find( $id ) );
 	}
 
 	/**
-	 * Show Items by category
+	 * Show products by category
+	 * Category can be either id or slug
 	 *
-	 * @param  Request $request
-	 * @param  integer|string  $id
+	 * @param \Illuminate\Http\Request $request
+	 * @param                          $id
 	 *
-	 * @return mixed
+	 * @return mixed|\Okie\Category
 	 */
 	public function showByCategory( Request $request, $id )
 	{
@@ -76,8 +71,7 @@ class ItemController extends Controller {
 			$category = Category::whereSlug( $id )->first();
 		}
 
-		return response()->json( $category->products()->orderBy('created_at', 'desc')->paginate() )
-						 ->setCallback( $request->input( 'callback' ) );
+		return $this->responseInJSON( $category->products()->latest( 'created_at' )->paginate() );
 	}
 
 }
