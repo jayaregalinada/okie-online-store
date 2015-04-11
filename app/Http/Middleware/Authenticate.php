@@ -34,20 +34,19 @@ class Authenticate {
 	 */
 	public function handle( $request, Closure $next )
 	{
-		$code = 401;
 		if ( $this->auth->guest() )
 		{
+			$code = 401;
 			if ( $request->ajax() )
 			{
 				$response = [ 'error' => [
-					'message' => 'Unathorized. Please login first',
-					'redirect_link' => url('auth/login'),
-					'request' => [
-						'url' => $request->fullUrl(),
-						'path' => $request->path(),
-						'method' => $request->method()
+					'message'       => 'Unathorized. Please login first',
+					'redirect_link' => url( 'auth/login' ),
+					'request'       => [
+						'url'    => $request->fullUrl(),
+						'path'   => $request->path(),
+						'method' => $request->method() ]
 					]
-				]
 				];
 
 				return response()->json( $response, $code )->setCallback( $request->input( 'callback' ) );
