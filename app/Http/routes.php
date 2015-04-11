@@ -41,6 +41,8 @@ Route::get( 'login', function()
     return redirect('/auth/login');
 });
 
+Route::get('routes', 'HomeController@getAllRoutes');
+
 Route::get('i', ['as' => 'i', 'uses' => 'UserController@getUserInfo']);
 
 Route::get( 'login/{provider?}', ['as' => 'login.provider', 'uses' => 'Auth\AuthController@login'] );
@@ -74,17 +76,33 @@ Route::group(['prefix' => 'views'], function()
     get('items/index.html', 'ItemController@getItemsIndexView');
     get('items/item.html', 'ItemController@getItemView');
     get('messages/messages.html', 'MessageController@getMessagesView');
-    get('messages/inbox.html', 'MessageController@getInboxView');
     get('messages/conversation.html', 'MessageController@getConversationView');
     get('messages/conversation_delivered.html', 'MessageController@getConversationDeliveredView');
-    get('messages/conversation_inbox.html', 'MessageController@getConversationInboxView');
     get('messages/create.html', 'MessageController@getCreateView');
+
+	// INQUIRIES
+	get('messages/inquiries.html', 'InquiryController@getMessagesView');
+	get('messages/conversation_inquiry.html', 'InquiryController@getConversationView');
+
+    // INBOX
+    get('messages/inbox.html', 'InboxController@getMessagesView');
+    get('messages/conversation_inbox.html', 'InboxController@getConversationView');
+
+    // DELIVER
+    get('messages/deliver.html', 'DeliverController@getMessagesView');
+    get('messages/conversation_deliver.html', 'DeliverController@getConversationView');
+
+	get('settings/newsletter.html', 'SettingsController@getNewsletterView');
 });
 
 Route::group(['prefix' => 'search'], function()
 {
     Route::get('user/{search?}', ['as' => 'search.user', 'uses' => 'SearchController@getUser']);
+	Route::get('product/{search?}', ['as' => 'search.product', 'uses' => 'SearchController@getProduct']);
 });
+
+Route::post('newsletter', ['as' => 'newsletter', 'uses' => 'NewsletterController@subscribeToNewsletter']);
+Route::get('newsletter', ['as' => 'newsletter.user', 'uses' => 'NewsletterController@getSubscribeByUser']);
 
 Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
 {
@@ -106,16 +124,39 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
 
         Route::get('offset', ['as' => 'messages.offset', 'uses' => 'ThreadController@getMessagesByOffset']);
         Route::post('create', ['as' => 'messages.create', 'uses' => 'MessageController@createMessage']);
+		Route::group(['prefix' => 'inquiry'], function()
+		{
+			get('all', ['as' => 'inquiry.all', 'uses' => 'InquiryController@getAll']);
+			get('{inquiry_id}', ['as' => 'inquiry', 'uses' => 'InquiryController@get']);
+			get('{inquiry_id}/conversations', ['as' => 'inquiry.conversations', 'uses' => 'InquiryController@getConversations']);
+			post('reply', ['as' => 'inquiry.reply', 'uses' => 'InquiryController@postReply']);
+			post('delivered', ['as' => 'inquiry.delivered', 'uses' => 'DeliverController@create']);
+		});
+        Route::group(['prefix' => 'inbox'], function()
+        {
+            get('/', ['as' => 'messages.inbox', 'uses' => 'InboxController@getAll']);
+            get('all', ['as' => 'inbox.all', 'uses' => 'InboxController@getAll']);
+            get('{inbox_id}', ['as' => 'inbox', 'uses' => 'InboxController@get']);
+            get('{inbox_id}/conversations', ['as' => 'inbox.conversations', 'uses' => 'InboxController@getConversations']);
+            post('reply', ['as' => 'inbox.reply', 'uses' => 'InboxController@reply']);
+            post('create', ['as' => 'inbox.create', 'uses' => 'InboxController@create']);
+        });
+	    Route::group(['prefix' => 'delivered'], function()
+	    {
+		    get('/', ['as' => 'messages.delivered', 'uses' => 'DeliverController@getAll']);
+		    get('all', ['as' => 'delivered.all', 'uses' => 'DeliverController@getAll']);
+		    get('{delivered_id}', ['as' => 'delivered', 'uses' => 'DeliverController@get']);
+		    get('{delivered_id}/conversations', ['as' => 'delivered.conversations', 'uses' => 'DeliverController@getConversations']);
+		    post('reply', ['as' => 'delivered.reply', 'uses' => 'DeliverController@reply']);
+	    });
+        Route::get('inquiries', ['as' => 'messages.inquiries', 'uses' => 'InquiryController@getAll']);
+        // Route::get('inquire/{thread_id}', ['as' => 'messages.inquiries.thread', 'uses' => 'ThreadController@getInquiryByThread']);
+        // Route::get('inquire/{thread_id}/messages', ['as' => 'messages.inquiries.thread.messages', 'uses' => 'ThreadController@getMessagesByThread']);
+        // Route::post('inquire/reply', ['as' => 'messages.inquiries.reply', 'uses' => 'MessageController@replyToInquire']);
+        // Route::post('inquire/delivered', ['as' => 'messages.inquiries.delivered', 'uses' => 'ThreadController@updateToDelivered']);
 
-        Route::get('inquiries', ['as' => 'messages.inquiries', 'uses' => 'ThreadController@getAllInquiries']);
-        Route::get('inquire/{thread_id}', ['as' => 'messages.inquiries.thread', 'uses' => 'ThreadController@getInquiryByThread']);
-        Route::get('inquire/{thread_id}/messages', ['as' => 'messages.inquiries.thread.messages', 'uses' => 'ThreadController@getMessagesByThread']);
-        Route::post('inquire/reply', ['as' => 'messages.inquiries.reply', 'uses' => 'MessageController@replyToInquire']);
-        Route::post('inquire/delivered', ['as' => 'messages.inquiries.delivered', 'uses' => 'ThreadController@updateToDelivered']);
+        //Route::get('delivered', ['middleware' => 'admin', 'as' => 'messages.delivered', 'uses' => 'ThreadController@getAllDelivered']);
 
-        Route::get('delivered', ['middleware' => 'admin', 'as' => 'messages.delivered', 'uses' => 'ThreadController@getAllDelivered']);
-
-        Route::get('inbox', ['as' => 'messages.inbox', 'uses' => 'ThreadController@getAllInboxes']);
     });
 });
 
@@ -129,7 +170,7 @@ Route::group(['prefix' => 'items'], function()
 Route::group(['prefix' => 'item'], function()
 {
     get('/{id}', ['as' => 'item.show', 'uses' => 'ItemController@show']);
-    post('/inquire', ['middleware' => 'auth', 'as' => 'item.inquire', 'uses' => 'MessageController@inquireItem']);
+    post('/inquire', ['middleware' => 'auth', 'as' => 'item.inquire', 'uses' => 'ConversationController@inquireItem']);
 });
 
 
