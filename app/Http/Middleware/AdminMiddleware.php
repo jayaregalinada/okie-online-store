@@ -32,7 +32,6 @@ class AdminMiddleware {
 	 */
 	public function handle( $request, Closure $next )
 	{
-		// if( ! $this->auth->user()->isAdmin() && ! $this->auth->user()->isModerator() )
 		if( ! $this->auth->user()->isPermitted() )
 		{
 			$code = 401;
