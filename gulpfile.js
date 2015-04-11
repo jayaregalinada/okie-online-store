@@ -66,7 +66,7 @@ elixir(function(mix)
     // This includes less, sass and native css
     mix.less( 'app.less', 'public/css/' )
        .styles([
-          paths.vendorDir + 'nprogress/nprogress.css',
+          //paths.vendorDir + 'nprogress/nprogress.css',
           paths.vendorDir + 'animate.css/animate.css',
           paths.vendorDir + 'dropzone/dist/dropzone.css',
           paths.vendorDir + 'angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css',
