@@ -1,4 +1,4 @@
-_okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localStorageService )->
+_okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localStorageService, $window, $log )->
 
     _u = {}
 
@@ -8,14 +8,20 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
         inbox: '[data-notify=inbox]'
         inquiry: '[data-notify=inquiry]'
 
+    _u.route = 
+        index: '/'
+        messages: '/me/messages'
+        settings: '/me/settings'
+        products: '/me/products'
+
     _u.messages = 0
 
     _u.redirectInItem = ->
-        console.info 'RedirectInItem', $stateParams.itemId
+        $log.info 'RedirectInItem', $stateParams.itemId
 
     _u.checkRedirectItem = ->
         if localStorageService.get 'redirect_to_item'
-            console.log 'Now redirecting to ' + localStorageService.get 'redirect_to_item'
+            $log.log 'Now redirecting to ' + localStorageService.get 'redirect_to_item'
             $state.go 'item', 
                 itemId: localStorageService.get 'redirect_to_item'
             localStorageService.remove 'redirect_to_item'
@@ -43,6 +49,8 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
 
         _u.checkUnreadMessages( ids.inquiry, counts.inquiry )
         _u.checkUnreadMessages( ids.inbox, counts.inbox )
+
+        return
 
     _u.checkIfUnreadMessages = ( messages )->
         if( messages )
@@ -79,11 +87,12 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
             url: '/me'
             ignoreLoadingBar: true
         ).success ( data, xhr )->
-            console.log 'getNotify::data', data
+            $log.log 'getNotify::data', data
             $rootScope.me = data
-            _u.checkIfUnreadMessages data.messages.all
+            _u.checkState()
+#            _u.checkIfUnreadMessages data.messages.all
             _u.checkRedirectItem()
-            _u.notifyToBadges data.messages
+#            _u.notifyToBadges data.messages
 
             return
 
@@ -92,5 +101,20 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
             url: '/me'
             ignoreLoadingBar: true
         )
+
+    _u.checkState = ->
+        $log.info 'UserFactory::checkState()', $window.location.pathname
+        switch $window.location.pathname
+            when _u.route.messages
+                if $state.current.name is 'index'
+                    $state.go 'messages.inquiries'
+                break
+            when _u.route.products
+                if $state.current.name is 'index'
+                    $state.go 'products.all'
+                break
+
+            
+        
 
     _u

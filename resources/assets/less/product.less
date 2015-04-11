@@ -6,7 +6,6 @@
         position: relative;
         &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
             .transition-delay( .1s );
-            // .animation-delay( .5s );
         }
         &.ng-enter, &.ng-leave, &.ng-move {
             .transition( all .3s );
@@ -127,24 +126,30 @@
             border: 1px solid @gray-lighter;
             margin-right: @padding-small-vertical;
             margin-bottom: @padding-small-vertical;
+
+            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+                .transition-delay( .1s );
+            }
+            &.ng-enter, &.ng-leave, &.ng-move {
+                .transition( all .3s );
+            }
+            &.ng-enter-stagger {
+                .transition-duration( 0s );
+            }
             &.ng-enter {
-                transition: all 1s;
                 opacity: 0;
-                top: 20px;
-                left: 0;
+                .translate3d(0, 10%, 0);
                 &.ng-enter-active {
-                    top: 0;
-                    left: 0;
                     opacity: 1;
+                    transform: none;
+                    -webkit-transform: none;
                 }
             }
             &.ng-leave {
-                top: 5px;
-                left: 0;
                 opacity: 1;
+                .animation( fadeOut 1s );
                 &.ng-leave-active {
-                    top: 0;
-                    left: 0;
+                    .transition( all 1s );
                     opacity: 0;
                 }
             }

@@ -1,4 +1,4 @@
-_okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory )->
+_okie.controller 'MessageController', ( $scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory )->
 
     $scope.heading = 'Messages'
     $scope.messages = []
@@ -10,6 +10,23 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
     $scope.messageSubmitButton =
         state: false
     $scope.threadInquiries = []
+    ## INQUIRIES
+    $scope.inquiries = []
+    $scope.inquiryConversations = []
+    $scope.inquiryInfo = {}
+    $scope.inquiryState = false
+    $scope.inquiryLoadingState = false
+    $scope.inquiryErrorState = false
+    $scope.inquiriesKey = 'inquiries'
+    ## INBOX
+    $scope.inbox = []
+    $scope.inboxConversations = []
+    $scope.inboxInfo = {}
+    $scope.inboxState = false
+    $scope.inboxLoadingState = false
+    $scope.inboxErrorState = false
+    $scope.inboxKey = 'inbox'
+
     $scope.threadDeliveries = []
     $scope.threadInboxes = []
     $scope.intervalSeconds = 3000
@@ -17,7 +34,8 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
     $scope.message = {}
     $scope.search = []
     $scope.searchError = false
-
+    $scope.url = $window._url
+    $scope.storage = localStorageService
 
     ###*
      * Change the heading
@@ -26,9 +44,41 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
      *
      * @return {void}
     ###
-    $scope.changeHeading = ( heading )->
+    $scope.changeHeading = ( heading, prepend )->
         $scope.heading = heading
         $('.profile-container .profile-full-name').text heading
+        $('.profile-container .profile-full-name').prepend prepend
+
+        return
+
+    ###*
+     * Store to localStorage in JSON.stringify
+     *
+     * @param  {string} key
+     * @param  {object|array} data
+     *
+     * @return {void}
+    ###
+    $scope.store = ( key, data )->
+        $scope.storage.set key, JSON.stringify data
+
+        return
+
+    ###*
+     * Back to Text Area
+     *
+     * @param  {integer} delayTime
+     * @param  {integer} animateTime
+     *
+     * @return {void}
+    ###
+    $scope.backToTextArea = ( delayTime, animateTime )->
+        $timeout(->
+            $( 'body,html' ).animate
+                scrollTop: $( '#reply' ).offset().top + $( '#reply' ).outerHeight( true ) - $( window ).height() + 20
+            , if animateTime then animateTime else 1000
+        , if delayTime then delayTime else 1500 )
+
         return
 
     ###*
@@ -39,35 +89,230 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
      * @return {void}
     ###
     $scope.getAllInquiries = ( page )->
+        $scope.inquiries = []
         $scope.changeHeading 'Inquiries'
-        $scope.messages = []
-        MessageFactory.getInquiryMessages( page )
+        page = if page then page else 1
+        $scope.inquiryState = true
+        $scope.inquiryLoadingState = true
+        $scope.inquiryErrorState = false
+        $scope.inquiryConversations = []
+        InquiryFactory.getAllInquiries( page )
             .success ( data, xhr )->
                 $log.log 'getAllInquiries::data', data
+                $scope.inquiryErrorState = false
                 if Boolean( data.next_page_url )
                     $scope.getAllInquiries( data.current_page + 1 )
 
                 return
+            .error ( data, xhr )->
+                $scope.inquiryErrorState = true
+                $scope.inquiryLoadingState = false
+                $scope.inquiryErrorMessage = data.error.message.replace '[INQUIRY] ', ''
+
+                return
             .then ( data, xhr )->
-                angular.forEach data.data.data, ( value, key )->
-                    $scope.messages.push value
-                    $scope.threadInboxes.push value
-                
+                $scope.pushToInquiries data.data.data
+
                 return
 
         return
 
-    $scope.stopLatestMessage = ->
-        $log.info 'Stopping latest messages trolling'
-        if angular.isDefined stop
-            $interval.cancel stop
-            stop = undefined
+    ###*
+     * Push data to $scope.inquiries
+     *
+     * @param  {array} data
+     *
+     * @return {void}
+    ###
+    $scope.pushToInquiries = ( data )->
+        angular.forEach data, ( value, key )->
+            $scope.inquiries.push value
+            return
+        $scope.inquiryLoadingState = false
+        $timeout(->
+            $scope.inquiryState = false
+            $scope.inquiryErrorState = false
+        , 3000 )
+
         return
 
-    $scope.changeHeadingWhenInquiring = ( product_name, name )->
-        $('.profile-container .profile-full-name').html 'Inquiring for ' + product_name + ' <small>by ' + name + '</small>'
+    ###*
+     * Push data to $scope.inbox
+     *
+     * @param  {array} data
+     *
+     * @return {void}
+    ###
+    $scope.pushToInbox = ( data )->
+        angular.forEach data, ( value, key )->
+            $scope.inbox.push value
+            return
+        $scope.inboxLoadingState = false
+        $timeout(->
+            $scope.inboxState = false
+        , 3000 )
+
+    ###*
+     * All shortcuts
+     * instead of refreshing the whole page
+     * just alt + r
+     *
+     * @return {void}
+    ###
+    $scope.keyBinder = ->
+        $document.bind 'keyup', ( event )->
+            # $log.info event
+            if event.keyCode is 82 && event.altKey
+                event.preventDefault()
+                switch $state.current.name
+                    when 'messages.inquiries'
+                        if ! $scope.inquiryState
+                            $scope.inquiries = []
+                            $scope.getAllInquiries()
+                    when 'messages.viewInquiry'
+                        if ! $scope.inquiryState
+                            $scope.inquiryConversations = []
+                            $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId )
+                    when 'messages.inbox'
+                        if ! $scope.inboxState
+                            $scope.inbox = []
+                            $scope.getAllInboxes()
+                    when 'messages.viewInbox'
+                        if ! $scope.inboxState
+                            $scope.inboxConversations = []
+                            $scope.getToInboxMessages( $rootScope.$stateParams.inboxId, 1 )
+
         return
 
+    ###*
+     * Reply on inquiry
+     *
+     * @param  {object} event
+     * @param  {object} form
+     *
+     * @return {mixed}
+    ###
+    $scope.inquiryReplySubmit = ( event, form )->
+        event.preventDefault()
+        $scope.replySubmitButton.state = !$scope.replySubmitButton.state
+        tA = textAngularManager.retrieveEditor( 'reply' )
+        data =
+            message: form.reply.$modelValue
+            item: $scope.inquiryInfo.product_id
+            inquisition: $scope.inquiryInfo.inquisition_id
+            inquiry: $rootScope.$stateParams.inquiryId
+
+        InquiryFactory.replyInquiry( data )
+            .success ( d, xhr )->
+                $log.log 'inquiryReplySubmit::data', d
+                tA.scope.$parent.reply = ''
+                $scope.inquiryConversations.push d.success.data
+
+                return
+            .error ( data, xhr )->
+                $scope.alerts.push data.error
+                $timeout(->
+                    $scope.alerts = []
+                    $scope.getToInquiryMessages $rootScope.$stateParams.inquiryId
+                    $scope.replySubmitButton.state = false
+                    return
+                , 4000 )
+
+                return
+            .then ( d )->
+                $scope.replySubmitButton.state = !$scope.replySubmitButton.state
+                $scope.backToTextArea( 500 )
+                tA.scope.displayElements.text.trigger 'focus'
+
+                return
+
+        return
+
+    ###*
+     * Reply on Inbox
+     *
+     * @param  {object} event
+     * @param  {object} form
+     *
+     * @return {mixed}
+    ###
+    $scope.inboxReplySubmit = ( event, form )->
+        event.preventDefault()
+        $scope.replySubmitButton.state = !$scope.replySubmitButton.state
+        tA = textAngularManager.retrieveEditor( 'reply' )
+        data =
+            message: form.reply.$modelValue
+            inbox: $scope.inboxInfo.id
+
+        InboxFactory.reply( data )
+            .success ( d, xhr )->
+                $log.log 'inboxReplySubmit::data', d
+                tA.scope.$parent.reply = ''
+                $scope.inboxConversations.push d.success.data
+
+                return
+            .error ( data, xhr )->
+                $scope.alerts.push data.error
+                $timeout(->
+                    $scope.alerts = []
+                    $scope.getToInboxMessages $rootScope.$stateParams.inboxId
+
+                    return
+                , 4000 )
+
+                return
+            .then ( d )->
+                $scope.replySubmitButton.state = !$scope.replySubmitButton.state
+                $scope.backToTextArea( 500 )
+                tA.scope.displayElements.text.trigger 'focus'
+
+                return
+
+        return
+
+    ###*
+     * Get to INQUIRY conversation
+     *
+     * @param  {integer} inquiryId
+     * @param  {integer} pageNumber
+     *
+     * @return {mixed}
+    ###
+    $scope.getToInquiryMessages = ( inquiryId, pageNumber )->
+        # $scope.inquiryConversations = []
+        $scope.changeHeading 'Loading conversations'
+        $scope.inquiryState = true
+        InquiryFactory.getConversations( inquiryId, pageNumber )
+            .success ( data, xhr )->
+                $log.log 'getToInquiryMessages::data', data
+                $scope.changeHeading data.inquiry.title, '<span>INQUIRY: &nbsp;</span>'
+                $scope.inquiryErrorState = false
+                if Boolean( data.conversations.next_page_url )
+                    $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId, data.conversations.current_page + 1 )
+
+                return
+
+            .error ( data, xhr )->
+                $scope.inquiryErrorState = true
+                $log.error 'getToInquiryMessages::data', data
+                $scope.changeHeading 'ERROR'
+                $scope.inquiryErrorMessage = data.error.message
+
+                return
+            .then ( data, xhr )->
+                angular.forEach data.data.conversations.data, ( value, key )->
+                    $scope.inquiryConversations.push value
+                    return
+                $scope.inquiryInfo = data.data.inquiry
+                $scope.backToTextArea()
+                $timeout(->
+                    $scope.inquiryState = false
+                , 3000 )
+
+                return
+
+        return
+    
     $scope.getToConversation = ( thread_id, pageNumber )->
         $scope.conversation = []
         MessageFactory.getThreadMessages thread_id
@@ -121,6 +366,13 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
 
         return
 
+    ###*
+     * Close the alert
+     *
+     * @param  {integer} index
+     *
+     * @return {void}
+    ###
     $scope.closeAlert = ( index )->
         $scope.alerts.splice( index, 1 )
         return
@@ -149,91 +401,81 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
             return
         .then ( data )->
             $scope.replySubmitButton.state = !$scope.replySubmitButton.state
-            $timeout(->
-                $( 'body,html' ).animate
-                    scrollTop: $( '#reply' ).offset().top
-                , 1000
-            , 2000 )
+            $scope.backToTextArea()
+            tA.scope.displayElements.text.trigger 'focus'
+
 
             return
 
         return
 
-
-    $scope.getAllDeliveries = ( page )->
-        $log.info 'Getting all deliveries'
-        $scope.changeHeading 'Delivered'
-        $scope.messages = []
-        MessageFactory.getDeliveryMessages( page )
-            .success ( data, xhr )->
-                $log.log 'getAllDeliveries::data', data
-                if Boolean( data.next_page_url )
-                    $scope.getAllDeliveries( data.current_page + 1 )
-                    
-                return
-            .then ( data, xhr )->
-                angular.forEach data.data.data, ( value, key )->
-                    $scope.messages.push value
-                    $scope.threadDeliveries.push value
-                    return
-
-                return
-
-        return
-
     $scope.moveToDelivered = ->
-        MessageFactory.updateToDeliver( $rootScope.$stateParams.threadId )
-            .success ( data, xhr )->
-                $log.log 'moveToDelivered::data', data
-                UserFactory.getNotify() # So notification change
-                $state.go 'messages.inquiries'
+        InquiryFactory.markAsDeliver
+            inquiry: $rootScope.$stateParams.inquiryId
+        .success ( data, xhr )->
+            $log.log 'moveToDelivered::data', data
+            $log.info 'moveToDelivered()::Checkuser', $rootScope.user.is_permitted
 
-                return
+        # MessageFactory.updateToDeliver( $rootScope.$stateParams.threadId )
+        #     .success ( data, xhr )->
+        #         $log.log 'moveToDelivered::data', data
+        #         UserFactory.getNotify() # So notification change
+        #         $state.go 'messages.inquiries'
 
-        return
-
-    $scope.getLatestMessages = ( conversationLength, dataTotal )->
-        $log.log 'conversationLength: ', conversationLength
-        $log.log 'dataTotal:', dataTotal
-        if( conversationLength > dataTotal )
-            $scope.getMessagesByOffset conversationLength, 15
-        return
-
-    $scope.getMessagesByOffset = ( offset, take )->
-        thread = $rootScope.$stateParams.threadId
-        MessageFactory.getMessageOffset( thread, offset, take )
-            .success ( data, xhr )->
-                $log.log 'getMessagesByOffset::data', data
-                angular.forEach data.messages, ( value, key )->
-                    $scope.messages.unshift value
-                    return
-                return
+        #         return
 
         return
 
+    ###*
+     * Create INBOX
+     *
+     * @return {void}
+    ###
     $scope.createMessage = ->
         $log.info 'Create a message'
         $scope.changeHeading 'Create'
-        $scope.message.subject = 'Message from ' + $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name
+        name = if $rootScope.me.user.is_permitted then $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name else 'You'
+        $scope.message.subject = 'Message from ' + name
         
         return
 
+    ###*
+     * Searching the user in INBOX
+     *
+     * @param  {object} event
+     *
+     * @return {void}
+    ###
     $scope.getUser = ( event )->
-        if event.keyCode == 13
-            $log.log event.target.value
-            $scope.search = []
-            $scope.searchUserByFilter event.target.value
+        # event.preventDefault()
+        $scope.search = []
+        $scope.message.recipient = null
+        if Boolean( $scope.message.send )
+            $scope.searchUserByFilter $scope.message.send
 
-        event.preventDefault()
         return
 
+    ###*
+     * The user Searched in INBOX
+     *
+     * @param  {object} user
+     *
+     * @return {void}
+    ###
     $scope.sendWithUser = ( user )->
-        $scope.search = []
-        $scope.message.user = user.id
+        $scope.message.recipient = user.id
         $scope.message.send = user.full_name
+        $scope.search = []
         $log.log $scope.message
         return
 
+    ###*
+     * Search user in INBOX now on progress
+     *
+     * @param  {string} value
+     *
+     * @return {void}
+    ###
     $scope.searchUserByFilter = ( value )->
         $log.log( 'searchUserByFilter::ifElse', Boolean( value.substr 0, value.indexOf ":" ) )
         if Boolean( value.substr 0, value.indexOf ":" )
@@ -278,38 +520,107 @@ _okie.controller 'MessageController', ( $scope, $log, $interval, $http, $state, 
     $scope.submitNewMessage = ( event, form )->
         event.preventDefault()
         $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state
-        MessageFactory.sendMessage( event.target.action, $scope.message )
+        $scope.alerts = []
+        InboxFactory.createMessage( event.target.action, $scope.message )
             .success ( data, xhr )->
                 $log.log 'submitNewMessage::data', data
                 $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state
-                $scope.message.body = ''
-                $state.go 'messages.thread', 
-                    threadId: data.success.data.thread.id
+                $state.go 'messages.viewInbox',
+                    inboxId: data.success.data.inbox.id
+
+                return
+            .error ( data, xhr )->
+                $scope.message.recipient = null
+                $scope.message.send = null
+                $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state
+                $scope.alerts.push data.error
 
                 return
 
         return
 
+    ###*
+     * Get all INBOX
+     *
+     * @param  {integer} page
+     *
+     * @return {void}
+    ###
     $scope.getAllInboxes = ( page )->
-        $scope.changeHeading 'Inbox'
         $scope.inbox = []
-        $scope.threadInboxes = []
-        MessageFactory.getInboxMessages( page )
+        $scope.changeHeading 'Inbox'
+        page = if page then page else 1
+        $scope.inboxState = true
+        $scope.inboxLoadingState = true
+        $scope.inboxErrorState = false
+        $scope.inboxConversations = []
+        InboxFactory.getAllInbox( page )
             .success ( data, xhr )->
                 $log.log 'getAllInboxes::data', data
+                $scope.inboxErrorState = false
                 if Boolean( data.next_page_url )
                     $scope.getAllInboxes( data.current_page + 1 )
-                    
+
+                return
+            .error ( data, xhr )->
+                $scope.inboxErrorState = true
+                $scope.inboxLoadingState = false
+                $scope.inboxErrorMessage = data.error.message.replace '[INBOX] ', ''
                 return
             .then ( data, xhr )->
                 angular.forEach data.data.data, ( value, key )->
                     $scope.inbox.push value
-                    $scope.threadInboxes.push value
                     return
+                $scope.inboxLoadingState = false
+                $scope.inboxState = false
+                $scope.inboxErrorState = false
 
                 return
 
         return
 
+    ###*
+     * Get INBOX Conversation
+     *
+     * @param  {integer} inboxId
+     * @param  {integer} pageNumber
+     *
+     * @return {void}
+    ###
+    $scope.getToInboxMessages = ( inboxId, pageNumber )->
+        $scope.inboxConversations = []
+        $scope.changeHeading 'Loading conversations'
+        $scope.inboxState = true
+        InboxFactory.getConversations( inboxId, pageNumber )
+            .success ( data, xhr )->
+                $log.log 'getToInboxMessages::data', data
+                $scope.changeHeading data.inbox.title, '<span>INBOX: &nbsp;</span>'
+                $scope.inboxErrorState = false
+
+                if Boolean( data.conversations.next_page_url )
+                    $scope.getToInboxMessages( $rootScope.$stateParams.inboxId, data.conversations.current_page + 1 )
+
+                return
+
+            .error ( data, xhr )->
+                $scope.inboxErrorState = true
+                $log.error 'getToInboxMessages::data', data
+                $scope.changeHeading 'ERROR'
+                $scope.inboxErrorMessage = data.error.message
+
+                return
+            .then ( data, xhr )->
+                angular.forEach data.data.conversations.data, ( value, key )->
+                    $scope.inboxConversations.push value
+                    return
+                $scope.inboxInfo = data.data.inbox
+                $scope.backToTextArea()
+                $timeout(->
+                    $scope.inboxState = false
+                , 3000 )
+
+                return
+
+        return
 
     return

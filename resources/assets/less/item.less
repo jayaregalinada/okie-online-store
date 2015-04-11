@@ -60,6 +60,16 @@
             }
         }
     }
+    .item-info {
+        .item-inquire {
+            a {
+                // .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+                @media (min-width: @screen-md-min) {
+                    .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+                }
+            }
+        }
+    }
     .item-inquire {
         .ta-editor {
             min-height: 300px;
@@ -73,6 +83,10 @@
             color: @gray-light;
         }
         .ta-toolbar {
+            display: none;
+            @media (min-width: @screen-md-min) {
+                display: block;
+            }
             margin-left: 0;
             background-color: @btn-default-bg;
             > .btn-group {
@@ -87,5 +101,7 @@
         .btn-group {
             font-family: @font-family-descriptive;
         }
+
+
     }
 }

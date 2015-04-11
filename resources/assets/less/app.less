@@ -9,6 +9,7 @@
 @import "product";
 @import "item";
 @import "footer";
+@import "settings";
 @import url("vendor.css");
 @import url("//fonts.googleapis.com/css?family=Lato:300,400");
 
@@ -166,6 +167,10 @@ body {
             background-color: darken( @brand-info, 20% );
         }
     }
+}
+
+#nprogress .bar, #loading-bar .bar {
+    height: 3px;
 }
 
 /* Have to set height explicity on ui-view 

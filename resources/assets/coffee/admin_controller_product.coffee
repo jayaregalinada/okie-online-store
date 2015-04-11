@@ -1,4 +1,4 @@
-_okie.controller 'ProductController', ( $rootScope, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory ) ->
+_okie.controller 'ProductController', ( $rootScope, $log, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory ) ->
 
     ## Scope Variables
     $scope.info = 'Product Information'
@@ -46,7 +46,7 @@ _okie.controller 'ProductController', ( $rootScope, $scope, $http, $location, $w
     ##############
     $scope.getTitle = ->
         if( $window.location.pathname is $scope.path + '/create' )
-            console.log('Create Product')
+            $log.log('Create Product')
 
         return
 

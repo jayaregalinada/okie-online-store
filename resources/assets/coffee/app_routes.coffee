@@ -67,20 +67,11 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
         .state 'messages.inquiries',
             parent: 'messages'
             url: '^/inquiries'
-            templateUrl: '/views/messages/messages.html'
+            templateUrl: '/views/messages/inquiries.html'
             controller: ( $scope )->
                 $scope.header = 'Inquiries'
                 $scope.getAllInquiries()
-
-                return
-
-        .state 'messages.delivered',
-            parent: 'messages'
-            url: '^/delivered'
-            templateUrl: '/views/messages/messages.html'
-            controller: ( $scope )->
-                $scope.header = 'Delivered'
-                $scope.getAllDeliveries()
+                $scope.keyBinder()
 
                 return
 
@@ -101,16 +92,17 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
             controller: ( $scope )->
                 $scope.header = 'Inbox'
                 $scope.getAllInboxes()
+                $scope.keyBinder()
 
                 return
 
         .state 'messages.viewInbox',
             parent: 'messages'
-            url: '^/inbox/:msgId'
+            url: '^/inbox/view/:inboxId'
             templateUrl: '/views/messages/conversation_inbox.html'
             controller: ( $scope, $stateParams )->
-                $scope.getToInboxConversation( $stateParams.msgId )
-                $scope.msgId = $stateParams.msgId
+                $scope.getToInboxMessages( $stateParams.inboxId, 1 )
+                $scope.keyBinder()
 
                 return
 
@@ -124,19 +116,60 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
 
                 return
 
-        .state 'messages.threaddeliver',
+        .state 'messages.viewInquiry',
             parent: 'messages'
-            url: '^/deliver/:threadId'
-            templateUrl: '/views/messages/conversation_delivered.html'
+            url: '^/inquiry/read/:inquiryId'
+            templateUrl: '/views/messages/conversation_inquiry.html'
             controller: ( $scope, $stateParams )->
-                $scope.getToConversation( $stateParams.threadId )
-                $scope.threadId = $stateParams.threadId
+                $scope.getToInquiryMessages( $stateParams.inquiryId, 1 )
+                $scope.keyBinder()
 
                 return
 
+    # Deliver
+    $stateProvider
+        .state 'delivered',
+            abstract: true
+            controller: 'DeliverController'
+            template: '<ui-view/>'
+            url: '/deliver'
+
+        .state 'delivered.all',
+            parent: 'delivered'
+            url: '/all'
+            templateUrl: '/views/messages/deliver.html'
+            controller: ( $scope )->
+                $scope.getAllDeliver()
+
+                return
+
+        .state 'delivered.viewDeliver',
+            parent: 'delivered'
+            url: '/read/:deliverId'
+            templateUrl: '/views/messages/conversation_deliver.html'
+            controller: ( $scope, $stateParams )->
+                $scope.getToConversation( $stateParams.deliverId, 1 )
+
+                return
+
+    # Settings (User)
+    $stateProvider
+        .state 'settings',
+            abstract: true
+            controller: 'UserSettingsController'
+            template: '<ui-view/>'
+            url: '/settings'
+
+        .state 'settings.newsletter',
+            parent: 'settings'
+            url: '^/newsletter'
+            templateUrl: '/views/settings/newsletter.html'
+            controller: ( $scope )->
+                $scope.getEmailSubscribe()
+
+                return
+
+
     $urlRouterProvider.otherwise( '/' );
-
-
-
 
     return

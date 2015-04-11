@@ -1,4 +1,4 @@
-_okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout )->
+_okie.controller 'ItemController', ( $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout )->
 
     $scope.items = []
     $scope.item = {}
@@ -10,9 +10,19 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
         text: 'SUBMIT'
         state: false
         success: false
+    $scope.inquireResponseTime = 5000
+
+    $scope.backToHeader = ( delayTime, animateTime )->
+        $timeout ->
+            $( 'body,html' ).animate
+                scrollTop: $( '#header' ).offset().top - $( '#navigation' ).outerHeight( true )
+            , if animateTime then animateTime else 1000
+        , if delayTime then delayTime else 500
+
+        return
 
     $scope.checkState = ->
-        console.log 'Checking State: ', $state.current
+        $log.info 'ItemController.checkState()', $state.current
         switch $state.current.name
             when 'item' then $scope.getItem $stateParams.itemId
             when 'category' then $scope.getItemsByCategory 1
@@ -22,8 +32,7 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
 
     $scope.inquireItem = ->
         $scope.inquireState = !$scope.inquireState
-        console.log 'Inquiring item', $stateParams.itemId
-
+        $log.log 'Inquiring item', $stateParams.itemId
 
         return
 
@@ -36,8 +45,7 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
             item: $stateParams.itemId
             message: $scope.inquire
         ).success ( data, xhr )->
-            console.log data
-            
+            $scope.backToHeader()
             $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state
             $scope.inquire = ''
             $scope.inquireMessages.push
@@ -46,7 +54,6 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
 
             return
         .error ( data, xhr )->
-            console.error data
             $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state
             $scope.inquireMessages.push
                 type: 'danger'
@@ -56,12 +63,15 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
         .then ( data )->
             $timeout(->
                 $scope.inquireMessages.splice 0, $scope.inquireMessages.length
-            , 3000 )
+            , $scope.inquireResponseTime )
+
+            return
 
         return
 
     $scope.closeInquireMessage = ( index )->
         $scope.inquireMessages.splice index, 1
+
         return
 
     $scope.getItemsByCategory = ( pageNumber )->
@@ -87,16 +97,13 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
                         $scope.items.push value
                         return
 
-                # console.log 'getAllItem', $scope.items
                 return
 
     $scope.getItem = ( id )->
-        # console.log '$stateParams', $stateParams
-        # console.log '$state', $state.get 'i'
         ItemFactory.getItem( id )
             .success ( data, xhr )->
                 $scope.item = data
-                console.log 'item: ', $scope.item
+                $log.log 'item: ', $scope.item
 
                 return
 
@@ -104,9 +111,10 @@ _okie.controller 'ItemController', ( $scope, $http, $window, ItemFactory, $state
 
     $scope.redirectInItem = ->
         localStorageService.set 'redirect_to_item', $stateParams.itemId
+
         return
 
     $scope.checkState()
-    # $scope.getItem $stateParams.itemId
+    
 
     return

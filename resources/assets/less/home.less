@@ -84,11 +84,12 @@
         }
         .product-item-container {
             background-color: @product-item-background;
-            #gradient > .vertical( darken(@product-item-background, 16%), @product-item-background );
+            // #gradient > .vertical( darken(@product-item-background, 16%), @product-item-background );
             display: block;
-            .box-shadow( 0 3px 5px lighten(@gray-base, 60%) );
+            .box-shadow( 0 0 1px lighten(@gray-base, 60%) );
             cursor: pointer;
             &:hover {
+                .box-shadow( 0 0 3px lighten(@gray-base, 60%) );
                 .description {
                     border-bottom-color: @gray;
                 }
