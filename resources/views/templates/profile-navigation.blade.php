@@ -21,7 +21,7 @@
                         <i class="profile-nav-icon fa fa-star"></i> Inquiries
                     </a>
                     @if ( Auth::user()->isAdmin() )
-                    <a ng-class="{ active: $state.is('messages.delivered') }" ui-sref="messages.delivered" href="#delivered" data-notify="delivered" class="list-group-item">
+                    <a ng-class="{ active: $state.is('delivered.all') }" ui-sref="delivered.all" href="#delivered" data-notify="delivered" class="list-group-item">
                         <span class="badge"></span>
                         <i class="profile-nav-icon fa fa-thumbs-up"></i> Delivered
                     </a>
@@ -35,15 +35,14 @@
     <!-- START SETTINGS -->
     <div class="panel panel-default">
         <div class="panel-heading" id="panel_heading_two">
-            <a data-target="#settings" href="{{ route( 'settings.index' ) }}" class="h4 display-block panel-title" data-toggle="collapse" data-parent="#profile_nav" aria-expanded="true">
+            <a data-target="#settings" href="{{ route( 'settings.index' ) }}#newsletter" class="h4 display-block panel-title" data-toggle="collapse" data-parent="#profile_nav" aria-expanded="true">
                 <i class="profile-nav-icon fa fa-cogs"></i> Settings
             </a>
         </div>
         <div id="settings" class="panel-collapse collapse @yield('navigate.settings')">
             <div class="panel-body">
                 <div class="list-group">
-                    <a href="#email_notification" class="list-group-item">
-                        <span class="badge"></span>
+                    <a ng-class="{ active: $state.is('settings.newsletter') }" ui-sref="settings.newsletter" href="#" class="list-group-item">
                         <i class="profile-nav-icon fa fa-envelope-o"></i> Email Notification
                     </a>
                     <a href="#password" class="list-group-item">

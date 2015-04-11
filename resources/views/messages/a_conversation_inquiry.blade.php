@@ -1,18 +1,24 @@
-<div class="message-container conversation conversation-inbox"
-    data-id="{# inboxInfo.id #}"
-    data-sender="{# inboxInfo.sender_id #}"
-    data-recipient="{# inboxInfo.recipient_id #}"
-    data-title="{# inboxInfo.title #}" ng-hide="inboxErrorState">
+<div class="message-container conversation conversation-inquiry"
+    data-id="{# inquiryInfo.id #}"
+    data-inquisition="{# inquiryInfo.inquisition_id #}"
+    data-product="{# inquiryInfo.product_id #}"
+    data-title="{# inquiryInfo.title #}" ng-hide="inquiryErrorState">
 
-    <div ng-class="{ 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('inbox-', '') #} message media animate" ng-repeat="message in inboxConversations"
+    @if ( Auth::user()->isPermitted() )
+    <div class="marker">
+        <a href="#" ng-click="moveToDelivered()" class="btn btn-info btn-sm">MARK AS DELIVERED</a>
+        <a href="{{ route('product.index') }}/{# inquiryInfo.product_id #}" target="_blank" class="btn btn-info btn-sm">VIEW PRODUCT INQUIRED</a>
+    </div>
+    @endif
+
+    <div ng-class="{ 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('inquiry-', '') #} message media animate" ng-repeat="message in inquiryConversations"
         data-type="{# message.type #}"
         data-id="{# message.id #}"
         data-user="{# message.user_id #}"
         data-time="{# message.time #}">
         <div class="media-left media-top">
             <a href="javascript:void(0);">
-                <img ng-if="message.type == 'inbox'" ng-src="{# (message.user.id == me.user.id) ? message.user.avatar : (me.user.is_permitted) ? message.user.avatar : '{{ url('/images/logo.png') }}' #}" alt="avatar" class="img-circle" />
-                <img ng-if="message.type == 'inbox-reply'" ng-src="{# message.user.avatar  #}" alt="avatar" class="img-circle" />
+                <img ng-src="{# (message.type == 'inquiry-reply') ? (me.user.is_permitted) ? message.user.avatar : '{{ url('/images/logo.png') }}' : inquiryInfo.user.avatar  #}" alt="avatar" class="img-circle">
             </a>
         </div>
         <div class="media-body content-description">
@@ -25,7 +31,7 @@
 
     <div class="message-reply container-fluid" id="reply">
         <alert ng-repeat="alert in alerts" type="danger" close="closeAlert( $index )"><i class="fa fa-exclamation-triangle"></i> {# alert.message #}</alert>
-        {!! Form::open(['route' => 'inbox.reply', 'name' => 'form_reply', 'ng-submit' => 'form_reply.$valid && inboxReplySubmit( $event, form_reply )']) !!}
+        {!! Form::open(['route' => 'inquiry.reply', 'name' => 'form_reply', 'ng-submit' => 'form_reply.$valid && inquiryReplySubmit( $event, form_reply )']) !!}
             <div serial="r3p1y" name="reply" class="content-description" ta-toolbar="[['bold', 'italics', 'underline', 'undo', 'redo', 'clear']]" ng-minlength="5" required ng-required="true" placeholder="Write a reply {{ Auth::user()->first_name }}" text-angular ng-model="reply"></div>
             <div ta-bind ng-model="reply" id="reply_bind" class="hidden"></div>
             <div class="buttons">
@@ -37,8 +43,8 @@
 
 </div>
 
-<div class="alert alert-danger text-center" ng-show="inboxErrorState">
-    <p>{# inboxErrorMessage #}</p>
+<div class="alert alert-danger text-center" ng-show="inquiryErrorState">
+    <p>{# inquiryErrorMessage #}</p>
 </div>
 
 

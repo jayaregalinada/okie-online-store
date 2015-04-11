@@ -1,7 +1,5 @@
 @extends('templates.profile')
 
-@section('profile.attr', 'ng-controller="MessageController"')
-
 @section('settings.heading', '{# header #}')
 
 @section('navigate.messages', 'in')
@@ -24,4 +22,7 @@
 @endif
     <script type="text/javascript" src="{{ asset('js/user.js') }}"></script>
 
+
+
 @stop
+

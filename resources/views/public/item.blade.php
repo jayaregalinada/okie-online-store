@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="col-md-7 item-right">
-            <div class="page-header">
+            <div class="page-header" id="header">
                 <h1>{# item.name #}</h1>
             </div>
             <div class="item-info" ng-hide="inquireState">
@@ -34,12 +34,19 @@
                     </div>
                     <br />
                     @if( Auth::check() )
+                        @if( Auth::user()->isUser() )
                     <div class="item-inquire">
-                        <a href="javascript:void(0)" ng-click="inquireItem()" class="btn btn-primary btn-lg">INQUIRE FOR THIS PRODUCT</a>
+                        <a href="javascript:void(0)" ng-click="inquireItem()" class="btn btn-primary">INQUIRE FOR THIS PRODUCT</a>
                     </div>
+                        @else
+                    <div class="item-inquire">
+                        <a href="javascript:void(0)" class="btn btn-primary">CHECK FOR INQUIRIES ON THIS PRODUCT</a>
+                    </div>
+                        @endif
+
                     @else
                     <div class="item-inquire">
-                        <a ng-click="redirectInItem()" href="{{ route('auth.login') }}?redirect_to_item={# $stateParams.itemId #}" class="btn btn-primary btn-lg">LOGIN TO INQUIRE</a>
+                        <a ng-click="redirectInItem()" href="{{ route('auth.login') }}?redirect_to_item={# $stateParams.itemId #}" class="btn btn-warning">LOGIN TO INQUIRE</a>
                     </div>
                     @endif
                 </div>
@@ -53,7 +60,7 @@
                         <div class="content-description" ta-toolbar="[['bold', 'italics', 'underline', 'undo', 'redo', 'clear']]" ng-minlength="5" required ng-required="true" placeholder="I would like to inquire about this item" text-angular ng-model="inquire"></div>
                         <input ng-hide="inquireSubmitButton.state" type="submit" ng-class="{ 'btn-success': form_inquire.$valid }" class="btn btn-primary btn-lg" ng-disabled="form_inquire.$invalid" value="SUBMIT" />
                         <button ng-show="inquireSubmitButton.state" type="button" class="btn btn-success btn-lg"><i class="fa fa-circle-o-notch fa-spin" ng-show="inquireSubmitButton.state"></i> SUBMITTING</button>
-                        <button class="btn-warning btn" type="button" ng-click="inquireState = false">CANCEL</button>
+                        <button ng-hide="inquireSubmitButton.state" class="btn-warning btn" type="button" ng-click="inquireState = false">CANCEL</button>
                     {!! Form::close() !!}
                 </div>
             </div>

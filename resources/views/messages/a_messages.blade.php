@@ -11,7 +11,7 @@
             </a>
         </div>
         <div class="media-body">
-            <h4 class="media-heading">{# message.name #}<br />
+            <h4 class="media-heading">{# message.title #}<br />
                 <span class="small font-light">{# message.latest.time #}</span></small>
             </h4>
             <div class="message-body" ng-bind-html="message.latest.body">
