@@ -11,7 +11,7 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		//
+		
 	}
 
 	/**
@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider {
 			'Illuminate\Contracts\Auth\Registrar',
 			'Okie\Services\Registrar'
 		);
+		$this->app->bind( 'Okie\Services\HTMLSanitizerInterface', function( $app )
+		{
+			return new \Okie\Services\HTMLSanitizer;
+		});
 	}
 
 }
