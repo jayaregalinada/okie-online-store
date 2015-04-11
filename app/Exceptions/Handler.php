@@ -22,9 +22,9 @@ class Handler extends ExceptionHandler {
 	 * @param  \Exception  $e
 	 * @return void
 	 */
-	public function report(Exception $e)
+	public function report( Exception $e )
 	{
-		return parent::report($e);
+		return parent::report( $e );
 	}
 
 	/**
@@ -39,13 +39,28 @@ class Handler extends ExceptionHandler {
 	{
 		if( $e instanceof ThreadException )
 		{
+			return response( $e->showInResponse() , $e->getCode() );
+		}
+		if( $e instanceof NewsletterException )
+		{
+			return response( $e->showInResponse(), $e->getCode() );
+		}
+		if( $e instanceof InboxException )
+		{
 			return response( [ 'error' => [
 				'message' => $e->getMessage(),
 				'code' => $e->getCode(),
 				'type' => $e->getType() ]
 			], $e->getCode() );
 		}
-		return parent::render($request, $e);
+		// if( $e instanceof \Illuminate\Session\TokenMismatchException )
+		// {
+		// 	return response( ['error' => [
+		// 		'message' => $e->getMessage(),
+		// 		'strings' => $e->__toString() ]
+		// 	], 500 );
+		// }
+		return parent::render( $request, $e );
 	}
 
 }
