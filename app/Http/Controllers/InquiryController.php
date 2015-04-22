@@ -1,6 +1,7 @@
 <?php namespace Okie\Http\Controllers;
 
 use Auth;
+use Okie\Product;
 use Okie\Inquiry;
 use Okie\Conversation;
 use Okie\Http\Requests;
@@ -123,23 +124,55 @@ class InquiryController extends Controller {
 	 *
 	 * @return mixed
 	 */
-	public function postReply( Request $request )
+	//public function postReply( Request $request )
+	//{
+	//	$inquiry = Inquiry::where( [
+	//		'inquisition_id' => (int) $request->input( 'inquisition' ),
+	//		'product_id'     => (int) $request->input( 'item' )
+	//	] )->first();
+	//	if( is_null( $inquiry ) )
+	//		throw new ThreadException( 'INQUIRY', 'Inquiry not found' );
+	//	$conversation           = new Conversation;
+	//	$conversation->user_id  = Auth::user()->id;
+	//	$conversation->body     = $this->filterBody( $request->input( 'message' ) );
+	//	$conversation->type     = ( Auth::user()->isPermitted() ) ? $conversation->responses[ 'inquiry' ] : 'inquiry';
+	//	$inquiry->conversations()->save( $conversation );
+	//
+	//	return $this->responseInJSON( [ 'success' => [
+	//		'message' => 'Successfully replied',
+	//		'data' => Conversation::find( $conversation->id ) ]
+	//	] );
+	//}
+
+	/**
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ThreadException
+	 */
+	public function postReserve( Request $request )
 	{
-		$inquiry = Inquiry::where( [
-			'inquisition_id' => (int) $request->input( 'inquisition' ),
-			'product_id'     => (int) $request->input( 'item' )
-		] )->first();
+		$inquiry = Inquiry::find( $request->input( 'inquiry' ) );
+
 		if( is_null( $inquiry ) )
 			throw new ThreadException( 'INQUIRY', 'Inquiry not found' );
-		$conversation           = new Conversation;
-		$conversation->user_id  = Auth::user()->id;
-		$conversation->body     = $this->filterBody( $request->input( 'message' ) );
-		$conversation->type     = ( Auth::user()->isPermitted() ) ? $conversation->responses[ 'inquiry' ] : 'inquiry';
-		$inquiry->conversations()->save( $conversation );
+		$reserveItem = $inquiry->reserve;
+		$inquiry->reserveProduct( $request->input( 'reserve' ) );
+		$product = Product::find( $inquiry->product_id );
+		if( $request->input( 'reserve' ) > $product->unit )
+			throw new ThreadException( 'INQUIRY', 'Cannot reserve item because unit is not enough', 400 );
+		
+		$product->update( [
+			'unit' => $product->unit - $request->input( 'reserve' )
+		] );
 
 		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully replied',
-			'data' => Conversation::find( $conversation->id ) ]
+			'message' => 'Successfully reserved', 
+			'data' => [
+				'inquiry' => Inquiry::find( $request->input( 'inquiry' ) ),
+				'product' => Product::find( $inquiry->id )
+			],
+			'amount' => $request->input( 'reserve' ) ]
 		] );
 	}
 

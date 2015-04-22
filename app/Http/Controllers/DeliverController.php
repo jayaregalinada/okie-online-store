@@ -8,6 +8,7 @@ use Okie\Http\Requests;
 use Okie\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Okie\Exceptions\ThreadException;
+use View;
 
 class DeliverController extends Controller {
 
@@ -137,6 +138,12 @@ class DeliverController extends Controller {
 			'deliver'       => Deliver::find( $id ),
 			'conversations' => Deliver::find( $id )->conversations()->paginate()->toArray()
 		] );
+	}
+
+	public function getPublicView( $view )
+	{
+		if( View::exists( 'messages.a_' . $view ) )
+			return view( 'messages.a_' . $view );
 	}
 
 }

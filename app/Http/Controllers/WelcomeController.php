@@ -20,7 +20,7 @@ class WelcomeController extends Controller {
 	 *
 	 * @return \Illuminate\View\View
 	 */
-	public function index( Request $request )
+	public function index()
 	{
 		return view( 'home' )->with( 'products', Product::latest()->take( 12 )->get() );
 	}

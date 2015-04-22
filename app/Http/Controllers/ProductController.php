@@ -8,6 +8,7 @@ use Okie\Image;
 use Okie\Category;
 use Okie\Services\Product\Factory as ProductFactory;
 use Okie\Services\Product\ImageProcessor;
+use Okie\Exceptions\ProductException;
 
 class ProductController extends Controller {
 
@@ -58,7 +59,7 @@ class ProductController extends Controller {
 	public function store( ProductFactory $product, Request $request )
 	{
 		$item = $product->execute( $request->except( [ 'ajax', '_token' ] ) );
-		if ( $request->input( 'ajax' ) )
+		if ( $request->input( 'ajax' ) || $request->ajax() || $request->wantsJson() )
 			return $this->responseInJSON( $item );
 
 		return redirect()->route( 'product.show', $item['id'] )->with([
@@ -90,8 +91,11 @@ class ProductController extends Controller {
 	 */
 	public function show( $id, Request $request )
 	{
-		$find = Product::with( [ 'images', 'categories' ] )->orderBy('created_at', 'desc')->find( $id );
-		if( $request->input( 'ajax' ) )
+		$find = Product::with( [ 'images', 'categories' ] )->find( $id );
+		$find->__set( 'related', Product::getRelated( $id ) );
+		if( ! $find )
+			throw new ProductException( 'We do not have that kind of product', 404 );
+		if( $request->input( 'ajax' ) || $request->ajax() || $request->wantsJson() )
 			return $this->responseInJSON( $find );
 
 		return view( 'product.addimage' )->with( 'product', $find )->with( 'category', Category::lists('id', 'name') );
@@ -129,7 +133,7 @@ class ProductController extends Controller {
 	 */
 	public function showImagesPaginate( $id )
 	{
-		return $this->responseInJSON( Image::whereProductId( $id )->paginate() );
+		return $this->responseInJSON( Image::whereProductId( $id )->latest( 'updated_at')->paginate() );
 	}
 
 	/**
@@ -165,29 +169,49 @@ class ProductController extends Controller {
 	 */
 	public function update( Request $request, $id )
 	{
-		$find = Product::find( $id );
-		if( $find->update( $request->all() ) )
-			return $this->responseInJSON( $find );
+		if( Product::find( $id )->update( $request->all() ) )
+			return $this->responseInJSON( [ 'success' => [
+				'title' => 'Good work!',
+				'message' => 'Successfully update product',
+				'data' => Product::find( $id ) ]
+			] );
 
 		return $this->responseInJSON( ['error' => [
-			'message' => 'Something went wrong on updating'
-			]
+			'message' => 'Something went wrong on updating' ]
 		], 500 );
 	}
 
 	/**
 	 * Show all products
 	 *
-	 * @param  \Illuminate\Http\Request $request
+	 * @param \Illuminate\Http\Request $request
 	 *
-	 * @return mixed
+	 * @return $this|mixed
+	 * @throws \Okie\Exceptions\ProductException
 	 */
 	public function index( Request $request )
 	{
-		if( $request->input( 'json' ) || $request->ajax() )
-			return $this->responseInJSON( Product::with( [ 'images', 'categories' ])->orderBy('created_at', 'desc')->paginate()->appends( [ 'json' => true ] ) );
-
-		return view( 'product.index' )->with( 'category', Category::lists('id', 'name') );
+		$products = Product::latest( 'updated_at' );
+		$category = Category::latest( 'updated_at' );
+		if( $request->input( 'json' ) || $request->ajax() || $request->wantsJson() )
+		{
+			if ( ! $category->exists() )
+			{
+				throw new ProductException( 'You must create category first', 404, 'Whoops!', ['categories' => $category->get() ] );
+			}
+			elseif( ! $products->exists() )
+			{
+				throw new ProductException( 'Currently no available products', 404, 'Opps!', ['categories' => $category->get() ] );
+			}
+			else
+			{
+				return $this->responseInJSON( Product::with( [ 'images', 'categories' ])->latest( 'created_at' )->paginate() );
+			}
+		}
+		else 
+		{
+			return view( 'product.index' )->with( 'category', Category::lists('id', 'name') );
+		}
 	}
 
 	/**
@@ -199,7 +223,7 @@ class ProductController extends Controller {
 	 */
 	public function updateCategory( Request $request )
 	{
-		$find = Product::with('categories')->find( $request->input( 'id' ) );
+		$find = Product::with( 'categories' )->find( $request->input( 'id' ) );
 		$find->categories()->sync( $request->input( 'categories' ) );
 
 		return $this->responseInJSON( Product::with('categories')->find( $request->input( 'id' ) ) );
@@ -215,15 +239,14 @@ class ProductController extends Controller {
 	 */
 	public function destroy( $id, Request $request )
 	{
-		$product = Product::find( $id );
-		if( $product->delete() )
+		if( Product::find( $id )->delete() )
 		{
 			$response = [
 				'success' => [
 					'message' => 'Successfully deleted product ' . $id
 				]
 			];
-			if( $request->ajax() )
+			if( $request->ajax() || $request->wantsJson() )
 			{
 				return $this->responseInJSON( $response );
 			}
@@ -231,8 +254,7 @@ class ProductController extends Controller {
 		}
 
 		return $this->responseInJSON( ['error' => [
-			'message' => 'Something went wrong on deleting product '. $id
-			]
+			'message' => 'Something went wrong on deleting product '. $id ]
 		], 500 );
 	}
 
@@ -262,15 +284,15 @@ class ProductController extends Controller {
 	 */
 	private function changeThumbnail( $id, Request $request )
 	{
-		$find = Product::find( $id );
-		if( $find->update( [ 'thumbnail_id' => $request->input( 'id' ) ] ) )
+		if( Product::find( $id )->update( [ 'thumbnail_id' => $request->input( 'id' ) ] ) )
 		{
 			$response = [
 				'success' => [
+					'title' => 'Nice!',
 					'message' => 'Successfully Update Thumbnail'
 				]
 			];
-			if( $request->ajax() )
+			if( $request->ajax() || $request->wantsJson() )
 			{
 				return $this->responseInJSON( $response );
 			}
@@ -279,8 +301,7 @@ class ProductController extends Controller {
 		}
 
 		return $this->responseInJSON( ['error' => [
-			'message' => 'Something went wrong on updating thumbnail'
-			]
+			'message' => 'Something went wrong on updating thumbnail' ]
 		], 500 );
 	}
 
@@ -299,10 +320,11 @@ class ProductController extends Controller {
 		{
 			$response = [
 				'success' => [
+					'title' => 'Nice!',
 					'message' => 'Successfully deleted image ' . $id 
 				]
 			];
-			if( $request->ajax() )
+			if( $request->ajax() || $request->wantsJson() )
 			{
 				return $this->responseInJSON( $response );
 			}
@@ -311,8 +333,7 @@ class ProductController extends Controller {
 		}
 
 		return $this->responseInJSON( ['error' => [
-			'message' => 'Something went wrong on deleting image '. $id
-			]
+			'message' => 'Something went wrong on deleting image '. $id ]
 		], 500 );
 	}
 
@@ -329,6 +350,37 @@ class ProductController extends Controller {
 		return $this->responseInJSON( [
 			'id'      => $id,
 			'request' => $request
+		] );
+	}
+
+	/**
+	 * @param  \Illuminate\Http\Request $request
+	 *
+	 * @return mixed
+	 */
+	public function updateBadge( $id, Request $request )
+	{
+		$product = Product::find( $id );
+		$product->editBadge( [
+			'title'       => $request->input( 'title' ),
+			'description' => $request->input( 'description' ),
+			'slug'        => $request->input( 'title' ),
+			'class'       => $request->input( 'class' )
+		] );
+
+		return $this->responseInJSON( [ 'success' => [
+			'message' => 'Successfully update product badge',
+			'data' => Product::find( $id ) ]
+		] );
+	}
+
+	public function removeBadge( $id )
+	{
+		Product::find( $id )->destroyBadge();
+
+		return $this->responseInJSON( [ 'success' => [
+			'message' => 'Successfully remove product badge',
+			'data' => Product::find( $id ) ]
 		] );
 	}
 

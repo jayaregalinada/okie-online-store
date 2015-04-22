@@ -32,15 +32,23 @@ class ConversationController extends Controller {
 	{
 		$product = Product::find( $request->input( 'item') );
 		$user = Auth::user();
-		$inquiry = Inquiry::firstOrCreate( [
+		$inquiry = Inquiry::updateOrCreate( [
 			'inquisition_id' => $user->id,
-			'product_id'     => $product->id,
+			'product_id'     => $product->id
+		], [
 			'title'          => 'Inquiring for ' . $product->name . ' by ' . $user->getFullName()
 		] );
 		$conversation = new Conversation;
 		$conversation->user_id = $user->id;
-		$conversation->body = $this->filterBody( $request->input( 'message' ) );
+		$conversation->body = $this->filterBodyOnly( $request->input( 'message' ) );
 		$inquiry->conversations()->save( $conversation );
+		$inquiry->update( [
+			'reserve' => $request->input( 'reserve' )
+		] );
+		if( (bool) $request->input( 'reserve' ) )
+			$product->update( [
+				'unit' => $product->unit - $request->input( 'reserve' ) 
+			] );
 
 		return $this->responseInJSON( [
 			'success' => [
@@ -52,7 +60,5 @@ class ConversationController extends Controller {
 			]
 		] );
 	}
-
-	
 
 }

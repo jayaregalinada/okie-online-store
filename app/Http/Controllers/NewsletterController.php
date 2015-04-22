@@ -1,6 +1,7 @@
 <?php namespace Okie\Http\Controllers;
 
 use Auth;
+use Okie\Exceptions\NewsletterException;
 use Okie\Http\Requests;
 use Okie\Http\Controllers\Controller;
 use Okie\Newsletter;
@@ -23,26 +24,53 @@ class NewsletterController extends Controller {
 
 		if( Auth::check() )
 			return $this->responseInJSON( [ 'success' => [
+				'title' => 'Nice!',
 				'message' => 'Successfully subscribe to our Newsletter',
 				'emails' => Newsletter::whereUserId( Auth::id() )->get() ]
 			] );
 
 		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully subscribe to our Newsletter', ]
+			'title'   => 'Nice!',
+			'message' => 'Successfully subscribe to our Newsletter',
+			'data'    => $model ]
 		] );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getSubscribeByUser()
 	{
 		if( ! Auth::check() )
 			return $this->responseInJSON( ['error' => [
+				'title'   => 'Opps',
 				'message' => 'Sorry you have to log in first' ]
 			] );
 
 		return $this->responseInJSON( [ 'success' => [
+			'title'   => 'Success',
 			'message' => 'Successfull get all email subscribtion by user',
-			'data' => Newsletter::whereUserId( Auth::id() )->get() ]
+			'data'    => Newsletter::whereUserId( Auth::id() )->get() ]
 		] );
+	}
+
+	/**
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\NewsletterException
+	 */
+	public function unsubscribeEmail( Request $request )
+	{
+		$newsletter = Newsletter::whereEmail( $request->input( 'email' ) );
+		if( ! $newsletter->exists() )
+			throw new NewsletterException( $request->input( 'email' ), 'No such email exists' );
+		
+		if( $newsletter->delete() )
+			return $this->responseInJSON( [ 'success' => [
+				'message' => 'Successfully unsubscribe',
+				'data' => Newsletter::whereUserId( Auth::id() )->get() ]
+			] );
 	}
 
 }

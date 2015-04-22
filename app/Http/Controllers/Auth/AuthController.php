@@ -59,9 +59,14 @@ class AuthController extends Controller {
 	 */
 	public function userHasLoggedIn( $user )
 	{
-		Session::flash( 'message', 'Welcome, ' . $user->name );
-		
-		return redirect( '/home' );
+		if( $user->updated_at == $user->created_at )
+			// User is new
+			Session::flash( 'message', 'Welcome, ' . $user->first_name . ' to '. config( 'app.title' ) );
+		else
+			Session::flash( 'message', 'Its good to be back, '. $user->first_name );
+		Session::put( 'me', $user->toArray() );
+
+		return redirect( '/' );
 	}
 
 	/**
@@ -70,6 +75,19 @@ class AuthController extends Controller {
 	public function getLogin()
 	{
 		return view('auth.login');
+	}
+
+	/**
+	 * Log the user out of the application.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function getLogout()
+	{
+		Session::forget( 'me' );
+		$this->auth->logout();
+
+		return redirect( property_exists( $this, 'redirectAfterLogout' ) ? $this->redirectAfterLogout : '/' );
 	}
 
 }

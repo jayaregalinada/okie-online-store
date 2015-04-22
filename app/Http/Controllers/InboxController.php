@@ -3,7 +3,7 @@
 use Auth;
 use Illuminate\Http\Request;
 use Okie\Conversation;
-use Okie\Exceptions\InboxException;
+use Okie\Exceptions\ThreadException;
 use Okie\Http\Requests;
 use Okie\Inbox;
 use Okie\User;
@@ -24,20 +24,14 @@ class InboxController extends Controller {
 		if ( Auth::user()->isPermitted() )
 		{
 			if ( ! $inbox->exists() )
-				return $this->responseInJSON( [ 'error' => [
-					'message' => 'Inbox not found at the moment',
-					'code'    => 404 ]
-				], 404 );
+				throw new ThreadException( 'INBOX', 'Inbox not found at the moment', 404 );
 
 			return $this->responseInJSON( $inbox->paginate() );
 		}
 		else
 		{
 			if ( ! $inbox->whereSenderId( Auth::user()->id )->orWhere( 'recipient_id', '=', Auth::user()->id )->exists() )
-				return $this->responseInJSON( [ 'error' => [
-					'message' => 'Inbox not found at the moment',
-					'code'    => 404 ]
-				], 404 );
+				throw new ThreadException( 'INBOX', 'Inbox not found at the moment', 404 );
 
 			return $this->responseInJSON( $inbox->whereSenderId( Auth::user()->id )->orWhere( 'recipient_id', '=', Auth::user()->id )->paginate() );
 		}
@@ -52,11 +46,7 @@ class InboxController extends Controller {
 	public function get( $id )
 	{
 		if ( is_null( Inbox::find( $id ) ) )
-			return $this->responseInJSON( [ 'error' => [
-				'message' => 'Inbox not found with id ' . $id,
-				'id'      => $id,
-				'code'    => 404 ]
-			], 404 );
+			throw new ThreadException( 'INBOX', 'Inbox not found with id ' . $id, 404 );
 
 		return $this->responseInJSON( Inbox::find( $id ) );
 	}
@@ -85,11 +75,7 @@ class InboxController extends Controller {
 	public function getConversations( $id )
 	{
 		if ( is_null( Inbox::find( $id ) ) )
-			return $this->responseInJSON( [ 'error' => [
-				'message' => 'Inbox not found with id ' . $id,
-				'id'      => $id,
-				'code'    => 404 ]
-			], 404 );
+			throw new ThreadException( 'INBOX', 'Inbox not found with id ' . $id, 404 );
 
 		return $this->responseInJSON( [
 			'inbox'         => Inbox::find( $id ),
@@ -111,17 +97,17 @@ class InboxController extends Controller {
 		$title = ( $request->input( 'subject' ) ? $request->input( 'subject' ) : 'Message from ' . Auth::user()->getFullName() );
 		if ( Auth::user()->isPermitted() && Auth::user()->id == $recipient->id )
 		{
-			throw new InboxException( 'Cannot create same sender and recipient', 400 );
+			throw new ThreadException( 'INBOX', 'Cannot create same sender and recipient', 400 );
 		}
 		$inbox = Inbox::firstOrCreate( [
 			'sender_id'    => Auth::user()->id,
 			'recipient_id' => ( Auth::user()->isPermitted() ? $recipient->id : null ),
-			'title'        => $title
+			'title'        => $this->changeTitle( $title )
 		] );
-		$conversation = new Conversation;
+		$conversation          = new Conversation;
 		$conversation->user_id = Auth::user()->id;
-		$conversation->body = $this->filterBody( $request->input( 'message' ) );
-		$conversation->type = 'inbox';
+		$conversation->body    = $this->filterBody( $request->input( 'message' ) );
+		$conversation->type    = 'inbox';
 		$inbox->conversations()->save( $conversation );
 
 		return $this->responseInJSON( [
@@ -135,6 +121,17 @@ class InboxController extends Controller {
 		] );
 	}
 
+	private function changeTitle( $string )
+	{
+		$title = [
+			'You' => Auth::user()->getFullName(),
+			'YOU' => Auth::user()->getFullName(),
+			'you' => Auth::user()->getFullName(),
+		];
+
+		return str_replace( array_keys( $title ), array_values( $title ), $string );
+	}
+
 	/**
 	 * Reply to Inbox
 	 *
@@ -145,15 +142,27 @@ class InboxController extends Controller {
 	public function reply( Request $request )
 	{
 		$inbox = Inbox::find( $request->input( 'inbox' ) );
-		$conversation = new Conversation;
+		$conversation          = new Conversation;
 		$conversation->user_id = Auth::user()->id;
-		$conversation->body = $this->filterBody( $request->input( 'message' ) );
-		$conversation->type = ( Auth::user()->isPermitted() ) ? 'inbox' : $conversation->responses['inbox'];
+		$conversation->body    = $this->filterBody( $request->input( 'message' ) );
+		$conversation->type    = ( Auth::user()->isPermitted() ) ? 'inbox' : $conversation->responses['inbox'];
 		$inbox->conversations()->save( $conversation );
+
+		$findConve = Conversation::find( $conversation->id );
+		$findConve->__set( 'reply', 'reply-reply' );
 
 		return $this->responseInJSON( [ 'success' => [
 			'message' => 'Successfully replied',
-			'data'    => Conversation::find( $conversation->id ) ]
+			'data'    => $findConve ]
+		] );
+	}
+
+	public function destroyConversation( $id )
+	{
+		Conversation::destroy( $id );
+
+		return $this->responseInJSON( [ 'success' => [
+			'message' => 'Successfully remove message' ]
 		] );
 	}
 
