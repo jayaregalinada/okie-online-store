@@ -15229,3 +15229,4315 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 */
 function(){"use strict";function a(a){try{return 0!==angular.element(a).length}catch(b){return!1}}function b(b,c){if(!b||""===b||r.hasOwnProperty(b))throw"textAngular Error: A unique name is required for a Tool Definition";if(c.display&&(""===c.display||!a(c.display))||!c.display&&!c.buttontext&&!c.iconclass)throw'textAngular Error: Tool Definition for "'+b+'" does not have a valid display/iconclass/buttontext value';r[b]=c}var c={ie:function(){for(var a,b=3,c=document.createElement("div"),d=c.getElementsByTagName("i");c.innerHTML="<!--[if gt IE "+ ++b+"]><i></i><![endif]-->",d[0];);return b>4?b:a}(),webkit:/AppleWebKit\/([\d.]+)/i.test(navigator.userAgent)},d=!1;c.webkit&&(document.addEventListener("mousedown",function(a){var b=a||window.event,c=b.target;if(d&&null!==c){for(var e=!1,f=c;null!==f&&"html"!==f.tagName.toLowerCase()&&!e;)e="true"===f.contentEditable,f=f.parentNode;e||(document.getElementById("textAngular-editableFix-010203040506070809").setSelectionRange(0,0),c.focus(),c.select&&c.select())}d=!1},!1),angular.element(document).ready(function(){angular.element(document.body).append(angular.element('<input id="textAngular-editableFix-010203040506070809" class="ta-hidden-input" unselectable="on" tabIndex="-1">'))}));var e=/^(address|article|aside|audio|blockquote|canvas|dd|div|dl|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|noscript|ol|output|p|pre|section|table|tfoot|ul|video)$/i,f=/^(ul|li|ol)$/i,g=/^(address|article|aside|audio|blockquote|canvas|dd|div|dl|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|noscript|ol|output|p|pre|section|table|tfoot|ul|video|li)$/i;String.prototype.trim||(String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")});var h,i,j,k,l,m;if(c.ie>8||void 0===c.ie){for(var n=document.styleSheets,o=0;o<n.length;o++)if((0===n[o].media.length||n[o].media.mediaText.match(/(all|screen)/gi))&&n[o].href&&n[o].href.match(/textangular\.(min\.|)css/gi)){h=n[o];break}h||(h=function(){var a=document.createElement("style");return c.webkit&&a.appendChild(document.createTextNode("")),document.getElementsByTagName("head")[0].appendChild(a),a.sheet}()),i=function(a,b){return k(h,a,b)},k=function(a,b,c){var d,e;return a.cssRules?d=Math.max(a.cssRules.length-1,0):a.rules&&(d=Math.max(a.rules.length-1,0)),a.insertRule?a.insertRule(b+"{"+c+"}",d):a.addRule(b,c,d),h.rules?e=h.rules[d]:h.cssRules&&(e=h.cssRules[d]),e},m=function(a,b){var c,d;for(c=0;c<b.length;c++)if(b[c].cssText===a.cssText){d=c;break}return d},j=function(a){l(h,a)},l=function(a,b){var c=m(b,a.cssRules||a.rules);a.removeRule?a.removeRule(c):a.deleteRule(c)}}angular.module("textAngular.factories",[]).factory("taBrowserTag",[function(){return function(a){return a?""===a?void 0===c.ie?"div":c.ie<=8?"P":"p":c.ie<=8?a.toUpperCase():a:c.ie<=8?"P":"p"}}]).factory("taApplyCustomRenderers",["taCustomRenderers","taDOM",function(a,b){return function(c){var d=angular.element("<div></div>");return d[0].innerHTML=c,angular.forEach(a,function(a){var c=[];a.selector&&""!==a.selector?c=d.find(a.selector):a.customAttribute&&""!==a.customAttribute&&(c=b.getByAttribute(d,a.customAttribute)),angular.forEach(c,function(b){b=angular.element(b),a.selector&&""!==a.selector&&a.customAttribute&&""!==a.customAttribute?void 0!==b.attr(a.customAttribute)&&a.renderLogic(b):a.renderLogic(b)})}),d[0].innerHTML}}]).factory("taFixChrome",function(){var a=function(a){if(!a||!angular.isString(a)||a.length<=0)return a;for(var b,c,d,e=/<([^>\/]+?)style=("([^"]+)"|'([^']+)')([^>]*)>/gi,f="",g=0;b=e.exec(a);)c=b[3]||b[4],c&&c.match(/line-height: 1.428571429;|color: inherit; line-height: 1.1;/i)&&(c=c.replace(/( |)font-family: inherit;|( |)line-height: 1.428571429;|( |)line-height:1.1;|( |)color: inherit;/gi,""),d="<"+b[1].trim(),c.length>0&&(d+=" style="+b[2].substring(0,1)+c+b[2].substring(0,1)),d+=b[5].trim()+">",f+=a.substring(g,b.index)+d,g=b.index+b[0].length);return f+=a.substring(g),g>0?f.replace(/<span\s*>(.*?)<\/span>(<br(\/|)>|)/gi,"$1"):a};return a}).factory("taSanitize",["$sanitize",function(a){function b(a,b){for(var c,d=0,e=0,f=/<[^>]*>/gi;c=f.exec(a);)if(e=c.index,"/"===c[0].substr(1,1)){if(0===d)break;d--}else d++;return b+a.substring(0,e)+angular.element(b)[0].outerHTML.substring(b.length)+a.substring(e)}function c(a){if(!a||!angular.isString(a)||a.length<=0)return a;for(var d,f,g,h,i,k,l=/<([^>\/]+?)style=("([^"]+)"|'([^']+)')([^>]*)>/gi,m="",n="",o=0;f=l.exec(a);){h=f[3]||f[4];var p=new RegExp(j,"i");if(angular.isString(h)&&p.test(h)){i="";for(var q=new RegExp(j,"ig");g=q.exec(h);)for(d=0;d<e.length;d++)g[2*d+2]&&(i+="<"+e[d].tag+">");k=c(a.substring(o,f.index)),n+=m.length>0?b(k,m):k,h=h.replace(new RegExp(j,"ig"),""),n+="<"+f[1].trim(),h.length>0&&(n+=' style="'+h+'"'),n+=f[5]+">",o=f.index+f[0].length,m=i}}return n+=m.length>0?b(a.substring(o),m):a.substring(o)}function d(a){if(!a||!angular.isString(a)||a.length<=0)return a;for(var b,c=/<([^>\/]+?)align=("([^"]+)"|'([^']+)')([^>]*)>/gi,d="",e=0;b=c.exec(a);){d+=a.substring(e,b.index),e=b.index+b[0].length;var f="<"+b[1]+b[5];/style=("([^"]+)"|'([^']+)')/gi.test(f)?f=f.replace(/style=("([^"]+)"|'([^']+)')/i,'style="$2$3 text-align:'+(b[3]||b[4])+';"'):f+=' style="text-align:'+(b[3]||b[4])+';"',f+=">",d+=f}return d+a.substring(e)}for(var e=[{property:"font-weight",values:["bold"],tag:"b"},{property:"font-style",values:["italic"],tag:"i"}],f=[],g=0;g<e.length;g++){for(var h="("+e[g].property+":\\s*(",i=0;i<e[g].values.length;i++)i>0&&(h+="|"),h+=e[g].values[i];h+=");)",f.push(h)}var j="("+f.join("|")+")";return function(b,e,f){if(!f)try{b=c(b)}catch(g){}b=d(b);var h;try{h=a(b),f&&(h=b)}catch(g){h=e||""}var i,j=h.match(/(<pre[^>]*>.*?<\/pre[^>]*>)/gi),k=h.replace(/(&#(9|10);)*/gi,""),l=/<pre[^>]*>.*?<\/pre[^>]*>/gi,m=0,n=0;for(h="";null!==(i=l.exec(k))&&m<j.length;)h+=k.substring(n,i.index)+j[m],n=i.index+i[0].length,m++;return h+k.substring(n)}}]).factory("taToolExecuteAction",["$q","$log",function(a,b){return function(c){void 0!==c&&(this.$editor=function(){return c});var d=a.defer(),e=d.promise,f=this.$editor();e["finally"](function(){f.endAction.call(f)});var g;try{g=this.action(d,f.startAction())}catch(h){b.error(h)}(g||void 0===g)&&d.resolve()}}]),angular.module("textAngular.DOM",["textAngular.factories"]).factory("taExecCommand",["taSelection","taBrowserTag","$document",function(a,b,c){var d=function(b,c){var d,e,f=b.find("li");for(e=f.length-1;e>=0;e--)d=angular.element("<"+c+">"+f[e].innerHTML+"</"+c+">"),b.after(d);b.remove(),a.setSelectionToElementEnd(d[0])},g=function(b){/(<br(|\/)>)$/i.test(b.innerHTML.trim())?a.setSelectionBeforeElement(angular.element(b).find("br")[0]):a.setSelectionToElementEnd(b)},h=function(a,b){var c=angular.element("<"+b+">"+a[0].innerHTML+"</"+b+">");a.after(c),a.remove(),g(c.find("li")[0])},i=function(a,c,d){for(var e="",f=0;f<a.length;f++)e+="<"+b("li")+">"+a[f].innerHTML+"</"+b("li")+">";var h=angular.element("<"+d+">"+e+"</"+d+">");c.after(h),c.remove(),g(h.find("li")[0])};return function(g,j){return g=b(g),function(k,l,m){var n,o,p,q,r,s,t,u=angular.element("<"+g+">");try{t=a.getSelectionElement()}catch(v){}var w=angular.element(t);if(void 0!==t){var x=t.tagName.toLowerCase();if("insertorderedlist"===k.toLowerCase()||"insertunorderedlist"===k.toLowerCase()){var y=b("insertorderedlist"===k.toLowerCase()?"ol":"ul");if(x===y)return d(w,g);if("li"===x&&w.parent()[0].tagName.toLowerCase()===y&&1===w.parent().children().length)return d(w.parent(),g);if("li"===x&&w.parent()[0].tagName.toLowerCase()!==y&&1===w.parent().children().length)return h(w.parent(),y);if(x.match(e)&&!w.hasClass("ta-bind")){if("ol"===x||"ul"===x)return h(w,y);var z=!1;return angular.forEach(w.children(),function(a){a.tagName.match(e)&&(z=!0)}),z?i(w.children(),w,y):i([angular.element("<div>"+t.innerHTML+"</div>")[0]],w,y)}if(x.match(e)){if(q=a.getOnlySelectedElements(),0===q.length)o=angular.element("<"+y+"><li>"+t.innerHTML+"</li></"+y+">"),w.html(""),w.append(o);else{if(1===q.length&&("ol"===q[0].tagName.toLowerCase()||"ul"===q[0].tagName.toLowerCase()))return q[0].tagName.toLowerCase()===y?d(angular.element(q[0]),g):h(angular.element(q[0]),y);p="";var A=[];for(n=0;n<q.length;n++)if(3!==q[n].nodeType){var B=angular.element(q[n]);if("li"===q[n].tagName.toLowerCase())continue;p+="ol"===q[n].tagName.toLowerCase()||"ul"===q[n].tagName.toLowerCase()?B[0].innerHTML:"span"!==q[n].tagName.toLowerCase()||"ol"!==q[n].childNodes[0].tagName.toLowerCase()&&"ul"!==q[n].childNodes[0].tagName.toLowerCase()?"<"+b("li")+">"+B[0].innerHTML+"</"+b("li")+">":B[0].childNodes[0].innerHTML,A.unshift(B)}o=angular.element("<"+y+">"+p+"</"+y+">"),A.pop().replaceWith(o),angular.forEach(A,function(a){a.remove()})}return void a.setSelectionToElementEnd(o[0])}}else{if("formatblock"===k.toLowerCase()){for(s=m.toLowerCase().replace(/[<>]/gi,""),"default"===s.trim()&&(s=g,m="<"+g+">"),o="li"===x?w.parent():w;!o[0].tagName||!o[0].tagName.match(e)&&!o.parent().attr("contenteditable");)o=o.parent(),x=(o[0].tagName||"").toLowerCase();if(x===s){q=o.children();var C=!1;for(n=0;n<q.length;n++)C=C||q[n].tagName.match(e);C?(o.after(q),r=o.next(),o.remove(),o=r):(u.append(o[0].childNodes),o.after(u),o.remove(),o=u)}else if(o.parent()[0].tagName.toLowerCase()!==s||o.parent().hasClass("ta-bind"))if(x.match(f))o.wrap(m);else{for(q=a.getOnlySelectedElements(),0===q.length&&(q=[o[0]]),n=0;n<q.length;n++)if(3===q[n].nodeType||!q[n].tagName.match(e))for(;3===q[n].nodeType||!q[n].tagName||!q[n].tagName.match(e);)q[n]=q[n].parentNode;if(angular.element(q[0]).hasClass("ta-bind"))o=angular.element(m),o[0].innerHTML=q[0].innerHTML,q[0].innerHTML=o[0].outerHTML;else if("blockquote"===s){for(p="",n=0;n<q.length;n++)p+=q[n].outerHTML;for(o=angular.element(m),o[0].innerHTML=p,q[0].parentNode.insertBefore(o[0],q[0]),n=q.length-1;n>=0;n--)q[n].parentNode&&q[n].parentNode.removeChild(q[n])}else for(n=0;n<q.length;n++)o=angular.element(m),o[0].innerHTML=q[n].innerHTML,q[n].parentNode.insertBefore(o[0],q[n]),q[n].parentNode.removeChild(q[n])}else{var D=o.parent(),E=D.contents();for(n=0;n<E.length;n++)D.parent().hasClass("ta-bind")&&3===E[n].nodeType&&(u=angular.element("<"+g+">"),u[0].innerHTML=E[n].outerHTML,E[n]=u[0]),D.parent()[0].insertBefore(E[n],D[0]);D.remove()}return void a.setSelectionToElementEnd(o[0])}if("createlink"===k.toLowerCase()){var F=a.getSelection();if(F.collapsed)return void a.insertHtml('<a href="'+m+'">'+m+"</a>",j)}else if("inserthtml"===k.toLowerCase())return void a.insertHtml(m,j)}}try{c[0].execCommand(k,l,m)}catch(v){}}}}]).service("taSelection",["$window","$document","taDOM",function(a,b,c){var d=b[0],f=a.rangy,h=function(a,b){return a.tagName&&a.tagName.match(/^br$/i)&&0===b&&!a.previousSibling?{element:a.parentNode,offset:0}:{element:a,offset:b}},i={getSelection:function(){var a=f.getSelection().getRangeAt(0),b=a.commonAncestorContainer,c={start:h(a.startContainer,a.startOffset),end:h(a.endContainer,a.endOffset),collapsed:a.collapsed};return b=3===b.nodeType?b.parentNode:b,c.container=b.parentNode===c.start.element||b.parentNode===c.end.element?b.parentNode:b,c},getOnlySelectedElements:function(){var a=f.getSelection().getRangeAt(0),b=a.commonAncestorContainer;return b=3===b.nodeType?b.parentNode:b,a.getNodes([1],function(a){return a.parentNode===b})},getSelectionElement:function(){return i.getSelection().container},setSelection:function(a,b,c){var d=f.createRange();d.setStart(a,b),d.setEnd(a,c),f.getSelection().setSingleRange(d)},setSelectionBeforeElement:function(a){var b=f.createRange();b.selectNode(a),b.collapse(!0),f.getSelection().setSingleRange(b)},setSelectionAfterElement:function(a){var b=f.createRange();b.selectNode(a),b.collapse(!1),f.getSelection().setSingleRange(b)},setSelectionToElementStart:function(a){var b=f.createRange();b.selectNodeContents(a),b.collapse(!0),f.getSelection().setSingleRange(b)},setSelectionToElementEnd:function(a){var b=f.createRange();b.selectNodeContents(a),b.collapse(!1),a.childNodes&&a.childNodes[a.childNodes.length-1]&&"br"===a.childNodes[a.childNodes.length-1].nodeName&&(b.startOffset=b.endOffset=b.startOffset-1),f.getSelection().setSingleRange(b)},insertHtml:function(a,b){var h,j,k,l,m,n,o,p=angular.element("<div>"+a+"</div>"),q=f.getSelection().getRangeAt(0),r=d.createDocumentFragment(),s=p[0].childNodes,t=!0;if(s.length>0){for(l=[],k=0;k<s.length;k++)"p"===s[k].nodeName.toLowerCase()&&""===s[k].innerHTML.trim()||3===s[k].nodeType&&""===s[k].nodeValue.trim()||(t=t&&!e.test(s[k].nodeName),l.push(s[k]));for(var u=0;u<l.length;u++)n=r.appendChild(l[u]);!t&&q.collapsed&&/^(|<br(|\/)>)$/i.test(q.startContainer.innerHTML)&&q.selectNode(q.startContainer)}else t=!0,n=r=d.createTextNode(a);if(t)q.deleteContents();else if(q.collapsed&&q.startContainer!==b)if(q.startContainer.innerHTML&&q.startContainer.innerHTML.match(/^<[^>]*>$/i))h=q.startContainer,1===q.startOffset?(q.setStartAfter(h),q.setEndAfter(h)):(q.setStartBefore(h),q.setEndBefore(h));else{if(3===q.startContainer.nodeType&&q.startContainer.parentNode!==b)for(h=q.startContainer.parentNode,j=h.cloneNode(),c.splitNodes(h.childNodes,h,j,q.startContainer,q.startOffset);!g.test(h.nodeName);){angular.element(h).after(j),h=h.parentNode;var v=j;j=h.cloneNode(),c.splitNodes(h.childNodes,h,j,v)}else h=q.startContainer,j=h.cloneNode(),c.splitNodes(h.childNodes,h,j,void 0,void 0,q.startOffset);if(angular.element(h).after(j),q.setStartAfter(h),q.setEndAfter(h),/^(|<br(|\/)>)$/i.test(h.innerHTML.trim())&&(q.setStartBefore(h),q.setEndBefore(h),angular.element(h).remove()),/^(|<br(|\/)>)$/i.test(j.innerHTML.trim())&&angular.element(j).remove(),"li"===h.nodeName.toLowerCase()){for(o=d.createDocumentFragment(),m=0;m<r.childNodes.length;m++)p=angular.element("<li>"),c.transferChildNodes(r.childNodes[m],p[0]),c.transferNodeAttributes(r.childNodes[m],p[0]),o.appendChild(p[0]);r=o,n&&(n=r.childNodes[r.childNodes.length-1],n=n.childNodes[n.childNodes.length-1])}}else q.deleteContents();q.insertNode(r),n&&i.setSelectionToElementEnd(n)}};return i}]).service("taDOM",function(){var a={getByAttribute:function(b,c){var d=[],e=b.children();return e.length&&angular.forEach(e,function(b){d=d.concat(a.getByAttribute(angular.element(b),c))}),void 0!==b.attr(c)&&d.push(b),d},transferChildNodes:function(a,b){for(b.innerHTML="";a.childNodes.length>0;)b.appendChild(a.childNodes[0]);return b},splitNodes:function(b,c,d,e,f,g){if(!e&&isNaN(g))throw new Error("taDOM.splitNodes requires a splitNode or splitIndex");for(var h=document.createDocumentFragment(),i=document.createDocumentFragment(),j=0;b.length>0&&(isNaN(g)||g!==j)&&b[0]!==e;)h.appendChild(b[0]),j++;for(!isNaN(f)&&f>=0&&b[0]&&(h.appendChild(document.createTextNode(b[0].nodeValue.substring(0,f))),b[0].nodeValue=b[0].nodeValue.substring(f));b.length>0;)i.appendChild(b[0]);a.transferChildNodes(h,c),a.transferChildNodes(i,d)},transferNodeAttributes:function(a,b){for(var c=0;c<a.attributes.length;c++)b.setAttribute(a.attributes[c].name,a.attributes[c].value);return b}};return a}),angular.module("textAngular.validators",[]).directive("taMaxText",function(){return{restrict:"A",require:"ngModel",link:function(a,b,c,d){function e(a){var b=angular.element("<div/>");b.html(a);var c=b.text().length;return f>=c?(d.$setValidity("taMaxText",!0),a):void d.$setValidity("taMaxText",!1)}var f=parseInt(a.$eval(c.taMaxText));if(isNaN(f))throw"Max text must be an integer";c.$observe("taMaxText",function(a){if(f=parseInt(a),isNaN(f))throw"Max text must be an integer";d.$dirty&&d.$setViewValue(d.$viewValue)}),d.$parsers.unshift(e)}}}).directive("taMinText",function(){return{restrict:"A",require:"ngModel",link:function(a,b,c,d){function e(a){var b=angular.element("<div/>");b.html(a);var c=b.text().length;return!c||c>=f?(d.$setValidity("taMinText",!0),a):void d.$setValidity("taMinText",!1)}var f=parseInt(a.$eval(c.taMinText));if(isNaN(f))throw"Min text must be an integer";c.$observe("taMinText",function(a){if(f=parseInt(a),isNaN(f))throw"Min text must be an integer";d.$dirty&&d.$setViewValue(d.$viewValue)}),d.$parsers.unshift(e)}}}),angular.module("textAngular.taBind",["textAngular.factories","textAngular.DOM"]).service("_taBlankTest",[function(){var a=/<(a|abbr|acronym|bdi|bdo|big|cite|code|del|dfn|img|ins|kbd|label|map|mark|q|ruby|rp|rt|s|samp|time|tt|var)[^>]*(>|$)/i;return function(b){return function(c){if(!c)return!0;var d,e=/(^[^<]|>)[^<]/i.exec(c);return e?d=e.index:(c=c.toString().replace(/="[^"]*"/i,"").replace(/="[^"]*"/i,"").replace(/="[^"]*"/i,"").replace(/="[^"]*"/i,""),d=c.indexOf(">")),c=c.trim().substring(d,d+100),/^[^<>]+$/i.test(c)?!1:0===c.length||c===b||/^>(\s|&nbsp;)*<\/[^>]+>$/gi.test(c)?!0:/>\s*[^\s<]/i.test(c)||a.test(c)?!1:!0}}}]).directive("taBind",["taSanitize","$timeout","$window","$document","taFixChrome","taBrowserTag","taSelection","taSelectableElements","taApplyCustomRenderers","taOptions","_taBlankTest","$parse","taDOM",function(a,b,e,f,h,k,l,m,n,o,q,r,s){return{require:"ngModel",link:function(k,t,u,v){var w,x,y,z,A=void 0!==t.attr("contenteditable")&&t.attr("contenteditable"),B=A||"textarea"===t[0].tagName.toLowerCase()||"input"===t[0].tagName.toLowerCase(),C=!1,D=!1,E=!1,F=u.taUnsafeSanitizer||o.disableSanitizer,G=/^(9|19|20|27|33|34|35|36|37|38|39|40|45|112|113|114|115|116|117|118|119|120|121|122|123|144|145)$/i,H=/^(8|13|32|46|59|61|107|109|186|187|188|189|190|191|192|219|220|221|222)$/i;void 0===u.taDefaultWrap&&(u.taDefaultWrap="p"),""===u.taDefaultWrap?(y="",z=void 0===c.ie?"<div><br></div>":c.ie>=11?"<p><br></p>":c.ie<=8?"<P>&nbsp;</P>":"<p>&nbsp;</p>"):(y=void 0===c.ie||c.ie>=11?"<"+u.taDefaultWrap+"><br></"+u.taDefaultWrap+">":c.ie<=8?"<"+u.taDefaultWrap.toUpperCase()+"></"+u.taDefaultWrap.toUpperCase()+">":"<"+u.taDefaultWrap+"></"+u.taDefaultWrap+">",z=void 0===c.ie||c.ie>=11?"<"+u.taDefaultWrap+"><br></"+u.taDefaultWrap+">":c.ie<=8?"<"+u.taDefaultWrap.toUpperCase()+">&nbsp;</"+u.taDefaultWrap.toUpperCase()+">":"<"+u.taDefaultWrap+">&nbsp;</"+u.taDefaultWrap+">");var I=q(z),J=function(a){if(I(a))return a;var b=angular.element("<div>"+a+"</div>");return 0===b.children().length&&(a="<"+u.taDefaultWrap+">"+a+"</"+u.taDefaultWrap+">"),a};u.taPaste&&(x=r(u.taPaste)),t.addClass("ta-bind");var K;k["$undoManager"+(u.id||"")]=v.$undoManager={_stack:[],_index:0,_max:1e3,push:function(a){return"undefined"==typeof a||null===a||"undefined"!=typeof this.current()&&null!==this.current()&&a===this.current()?a:(this._index<this._stack.length-1&&(this._stack=this._stack.slice(0,this._index+1)),this._stack.push(a),K&&b.cancel(K),this._stack.length>this._max&&this._stack.shift(),this._index=this._stack.length-1,a)},undo:function(){return this.setToIndex(this._index-1)},redo:function(){return this.setToIndex(this._index+1)},setToIndex:function(a){return 0>a||a>this._stack.length-1?void 0:(this._index=a,this.current())},current:function(){return this._stack[this._index]}};var L=k["$undoTaBind"+(u.id||"")]=function(){if(!C&&A){var a=v.$undoManager.undo();"undefined"!=typeof a&&null!==a&&(Z(a),O(a,!1),l.setSelectionToElementEnd(t[0].childNodes.length?t[0].childNodes[t[0].childNodes.length-1]:t[0]))}},M=k["$redoTaBind"+(u.id||"")]=function(){if(!C&&A){var a=v.$undoManager.redo();"undefined"!=typeof a&&null!==a&&(Z(a),O(a,!1),l.setSelectionToElementEnd(t[0].childNodes.length?t[0].childNodes[t[0].childNodes.length-1]:t[0]))}},N=function(){if(A)return t[0].innerHTML;if(B)return t.val();throw"textAngular Error: attempting to update non-editable taBind"},O=function(a,b){E=!0,("undefined"==typeof b||null===b)&&(b=!0&&A),("undefined"==typeof a||null===a)&&(a=N()),I(a)?(""!==v.$viewValue&&v.$setViewValue(""),b&&""!==v.$undoManager.current()&&v.$undoManager.push("")):(Y(),v.$viewValue!==a&&(v.$setViewValue(a),b&&v.$undoManager.push(a)))};if(k["updateTaBind"+(u.id||"")]=function(){C||O()},B)if(k.events={},A){var P=!1,Q=function(c){if(c&&c.trim().length){if(c.match(/class=["']*Mso(Normal|List)/i)){var d=c.match(/<!--StartFragment-->([\s\S]*?)<!--EndFragment-->/i);d=d?d[1]:c,d=d.replace(/<o:p>[\s\S]*?<\/o:p>/gi,"").replace(/class=(["']|)MsoNormal(["']|)/gi,"");var e=angular.element("<div>"+d+"</div>"),f=angular.element("<div></div>"),g={element:null,lastIndent:[],lastLi:null,isUl:!1};g.lastIndent.peek=function(){var a=this.length;return a>0?this[a-1]:void 0};for(var h=function(a){g.isUl=a,g.element=angular.element(a?"<ul>":"<ol>"),g.lastIndent=[],g.lastIndent.peek=function(){var a=this.length;return a>0?this[a-1]:void 0},g.lastLevelMatch=null},i=0;i<=e[0].childNodes.length;i++)if(e[0].childNodes[i]&&"#text"!==e[0].childNodes[i].nodeName&&"p"===e[0].childNodes[i].tagName.toLowerCase()){var j=angular.element(e[0].childNodes[i]),m=(j.attr("class")||"").match(/MsoList(Bullet|Number|Paragraph)(CxSp(First|Middle|Last)|)/i);if(m){if(j[0].childNodes.length<2||j[0].childNodes[1].childNodes.length<1)continue;var n="bullet"===m[1].toLowerCase()||"number"!==m[1].toLowerCase()&&!(/^[^0-9a-z<]*[0-9a-z]+[^0-9a-z<>]</i.test(j[0].childNodes[1].innerHTML)||/^[^0-9a-z<]*[0-9a-z]+[^0-9a-z<>]</i.test(j[0].childNodes[1].childNodes[0].innerHTML)),o=(j.attr("style")||"").match(/margin-left:([\-\.0-9]*)/i),p=parseFloat(o?o[1]:0),q=(j.attr("style")||"").match(/mso-list:l([0-9]+) level([0-9]+) lfo[0-9+]($|;)/i);if(q&&q[2]&&(p=parseInt(q[2])),q&&(!g.lastLevelMatch||q[1]!==g.lastLevelMatch[1])||!m[3]||"first"===m[3].toLowerCase()||null===g.lastIndent.peek()||g.isUl!==n&&g.lastIndent.peek()===p)h(n),f.append(g.element);else if(null!=g.lastIndent.peek()&&g.lastIndent.peek()<p)g.element=angular.element(n?"<ul>":"<ol>"),g.lastLi.append(g.element);else if(null!=g.lastIndent.peek()&&g.lastIndent.peek()>p){for(;null!=g.lastIndent.peek()&&g.lastIndent.peek()>p;)if("li"!==g.element.parent()[0].tagName.toLowerCase()){if(!/[uo]l/i.test(g.element.parent()[0].tagName.toLowerCase()))break;g.element=g.element.parent(),g.lastIndent.pop()}else g.element=g.element.parent();g.isUl="ul"===g.element[0].tagName.toLowerCase(),n!==g.isUl&&(h(n),f.append(g.element))}g.lastLevelMatch=q,p!==g.lastIndent.peek()&&g.lastIndent.push(p),g.lastLi=angular.element("<li>"),g.element.append(g.lastLi),g.lastLi.html(j.html().replace(/<!(--|)\[if !supportLists\](--|)>[\s\S]*?<!(--|)\[endif\](--|)>/gi,"")),j.remove()}else h(!1),f.append(j)}var r=function(a){a=angular.element(a);for(var b=a[0].childNodes.length-1;b>=0;b--)a.after(a[0].childNodes[b]);a.remove()};angular.forEach(f.find("span"),function(a){a.removeAttribute("lang"),a.attributes.length<=0&&r(a)}),angular.forEach(f.find("font"),r),c=f.html()}else{if(c=c.replace(/<(|\/)meta[^>]*?>/gi,""),c.match(/<[^>]*?(ta-bind)[^>]*?>/)){if(c.match(/<[^>]*?(text-angular)[^>]*?>/)){var u=angular.element("<div>"+c+"</div>");u.find("textarea").remove();for(var w=s.getByAttribute(u,"ta-bind"),y=0;y<w.length;y++){for(var z=w[y][0].parentNode.parentNode,A=0;A<w[y][0].childNodes.length;A++)z.parentNode.insertBefore(w[y][0].childNodes[A],z);z.parentNode.removeChild(z)}c=u.html().replace('<br class="Apple-interchange-newline">',"")}}else c.match(/^<span/)&&(c=c.replace(/<(|\/)span[^>]*?>/gi,""));c=c.replace(/<br class="Apple-interchange-newline"[^>]*?>/gi,"").replace(/<span class="Apple-converted-space">( |&nbsp;)<\/span>/gi,"&nbsp;")}c=a(c,"",F),x&&(c=x(k,{$html:c})||c),l.insertHtml(c,t[0]),b(function(){v.$setViewValue(N()),P=!1,t.removeClass("processing-paste")},0)}else P=!1,t.removeClass("processing-paste")};if(t.on("paste",k.events.paste=function(a,c){if(c&&angular.extend(a,c),C||P)return a.stopPropagation(),a.preventDefault(),!1;P=!0,t.addClass("processing-paste");var d,g=(a.originalEvent||a).clipboardData;if(g&&g.getData&&g.types.length>0){for(var h="",i=0;i<g.types.length;i++)h+=" "+g.types[i];return/text\/html/i.test(h)?d=g.getData("text/html"):/text\/plain/i.test(h)&&(d=g.getData("text/plain")),Q(d),a.stopPropagation(),a.preventDefault(),!1}var j=e.rangy.saveSelection(),k=angular.element('<div class="ta-hidden-input" contenteditable="true"></div>');f.find("body").append(k),k[0].focus(),b(function(){e.rangy.restoreSelection(j),Q(k[0].innerHTML),t[0].focus(),k.remove()},0)}),t.on("cut",k.events.cut=function(a){C?a.preventDefault():b(function(){v.$setViewValue(N())},0)}),t.on("keydown",k.events.keydown=function(a,b){if(b&&angular.extend(a,b),!C)if(!a.altKey&&a.metaKey||a.ctrlKey)90!==a.keyCode||a.shiftKey?(90===a.keyCode&&a.shiftKey||89===a.keyCode&&!a.shiftKey)&&(M(),a.preventDefault()):(L(),a.preventDefault());else if(13===a.keyCode&&!a.shiftKey){var c,d=l.getSelectionElement();if(!d.tagName.match(g))return;var e=angular.element(y);if(/^<br(|\/)>$/i.test(d.innerHTML.trim())&&"blockquote"===d.parentNode.tagName.toLowerCase()&&!d.nextSibling){c=angular.element(d);var f=c.parent();f.after(e),c.remove(),0===f.children().length&&f.remove(),l.setSelectionToElementStart(e[0]),a.preventDefault()}else/^<[^>]+><br(|\/)><\/[^>]+>$/i.test(d.innerHTML.trim())&&"blockquote"===d.tagName.toLowerCase()&&(c=angular.element(d),c.after(e),c.remove(),l.setSelectionToElementStart(e[0]),a.preventDefault())}}),t.on("keyup",k.events.keyup=function(a,c){if(c&&angular.extend(a,c),9===a.keyCode){var d=l.getSelection();return void(d.start.element===t[0]&&t.children().length&&l.setSelectionToElementStart(t.children()[0]))}if(K&&b.cancel(K),!C&&!G.test(a.keyCode)){if(""!==y&&13===a.keyCode&&!a.shiftKey){for(var f=l.getSelectionElement();!f.tagName.match(g)&&f!==t[0];)f=f.parentNode;if(f.tagName.toLowerCase()!==u.taDefaultWrap&&"li"!==f.tagName.toLowerCase()&&(""===f.innerHTML.trim()||"<br>"===f.innerHTML.trim())){var h=angular.element(y);angular.element(f).replaceWith(h),l.setSelectionToElementStart(h[0])}}var i=N();if(""!==y&&""===i.trim())Z(y),l.setSelectionToElementStart(t.children()[0]);else if("<"!==i.substring(0,1)&&""!==u.taDefaultWrap){var j=e.rangy.saveSelection();i=N(),i="<"+u.taDefaultWrap+">"+i+"</"+u.taDefaultWrap+">",Z(i),e.rangy.restoreSelection(j)}var k=w!==a.keyCode&&H.test(a.keyCode);O(i,k),k||(K=b(function(){v.$undoManager.push(i)},250)),w=a.keyCode}}),t.on("blur",k.events.blur=function(){D=!1,C||O(),E=!0,v.$render()}),u.placeholder&&(c.ie>8||void 0===c.ie)){var R;if(!u.id)throw"textAngular Error: An unique ID is required for placeholders to work";R=i("#"+u.id+".placeholder-text:before",'content: "'+u.placeholder+'"'),k.$on("$destroy",function(){j(R)})}t.on("focus",k.events.focus=function(){D=!0,t.removeClass("placeholder-text")}),t.on("mouseup",k.events.mouseup=function(){var a=l.getSelection();a.start.element===t[0]&&t.children().length&&l.setSelectionToElementStart(t.children()[0])}),t.on("mousedown",k.events.mousedown=function(a,b){b&&angular.extend(a,b),a.stopPropagation()})}else{t.on("change blur",k.events.change=k.events.blur=function(){C||v.$setViewValue(N())}),t.on("keydown",k.events.keydown=function(a,b){if(b&&angular.extend(a,b),9===a.keyCode){var c=this.selectionStart,d=this.selectionEnd,e=t.val();if(a.shiftKey){var f=e.lastIndexOf("\n",c),g=e.lastIndexOf("	",c);-1!==g&&g>=f&&(t.val(e.substring(0,g)+e.substring(g+1)),this.selectionStart=this.selectionEnd=c-1)}else t.val(e.substring(0,c)+"	"+e.substring(d)),this.selectionStart=this.selectionEnd=c+1;a.preventDefault()}});var S=function(a,b){for(var c="",d=0;b>d;d++)c+=a;return c},T=function(a,b){var c="",d=a.childNodes;b++,c+=S("	",b-1)+a.outerHTML.substring(0,a.outerHTML.indexOf("<li"));for(var e=0;e<d.length;e++)d[e].outerHTML&&(c+="ul"===d[e].nodeName.toLowerCase()||"ol"===d[e].nodeName.toLowerCase()?"\n"+T(d[e],b):"\n"+S("	",b)+d[e].outerHTML);return c+="\n"+S("	",b-1)+a.outerHTML.substring(a.outerHTML.lastIndexOf("<"))};v.$formatters.unshift(J),v.$formatters.unshift(function(a){var b=angular.element("<div>"+a+"</div>")[0].childNodes;if(b.length>0){a="";for(var c=0;c<b.length;c++)b[c].outerHTML&&(a.length>0&&(a+="\n"),a+="ul"===b[c].nodeName.toLowerCase()||"ol"===b[c].nodeName.toLowerCase()?""+T(b[c],0):""+b[c].outerHTML)}return a})}var U=function(b){return v.$oldViewValue=a(h(b),v.$oldViewValue,F)},V=function(a){return u.required&&v.$setValidity("required",!I(a)),a};v.$parsers.push(U),v.$parsers.unshift(V),v.$formatters.push(U),v.$formatters.unshift(J),v.$formatters.unshift(V),v.$formatters.unshift(function(a){return v.$undoManager.push(a||"")});var W=function(a){return k.$emit("ta-element-select",this),a.preventDefault(),!1},X=function(a,c){if(c&&angular.extend(a,c),!p&&!C){p=!0;var d;d=a.originalEvent?a.originalEvent.dataTransfer:a.dataTransfer,k.$emit("ta-drop-event",this,a,d),b(function(){p=!1,O()},100)}},Y=k["reApplyOnSelectorHandlers"+(u.id||"")]=function(){C||angular.forEach(m,function(a){t.find(a).off("click",W).on("click",W)})},Z=function(a){t[0].innerHTML=a};v.$render=function(){var a=v.$viewValue||"";E||(A&&D&&(t.removeClass("placeholder-text"),t[0].blur(),b(function(){t[0].focus(),l.setSelectionToElementEnd(t.children()[t.children().length-1])},1)),A?(Z(u.placeholder?""===a?y:a:""===a?y:a),C?t.off("drop",X):(Y(),t.on("drop",X))):"textarea"!==t[0].tagName.toLowerCase()&&"input"!==t[0].tagName.toLowerCase()?Z(n(a)):t.val(a)),A&&u.placeholder&&(""===a?D?t.removeClass("placeholder-text"):t.addClass("placeholder-text"):t.removeClass("placeholder-text")),E=!1},u.taReadonly&&(C=k.$eval(u.taReadonly),C?(t.addClass("ta-readonly"),("textarea"===t[0].tagName.toLowerCase()||"input"===t[0].tagName.toLowerCase())&&t.attr("disabled","disabled"),void 0!==t.attr("contenteditable")&&t.attr("contenteditable")&&t.removeAttr("contenteditable")):(t.removeClass("ta-readonly"),"textarea"===t[0].tagName.toLowerCase()||"input"===t[0].tagName.toLowerCase()?t.removeAttr("disabled"):A&&t.attr("contenteditable","true")),k.$watch(u.taReadonly,function(a,b){b!==a&&(a?(t.addClass("ta-readonly"),("textarea"===t[0].tagName.toLowerCase()||"input"===t[0].tagName.toLowerCase())&&t.attr("disabled","disabled"),void 0!==t.attr("contenteditable")&&t.attr("contenteditable")&&t.removeAttr("contenteditable"),angular.forEach(m,function(a){t.find(a).on("click",W)}),t.off("drop",X)):(t.removeClass("ta-readonly"),"textarea"===t[0].tagName.toLowerCase()||"input"===t[0].tagName.toLowerCase()?t.removeAttr("disabled"):A&&t.attr("contenteditable","true"),angular.forEach(m,function(a){t.find(a).off("click",W)}),t.on("drop",X)),C=a)})),A&&!C&&(angular.forEach(m,function(a){t.find(a).on("click",W)}),t.on("drop",X),t.on("blur",function(){c.webkit&&(d=!0)}))}}}]);var p=!1,q=angular.module("textAngular",["ngSanitize","textAngularSetup","textAngular.factories","textAngular.DOM","textAngular.validators","textAngular.taBind"]),r={};q.constant("taRegisterTool",b),q.value("taTools",r),q.config([function(){angular.forEach(r,function(a,b){delete r[b]})}]),q.run([function(){if(!window.rangy)throw"rangy-core.js and rangy-selectionsaverestore.js are required for textAngular to work correctly, rangy-core is not yet loaded.";if(window.rangy.init(),!window.rangy.saveSelection)throw"rangy-selectionsaverestore.js is required for textAngular to work correctly."}]),q.directive("textAngular",["$compile","$timeout","taOptions","taSelection","taExecCommand","textAngularManager","$window","$document","$animate","$log","$q","$parse",function(a,b,c,d,e,f,g,h,i,j,k,l){return{require:"?ngModel",scope:{},restrict:"EA",link:function(m,n,o,p){var q,r,s,t,u,v,w,x,y,z,A,B=o.serial?o.serial:Math.floor(1e16*Math.random());m._name=o.name?o.name:"textAngularEditor"+B;var C=function(a,c,d){b(function(){var b=function(){a.off(c,b),d.apply(this,arguments)};a.on(c,b)},100)};y=e(o.taDefaultWrap),angular.extend(m,angular.copy(c),{wrapSelection:function(a,b,c){"undo"===a.toLowerCase()?m["$undoTaBindtaTextElement"+B]():"redo"===a.toLowerCase()?m["$redoTaBindtaTextElement"+B]():(y(a,!1,b),c&&m["reApplyOnSelectorHandlerstaTextElement"+B](),m.displayElements.text[0].focus())},showHtml:m.$eval(o.taShowHtml)||!1}),o.taFocussedClass&&(m.classes.focussed=o.taFocussedClass),o.taTextEditorClass&&(m.classes.textEditor=o.taTextEditorClass),o.taHtmlEditorClass&&(m.classes.htmlEditor=o.taHtmlEditorClass),o.taTextEditorSetup&&(m.setup.textEditorSetup=m.$parent.$eval(o.taTextEditorSetup)),o.taHtmlEditorSetup&&(m.setup.htmlEditorSetup=m.$parent.$eval(o.taHtmlEditorSetup)),m.fileDropHandler=o.taFileDrop?m.$parent.$eval(o.taFileDrop):m.defaultFileDropHandler,w=n[0].innerHTML,n[0].innerHTML="",m.displayElements={forminput:angular.element("<input type='hidden' tabindex='-1' style='display: none;'>"),html:angular.element("<textarea></textarea>"),text:angular.element("<div></div>"),scrollWindow:angular.element("<div class='ta-scroll-window'></div>"),popover:angular.element('<div class="popover fade bottom" style="max-width: none; width: 305px;"></div>'),popoverArrow:angular.element('<div class="arrow"></div>'),popoverContainer:angular.element('<div class="popover-content"></div>'),resize:{overlay:angular.element('<div class="ta-resizer-handle-overlay"></div>'),background:angular.element('<div class="ta-resizer-handle-background"></div>'),anchors:[angular.element('<div class="ta-resizer-handle-corner ta-resizer-handle-corner-tl"></div>'),angular.element('<div class="ta-resizer-handle-corner ta-resizer-handle-corner-tr"></div>'),angular.element('<div class="ta-resizer-handle-corner ta-resizer-handle-corner-bl"></div>'),angular.element('<div class="ta-resizer-handle-corner ta-resizer-handle-corner-br"></div>')],info:angular.element('<div class="ta-resizer-handle-info"></div>')}},m.displayElements.popover.append(m.displayElements.popoverArrow),m.displayElements.popover.append(m.displayElements.popoverContainer),m.displayElements.scrollWindow.append(m.displayElements.popover),m.displayElements.popover.on("mousedown",function(a,b){return b&&angular.extend(a,b),a.preventDefault(),!1
 }),m.showPopover=function(a){m.displayElements.popover.css("display","block"),m.reflowPopover(a),i.addClass(m.displayElements.popover,"in"),C(h.find("body"),"click keyup",function(){m.hidePopover()})},m.reflowPopover=function(a){m.displayElements.text[0].offsetHeight-51>a[0].offsetTop?(m.displayElements.popover.css("top",a[0].offsetTop+a[0].offsetHeight+m.displayElements.scrollWindow[0].scrollTop+"px"),m.displayElements.popover.removeClass("top").addClass("bottom")):(m.displayElements.popover.css("top",a[0].offsetTop-54+m.displayElements.scrollWindow[0].scrollTop+"px"),m.displayElements.popover.removeClass("bottom").addClass("top"));var b=m.displayElements.text[0].offsetWidth-m.displayElements.popover[0].offsetWidth,c=a[0].offsetLeft+a[0].offsetWidth/2-m.displayElements.popover[0].offsetWidth/2;m.displayElements.popover.css("left",Math.max(0,Math.min(b,c))+"px"),m.displayElements.popoverArrow.css("margin-left",Math.min(c,Math.max(0,c-b))-11+"px")},m.hidePopover=function(){var a=function(){m.displayElements.popover.css("display",""),m.displayElements.popoverContainer.attr("style",""),m.displayElements.popoverContainer.attr("class","popover-content")};k.when(i.removeClass(m.displayElements.popover,"in",a)).then(a)},m.displayElements.resize.overlay.append(m.displayElements.resize.background),angular.forEach(m.displayElements.resize.anchors,function(a){m.displayElements.resize.overlay.append(a)}),m.displayElements.resize.overlay.append(m.displayElements.resize.info),m.displayElements.scrollWindow.append(m.displayElements.resize.overlay),m.reflowResizeOverlay=function(a){a=angular.element(a)[0],m.displayElements.resize.overlay.css({display:"block",left:a.offsetLeft-5+"px",top:a.offsetTop-5+"px",width:a.offsetWidth+10+"px",height:a.offsetHeight+10+"px"}),m.displayElements.resize.info.text(a.offsetWidth+" x "+a.offsetHeight)},m.showResizeOverlay=function(a){var b=h.find("body");z=function(c){var d={width:parseInt(a.attr("width")),height:parseInt(a.attr("height")),x:c.clientX,y:c.clientY};(void 0===d.width||isNaN(d.width))&&(d.width=a[0].offsetWidth),(void 0===d.height||isNaN(d.height))&&(d.height=a[0].offsetHeight),m.hidePopover();var e=d.height/d.width,f=function(b){var c={x:Math.max(0,d.width+(b.clientX-d.x)),y:Math.max(0,d.height+(b.clientY-d.y))};if(b.shiftKey){var f=c.y/c.x;c.x=e>f?c.x:c.y/e,c.y=e>f?c.x*e:c.y}el=angular.element(a),el.attr("height",Math.max(0,c.y)),el.attr("width",Math.max(0,c.x)),m.reflowResizeOverlay(a)};b.on("mousemove",f),C(b,"mouseup",function(c){c.preventDefault(),c.stopPropagation(),b.off("mousemove",f),m.showPopover(a)}),c.stopPropagation(),c.preventDefault()},m.displayElements.resize.anchors[3].on("mousedown",z),m.reflowResizeOverlay(a),C(b,"click",function(){m.hideResizeOverlay()})},m.hideResizeOverlay=function(){m.displayElements.resize.anchors[3].off("mousedown",z),m.displayElements.resize.overlay.css("display","")},m.setup.htmlEditorSetup(m.displayElements.html),m.setup.textEditorSetup(m.displayElements.text),m.displayElements.html.attr({id:"taHtmlElement"+B,"ng-show":"showHtml","ta-bind":"ta-bind","ng-model":"html"}),m.displayElements.text.attr({id:"taTextElement"+B,contentEditable:"true","ta-bind":"ta-bind","ng-model":"html"}),m.displayElements.scrollWindow.attr({"ng-hide":"showHtml"}),o.taDefaultWrap&&m.displayElements.text.attr("ta-default-wrap",o.taDefaultWrap),o.taUnsafeSanitizer&&(m.displayElements.text.attr("ta-unsafe-sanitizer",o.taUnsafeSanitizer),m.displayElements.html.attr("ta-unsafe-sanitizer",o.taUnsafeSanitizer)),m.displayElements.scrollWindow.append(m.displayElements.text),n.append(m.displayElements.scrollWindow),n.append(m.displayElements.html),m.displayElements.forminput.attr("name",m._name),n.append(m.displayElements.forminput),o.tabindex&&(n.removeAttr("tabindex"),m.displayElements.text.attr("tabindex",o.tabindex),m.displayElements.html.attr("tabindex",o.tabindex)),o.placeholder&&(m.displayElements.text.attr("placeholder",o.placeholder),m.displayElements.html.attr("placeholder",o.placeholder)),o.taDisabled&&(m.displayElements.text.attr("ta-readonly","disabled"),m.displayElements.html.attr("ta-readonly","disabled"),m.disabled=m.$parent.$eval(o.taDisabled),m.$parent.$watch(o.taDisabled,function(a){m.disabled=a,m.disabled?n.addClass(m.classes.disabled):n.removeClass(m.classes.disabled)})),o.taPaste&&(m._pasteHandler=function(a){return l(o.taPaste)(m.$parent,{$html:a})},m.displayElements.text.attr("ta-paste","_pasteHandler($html)")),a(m.displayElements.scrollWindow)(m),a(m.displayElements.html)(m),m.updateTaBindtaTextElement=m["updateTaBindtaTextElement"+B],m.updateTaBindtaHtmlElement=m["updateTaBindtaHtmlElement"+B],n.addClass("ta-root"),m.displayElements.scrollWindow.addClass("ta-text ta-editor "+m.classes.textEditor),m.displayElements.html.addClass("ta-html ta-editor "+m.classes.htmlEditor),m._actionRunning=!1;var D=!1;if(m.startAction=function(){return m._actionRunning=!0,D=g.rangy.saveSelection(),function(){D&&g.rangy.restoreSelection(D)}},m.endAction=function(){m._actionRunning=!1,D&&g.rangy.removeMarkers(D),D=!1,m.updateSelectedStyles(),m.showHtml||m["updateTaBindtaTextElement"+B]()},u=function(){m.focussed=!0,n.addClass(m.classes.focussed),x.focus(),n.triggerHandler("focus")},m.displayElements.html.on("focus",u),m.displayElements.text.on("focus",u),v=function(a){return m._actionRunning||h[0].activeElement===m.displayElements.html[0]||h[0].activeElement===m.displayElements.text[0]||(n.removeClass(m.classes.focussed),x.unfocus(),b(function(){m._bUpdateSelectedStyles=!1,n.triggerHandler("blur"),m.focussed=!1},0)),a.preventDefault(),!1},m.displayElements.html.on("blur",v),m.displayElements.text.on("blur",v),m.displayElements.text.on("paste",function(a){n.triggerHandler("paste",a)}),m.queryFormatBlockState=function(a){return!m.showHtml&&a.toLowerCase()===h[0].queryCommandValue("formatBlock").toLowerCase()},m.queryCommandState=function(a){return m.showHtml?"":h[0].queryCommandState(a)},m.switchView=function(){m.showHtml=!m.showHtml,i.enabled(!1,m.displayElements.html),i.enabled(!1,m.displayElements.text),m.showHtml?b(function(){return i.enabled(!0,m.displayElements.html),i.enabled(!0,m.displayElements.text),m.displayElements.html[0].focus()},100):b(function(){return i.enabled(!0,m.displayElements.html),i.enabled(!0,m.displayElements.text),m.displayElements.text[0].focus()},100)},o.ngModel){var E=!0;p.$render=function(){if(E){E=!1;var a=m.$parent.$eval(o.ngModel);void 0!==a&&null!==a||!w||""===w||p.$setViewValue(w)}m.displayElements.forminput.val(p.$viewValue),m._elementSelectTriggered||(m.html=p.$viewValue||"")};var F=function(a){return o.required&&p.$setValidity("required",!(!a||""===a.trim())),a};p.$parsers.push(F),p.$formatters.push(F)}else m.displayElements.forminput.val(w),m.html=w;if(m.$watch("html",function(a,b){a!==b&&(o.ngModel&&p.$viewValue!==a&&p.$setViewValue(a),m.displayElements.forminput.val(a))}),o.taTargetToolbars)x=f.registerEditor(m._name,m,o.taTargetToolbars.split(","));else{var G=angular.element('<div text-angular-toolbar name="textAngularToolbar'+B+'">');o.taToolbar&&G.attr("ta-toolbar",o.taToolbar),o.taToolbarClass&&G.attr("ta-toolbar-class",o.taToolbarClass),o.taToolbarGroupClass&&G.attr("ta-toolbar-group-class",o.taToolbarGroupClass),o.taToolbarButtonClass&&G.attr("ta-toolbar-button-class",o.taToolbarButtonClass),o.taToolbarActiveButtonClass&&G.attr("ta-toolbar-active-button-class",o.taToolbarActiveButtonClass),o.taFocussedClass&&G.attr("ta-focussed-class",o.taFocussedClass),n.prepend(G),a(G)(m.$parent),x=f.registerEditor(m._name,m,["textAngularToolbar"+B])}m.$on("$destroy",function(){f.unregisterEditor(m._name)}),m.$on("ta-element-select",function(a,b){x.triggerElementSelect(a,b)&&m["reApplyOnSelectorHandlerstaTextElement"+B]()}),m.$on("ta-drop-event",function(a,c,d,e){m.displayElements.text[0].focus(),e&&e.files&&e.files.length>0?(angular.forEach(e.files,function(a){try{k.when(m.fileDropHandler(a,m.wrapSelection)||m.fileDropHandler!==m.defaultFileDropHandler&&k.when(m.defaultFileDropHandler(a,m.wrapSelection))).then(function(){m["updateTaBindtaTextElement"+B]()})}catch(b){j.error(b)}}),d.preventDefault(),d.stopPropagation()):b(function(){m["updateTaBindtaTextElement"+B]()},0)}),m._bUpdateSelectedStyles=!1,angular.element(window).on("blur",function(){m._bUpdateSelectedStyles=!1,m.focussed=!1}),m.updateSelectedStyles=function(){var a;A&&b.cancel(A),void 0!==(a=d.getSelectionElement())&&a.parentNode!==m.displayElements.text[0]?x.updateSelectedStyles(angular.element(a)):x.updateSelectedStyles(),m._bUpdateSelectedStyles&&(A=b(m.updateSelectedStyles,200))},q=function(){return m.focussed?void(m._bUpdateSelectedStyles||(m._bUpdateSelectedStyles=!0,m.$apply(function(){m.updateSelectedStyles()}))):void(m._bUpdateSelectedStyles=!1)},m.displayElements.html.on("keydown",q),m.displayElements.text.on("keydown",q),r=function(){m._bUpdateSelectedStyles=!1},m.displayElements.html.on("keyup",r),m.displayElements.text.on("keyup",r),s=function(a,b){b&&angular.extend(a,b),m.$apply(function(){return x.sendKeyCommand(a)?(m._bUpdateSelectedStyles||m.updateSelectedStyles(),a.preventDefault(),!1):void 0})},m.displayElements.html.on("keypress",s),m.displayElements.text.on("keypress",s),t=function(){m._bUpdateSelectedStyles=!1,m.$apply(function(){m.updateSelectedStyles()})},m.displayElements.html.on("mouseup",t),m.displayElements.text.on("mouseup",t)}}}]),q.service("textAngularManager",["taToolExecuteAction","taTools","taRegisterTool",function(a,b,c){var d={},e={};return{registerEditor:function(c,f,g){if(!c||""===c)throw"textAngular Error: An editor requires a name";if(!f)throw"textAngular Error: An editor requires a scope";if(e[c])throw'textAngular Error: An Editor with name "'+c+'" already exists';var h=[];return angular.forEach(g,function(a){d[a]&&h.push(d[a])}),e[c]={scope:f,toolbars:g,_registerToolbar:function(a){this.toolbars.indexOf(a.name)>=0&&h.push(a)},editorFunctions:{disable:function(){angular.forEach(h,function(a){a.disabled=!0})},enable:function(){angular.forEach(h,function(a){a.disabled=!1})},focus:function(){angular.forEach(h,function(a){a._parent=f,a.disabled=!1,a.focussed=!0,f.focussed=!0})},unfocus:function(){angular.forEach(h,function(a){a.disabled=!0,a.focussed=!1}),f.focussed=!1},updateSelectedStyles:function(a){angular.forEach(h,function(b){angular.forEach(b.tools,function(c){c.activeState&&(b._parent=f,c.active=c.activeState(a))})})},sendKeyCommand:function(c){var d=!1;return(c.ctrlKey||c.metaKey)&&angular.forEach(b,function(b,e){if(b.commandKeyCode&&b.commandKeyCode===c.which)for(var g=0;g<h.length;g++)if(void 0!==h[g].tools[e]){a.call(h[g].tools[e],f),d=!0;break}}),d},triggerElementSelect:function(a,c){var d=function(a,b){for(var c=!0,d=0;d<b.length;d++)c=c&&a.attr(b[d]);return c},e=[],g={},i=!1;c=angular.element(c);var j=!1;if(angular.forEach(b,function(a,b){a.onElementSelect&&a.onElementSelect.element&&a.onElementSelect.element.toLowerCase()===c[0].tagName.toLowerCase()&&(!a.onElementSelect.filter||a.onElementSelect.filter(c))&&(j=j||angular.isArray(a.onElementSelect.onlyWithAttrs)&&d(c,a.onElementSelect.onlyWithAttrs),(!a.onElementSelect.onlyWithAttrs||d(c,a.onElementSelect.onlyWithAttrs))&&(g[b]=a))}),j?(angular.forEach(g,function(a,b){a.onElementSelect.onlyWithAttrs&&d(c,a.onElementSelect.onlyWithAttrs)&&e.push({name:b,tool:a})}),e.sort(function(a,b){return b.tool.onElementSelect.onlyWithAttrs.length-a.tool.onElementSelect.onlyWithAttrs.length})):angular.forEach(g,function(a,b){e.push({name:b,tool:a})}),e.length>0)for(var k=0;k<e.length;k++){for(var l=e[k].tool,m=e[k].name,n=0;n<h.length;n++)if(void 0!==h[n].tools[m]){l.onElementSelect.action.call(h[n].tools[m],a,c,f),i=!0;break}if(i)break}return i}}},e[c].editorFunctions},retrieveEditor:function(a){return e[a]},unregisterEditor:function(a){delete e[a]},registerToolbar:function(a){if(!a)throw"textAngular Error: A toolbar requires a scope";if(!a.name||""===a.name)throw"textAngular Error: A toolbar requires a name";if(d[a.name])throw'textAngular Error: A toolbar with name "'+a.name+'" already exists';d[a.name]=a,angular.forEach(e,function(b){b._registerToolbar(a)})},retrieveToolbar:function(a){return d[a]},retrieveToolbarsViaEditor:function(a){var b=[],c=this;return angular.forEach(this.retrieveEditor(a).toolbars,function(a){b.push(c.retrieveToolbar(a))}),b},unregisterToolbar:function(a){delete d[a]},updateToolsDisplay:function(a){var b=this;angular.forEach(a,function(a,c){b.updateToolDisplay(c,a)})},resetToolsDisplay:function(){var a=this;angular.forEach(b,function(b,c){a.resetToolDisplay(c)})},updateToolDisplay:function(a,b){var c=this;angular.forEach(d,function(d,e){c.updateToolbarToolDisplay(e,a,b)})},resetToolDisplay:function(a){var b=this;angular.forEach(d,function(c,d){b.resetToolbarToolDisplay(d,a)})},updateToolbarToolDisplay:function(a,b,c){if(!d[a])throw'textAngular Error: No Toolbar with name "'+a+'" exists';d[a].updateToolDisplay(b,c)},resetToolbarToolDisplay:function(a,c){if(!d[a])throw'textAngular Error: No Toolbar with name "'+a+'" exists';d[a].updateToolDisplay(c,b[c],!0)},removeTool:function(a){delete b[a],angular.forEach(d,function(b){delete b.tools[a];for(var c=0;c<b.toolbar.length;c++){for(var d,e=0;e<b.toolbar[c].length;e++){if(b.toolbar[c][e]===a){d={group:c,index:e};break}if(void 0!==d)break}void 0!==d&&(b.toolbar[d.group].slice(d.index,1),b._$element.children().eq(d.group).children().eq(d.index).remove())}})},addTool:function(a,b,e,f){c(a,b),angular.forEach(d,function(c){c.addTool(a,b,e,f)})},addToolToToolbar:function(a,b,e,f,g){c(a,b),d[e].addTool(a,b,f,g)},refreshEditor:function(a){if(!e[a])throw'textAngular Error: No Editor with name "'+a+'" exists';e[a].scope.updateTaBindtaTextElement(),e[a].scope.$$phase||e[a].scope.$digest()}}}]),q.directive("textAngularToolbar",["$compile","textAngularManager","taOptions","taTools","taToolExecuteAction","$window",function(a,b,c,d,e,f){return{scope:{name:"@"},restrict:"EA",link:function(g,h,i){if(!g.name||""===g.name)throw"textAngular Error: A toolbar requires a name";angular.extend(g,angular.copy(c)),i.taToolbar&&(g.toolbar=g.$parent.$eval(i.taToolbar)),i.taToolbarClass&&(g.classes.toolbar=i.taToolbarClass),i.taToolbarGroupClass&&(g.classes.toolbarGroup=i.taToolbarGroupClass),i.taToolbarButtonClass&&(g.classes.toolbarButton=i.taToolbarButtonClass),i.taToolbarActiveButtonClass&&(g.classes.toolbarButtonActive=i.taToolbarActiveButtonClass),i.taFocussedClass&&(g.classes.focussed=i.taFocussedClass),g.disabled=!0,g.focussed=!1,g._$element=h,h[0].innerHTML="",h.addClass("ta-toolbar "+g.classes.toolbar),g.$watch("focussed",function(){g.focussed?h.addClass(g.classes.focussed):h.removeClass(g.classes.focussed)});var j=function(b,c){var d;if(d=angular.element(b&&b.display?b.display:"<button type='button'>"),d.addClass(b&&b["class"]?b["class"]:g.classes.toolbarButton),d.attr("name",c.name),d.attr("unselectable","on"),d.attr("ng-disabled","isDisabled()"),d.attr("tabindex","-1"),d.attr("ng-click","executeAction()"),d.attr("ng-class","displayActiveToolClass(active)"),b&&b.tooltiptext&&d.attr("title",b.tooltiptext),d.on("mousedown",function(a,b){return b&&angular.extend(a,b),a.preventDefault(),!1}),b&&!b.display&&!c._display&&(d[0].innerHTML="",b.buttontext&&(d[0].innerHTML=b.buttontext),b.iconclass)){var e=angular.element("<i>"),f=d[0].innerHTML;e.addClass(b.iconclass),d[0].innerHTML="",d.append(e),f&&""!==f&&d.append("&nbsp;"+f)}return c._lastToolDefinition=angular.copy(b),a(d)(c)};g.tools={},g._parent={disabled:!0,showHtml:!1,queryFormatBlockState:function(){return!1},queryCommandState:function(){return!1}};var k={$window:f,$editor:function(){return g._parent},isDisabled:function(){return"function"!=typeof this.$eval("disabled")&&this.$eval("disabled")||this.$eval("disabled()")||"html"!==this.name&&this.$editor().showHtml||this.$parent.disabled||this.$editor().disabled},displayActiveToolClass:function(a){return a?g.classes.toolbarButtonActive:""},executeAction:e};angular.forEach(g.toolbar,function(a){var b=angular.element("<div>");b.addClass(g.classes.toolbarGroup),angular.forEach(a,function(a){g.tools[a]=angular.extend(g.$new(!0),d[a],k,{name:a}),g.tools[a].$element=j(d[a],g.tools[a]),b.append(g.tools[a].$element)}),h.append(b)}),g.updateToolDisplay=function(a,b,c){var d=g.tools[a];if(d){if(d._lastToolDefinition&&!c&&(b=angular.extend({},d._lastToolDefinition,b)),null===b.buttontext&&null===b.iconclass&&null===b.display)throw'textAngular Error: Tool Definition for updating "'+a+'" does not have a valid display/iconclass/buttontext value';null===b.buttontext&&delete b.buttontext,null===b.iconclass&&delete b.iconclass,null===b.display&&delete b.display;var e=j(b,d);d.$element.replaceWith(e),d.$element=e}},g.addTool=function(a,b,c,e){g.tools[a]=angular.extend(g.$new(!0),d[a],k,{name:a}),g.tools[a].$element=j(d[a],g.tools[a]);var f;void 0===c&&(c=g.toolbar.length-1),f=angular.element(h.children()[c]),void 0===e?(f.append(g.tools[a].$element),g.toolbar[c][g.toolbar[c].length-1]=a):(f.children().eq(e).after(g.tools[a].$element),g.toolbar[c][e]=a)},b.registerToolbar(g),g.$on("$destroy",function(){b.unregisterToolbar(g.name)})}}}])}()}({},function(){return this}());
+angular.module('ui-notification',[]);
+
+angular.module('ui-notification').value('uiNotificationTemplates','angular-ui-notification.html');
+
+angular.module('ui-notification').factory('Notification', function(
+	$timeout, uiNotificationTemplates, $http, $compile, $templateCache, $rootScope, $injector, $sce) {
+
+	var startTop = 10;
+	var startRight = 10;
+	var verticalSpacing = 10;
+	var horizontalSpacing = 10;
+	var type = '';
+	var delay = 5000;
+
+	var messageElements = [];
+
+	var notify = function(args, t){
+
+		if (typeof args !== 'object'){
+			args = {message:args};
+		}
+
+		args.template = args.template ? args.template : uiNotificationTemplates;
+		args.delay = !angular.isUndefined(args.delay) ? args.delay : delay;
+		args.type = t ? t : '';
+
+		$http.get(args.template,{cache: $templateCache}).success(function(template) {
+
+			var scope = $rootScope.$new();
+			scope.message = $sce.trustAsHtml(args.message);
+			scope.title = $sce.trustAsHtml(args.title);
+			scope.t = args.type.substr(0,1);
+			scope.delay = args.delay;
+
+			if (typeof args.scope === 'object'){
+				for (var key in args.scope){
+					scope[key] = args.scope[key];
+				}
+			}
+
+			var reposite = function() {
+				var j = 0;
+				var k = 0;
+				var lastTop = startTop;
+				var lastRight = startRight;
+				for(var i = messageElements.length - 1; i >= 0; i --) {
+					var element = messageElements[i];
+					var elHeight = parseInt(element[0].offsetHeight);
+					var elWidth = parseInt(element[0].offsetWidth);
+					if ((top + elHeight) > window.innerHeight) {
+						lastTop = startTop;
+						k ++;
+						j = 0;
+					}
+					var top = lastTop + (j === 0 ? 0 : verticalSpacing);
+					var right = startRight + (k * (horizontalSpacing + elWidth));
+					
+					element.css('top', top + 'px');
+					element.css('right', right + 'px');
+					
+					lastTop = top + elHeight;
+					j ++;
+				}
+			};
+
+			var templateElement = $compile(template)(scope);
+			templateElement.addClass(args.type);
+			templateElement.bind('webkitTransitionEnd oTransitionEnd otransitionend transitionend msTransitionEnd click', function(e){
+				e = e.originalEvent || e;
+				if (e.type === 'click' || (e.propertyName === 'opacity' && e.elapsedTime >= 1)){
+					templateElement.remove();
+					messageElements.splice(messageElements.indexOf(templateElement), 1);
+					reposite();
+				}
+			});
+			$timeout(function() {
+				templateElement.addClass('killed');
+			}, args.delay);
+
+			angular.element(document.getElementsByTagName('body')).append(templateElement);
+			messageElements.push(templateElement);				
+
+			$timeout(reposite);						
+
+		}).error(function(data){
+			throw new Error('Template ('+args.template+') could not be loaded. ' + data);
+		});
+		
+	};
+
+	notify.config = function(args){
+		startTop = args.top ? args.top : startTop;
+		verticalSpacing = args.verticalSpacing ? args.verticalSpacing : verticalSpacing;
+	};
+	notify.primary = function(args) {
+		this(args, 'primary');
+	};
+	notify.error = function(args) {
+		this(args, 'error');
+	};
+	notify.success = function(args) {
+		this(args, 'success');
+	};
+	notify.info = function(args) {
+		this(args, 'info');
+	};
+	notify.warning = function(args) {
+		this(args, 'warning');
+	};
+
+	notify.clearAll = function() {
+		var notifys = angular.element(document.getElementsByClassName('ui-notification'));
+
+		if (notifys) {
+			angular.forEach(notifys, function(notify) {
+				notify.remove();
+			});
+		}
+	};
+
+	return notify;
+});
+
+/*!
+ * ui-select
+ * http://github.com/angular-ui/ui-select
+ * Version: 0.11.2 - 2015-03-17T04:08:46.474Z
+ * License: MIT
+ */
+
+
+(function () { 
+"use strict";
+
+var KEY = {
+    TAB: 9,
+    ENTER: 13,
+    ESC: 27,
+    SPACE: 32,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+    SHIFT: 16,
+    CTRL: 17,
+    ALT: 18,
+    PAGE_UP: 33,
+    PAGE_DOWN: 34,
+    HOME: 36,
+    END: 35,
+    BACKSPACE: 8,
+    DELETE: 46,
+    COMMAND: 91,
+
+    MAP: { 91 : "COMMAND", 8 : "BACKSPACE" , 9 : "TAB" , 13 : "ENTER" , 16 : "SHIFT" , 17 : "CTRL" , 18 : "ALT" , 19 : "PAUSEBREAK" , 20 : "CAPSLOCK" , 27 : "ESC" , 32 : "SPACE" , 33 : "PAGE_UP", 34 : "PAGE_DOWN" , 35 : "END" , 36 : "HOME" , 37 : "LEFT" , 38 : "UP" , 39 : "RIGHT" , 40 : "DOWN" , 43 : "+" , 44 : "PRINTSCREEN" , 45 : "INSERT" , 46 : "DELETE", 48 : "0" , 49 : "1" , 50 : "2" , 51 : "3" , 52 : "4" , 53 : "5" , 54 : "6" , 55 : "7" , 56 : "8" , 57 : "9" , 59 : ";", 61 : "=" , 65 : "A" , 66 : "B" , 67 : "C" , 68 : "D" , 69 : "E" , 70 : "F" , 71 : "G" , 72 : "H" , 73 : "I" , 74 : "J" , 75 : "K" , 76 : "L", 77 : "M" , 78 : "N" , 79 : "O" , 80 : "P" , 81 : "Q" , 82 : "R" , 83 : "S" , 84 : "T" , 85 : "U" , 86 : "V" , 87 : "W" , 88 : "X" , 89 : "Y" , 90 : "Z", 96 : "0" , 97 : "1" , 98 : "2" , 99 : "3" , 100 : "4" , 101 : "5" , 102 : "6" , 103 : "7" , 104 : "8" , 105 : "9", 106 : "*" , 107 : "+" , 109 : "-" , 110 : "." , 111 : "/", 112 : "F1" , 113 : "F2" , 114 : "F3" , 115 : "F4" , 116 : "F5" , 117 : "F6" , 118 : "F7" , 119 : "F8" , 120 : "F9" , 121 : "F10" , 122 : "F11" , 123 : "F12", 144 : "NUMLOCK" , 145 : "SCROLLLOCK" , 186 : ";" , 187 : "=" , 188 : "," , 189 : "-" , 190 : "." , 191 : "/" , 192 : "`" , 219 : "[" , 220 : "\\" , 221 : "]" , 222 : "'"
+    },
+
+    isControl: function (e) {
+        var k = e.which;
+        switch (k) {
+        case KEY.COMMAND:
+        case KEY.SHIFT:
+        case KEY.CTRL:
+        case KEY.ALT:
+            return true;
+        }
+
+        if (e.metaKey) return true;
+
+        return false;
+    },
+    isFunctionKey: function (k) {
+        k = k.which ? k.which : k;
+        return k >= 112 && k <= 123;
+    },
+    isVerticalMovement: function (k){
+      return ~[KEY.UP, KEY.DOWN].indexOf(k);
+    },
+    isHorizontalMovement: function (k){
+      return ~[KEY.LEFT,KEY.RIGHT,KEY.BACKSPACE,KEY.DELETE].indexOf(k);
+    }
+  };
+
+/**
+ * Add querySelectorAll() to jqLite.
+ *
+ * jqLite find() is limited to lookups by tag name.
+ * TODO This will change with future versions of AngularJS, to be removed when this happens
+ *
+ * See jqLite.find - why not use querySelectorAll? https://github.com/angular/angular.js/issues/3586
+ * See feat(jqLite): use querySelectorAll instead of getElementsByTagName in jqLite.find https://github.com/angular/angular.js/pull/3598
+ */
+if (angular.element.prototype.querySelectorAll === undefined) {
+  angular.element.prototype.querySelectorAll = function(selector) {
+    return angular.element(this[0].querySelectorAll(selector));
+  };
+}
+
+/**
+ * Add closest() to jqLite.
+ */
+if (angular.element.prototype.closest === undefined) {
+  angular.element.prototype.closest = function( selector) {
+    var elem = this[0];
+    var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+
+    while (elem) {
+      if (matchesSelector.bind(elem)(selector)) {
+        return elem;
+      } else {
+        elem = elem.parentElement;
+      }
+    }
+    return false;
+  };
+}
+
+var latestId = 0;
+
+var uis = angular.module('ui.select', [])
+
+.constant('uiSelectConfig', {
+  theme: 'bootstrap',
+  searchEnabled: true,
+  sortable: false,
+  placeholder: '', // Empty by default, like HTML tag <select>
+  refreshDelay: 1000, // In milliseconds
+  closeOnSelect: true,
+  generateId: function() {
+    return latestId++;
+  },
+  appendToBody: false
+})
+
+// See Rename minErr and make it accessible from outside https://github.com/angular/angular.js/issues/6913
+.service('uiSelectMinErr', function() {
+  var minErr = angular.$$minErr('ui.select');
+  return function() {
+    var error = minErr.apply(this, arguments);
+    var message = error.message.replace(new RegExp('\nhttp://errors.angularjs.org/.*'), '');
+    return new Error(message);
+  };
+})
+
+// Recreates old behavior of ng-transclude. Used internally.
+.directive('uisTranscludeAppend', function () {
+  return {
+    link: function (scope, element, attrs, ctrl, transclude) {
+        transclude(scope, function (clone) {
+          element.append(clone);
+        });
+      }
+    };
+})
+
+/**
+ * Highlights text that matches $select.search.
+ *
+ * Taken from AngularUI Bootstrap Typeahead
+ * See https://github.com/angular-ui/bootstrap/blob/0.10.0/src/typeahead/typeahead.js#L340
+ */
+.filter('highlight', function() {
+  function escapeRegexp(queryToEscape) {
+    return queryToEscape.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+  }
+
+  return function(matchItem, query) {
+    return query && matchItem ? matchItem.replace(new RegExp(escapeRegexp(query), 'gi'), '<span class="ui-select-highlight">$&</span>') : matchItem;
+  };
+})
+
+/**
+ * A read-only equivalent of jQuery's offset function: http://api.jquery.com/offset/
+ *
+ * Taken from AngularUI Bootstrap Position:
+ * See https://github.com/angular-ui/bootstrap/blob/master/src/position/position.js#L70
+ */
+.factory('uisOffset',
+  ['$document', '$window',
+  function ($document, $window) {
+
+  return function(element) {
+    var boundingClientRect = element[0].getBoundingClientRect();
+    return {
+      width: boundingClientRect.width || element.prop('offsetWidth'),
+      height: boundingClientRect.height || element.prop('offsetHeight'),
+      top: boundingClientRect.top + ($window.pageYOffset || $document[0].documentElement.scrollTop),
+      left: boundingClientRect.left + ($window.pageXOffset || $document[0].documentElement.scrollLeft)
+    };
+  };
+}]);
+
+uis.directive('uiSelectChoices',
+  ['uiSelectConfig', 'uisRepeatParser', 'uiSelectMinErr', '$compile',
+  function(uiSelectConfig, RepeatParser, uiSelectMinErr, $compile) {
+
+  return {
+    restrict: 'EA',
+    require: '^uiSelect',
+    replace: true,
+    transclude: true,
+    templateUrl: function(tElement) {
+      // Gets theme attribute from parent (ui-select)
+      var theme = tElement.parent().attr('theme') || uiSelectConfig.theme;
+      return theme + '/choices.tpl.html';
+    },
+
+    compile: function(tElement, tAttrs) {
+
+      if (!tAttrs.repeat) throw uiSelectMinErr('repeat', "Expected 'repeat' expression.");
+
+      return function link(scope, element, attrs, $select, transcludeFn) {
+
+        // var repeat = RepeatParser.parse(attrs.repeat);
+        var groupByExp = attrs.groupBy;
+
+        $select.parseRepeatAttr(attrs.repeat, groupByExp); //Result ready at $select.parserResult
+
+        $select.disableChoiceExpression = attrs.uiDisableChoice;
+        $select.onHighlightCallback = attrs.onHighlight;
+
+        if(groupByExp) {
+          var groups = element.querySelectorAll('.ui-select-choices-group');
+          if (groups.length !== 1) throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-group but got '{0}'.", groups.length);
+          groups.attr('ng-repeat', RepeatParser.getGroupNgRepeatExpression());
+        }
+
+        var choices = element.querySelectorAll('.ui-select-choices-row');
+        if (choices.length !== 1) {
+          throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-row but got '{0}'.", choices.length);
+        }
+
+        choices.attr('ng-repeat', RepeatParser.getNgRepeatExpression($select.parserResult.itemName, '$select.items', $select.parserResult.trackByExp, groupByExp))
+            .attr('ng-if', '$select.open') //Prevent unnecessary watches when dropdown is closed
+            .attr('ng-mouseenter', '$select.setActiveItem('+$select.parserResult.itemName +')')
+            .attr('ng-click', '$select.select(' + $select.parserResult.itemName + ',false,$event)');
+
+        var rowsInner = element.querySelectorAll('.ui-select-choices-row-inner');
+        if (rowsInner.length !== 1) throw uiSelectMinErr('rows', "Expected 1 .ui-select-choices-row-inner but got '{0}'.", rowsInner.length);
+        rowsInner.attr('uis-transclude-append', ''); //Adding uisTranscludeAppend directive to row element after choices element has ngRepeat
+
+        $compile(element, transcludeFn)(scope); //Passing current transcludeFn to be able to append elements correctly from uisTranscludeAppend
+
+        scope.$watch('$select.search', function(newValue) {
+          if(newValue && !$select.open && $select.multiple) $select.activate(false, true);
+          $select.activeIndex = $select.tagging.isActivated ? -1 : 0;
+          $select.refresh(attrs.refresh);
+        });
+
+        attrs.$observe('refreshDelay', function() {
+          // $eval() is needed otherwise we get a string instead of a number
+          var refreshDelay = scope.$eval(attrs.refreshDelay);
+          $select.refreshDelay = refreshDelay !== undefined ? refreshDelay : uiSelectConfig.refreshDelay;
+        });
+      };
+    }
+  };
+}]);
+
+/**
+ * Contains ui-select "intelligence".
+ *
+ * The goal is to limit dependency on the DOM whenever possible and
+ * put as much logic in the controller (instead of the link functions) as possible so it can be easily tested.
+ */
+uis.controller('uiSelectCtrl',
+  ['$scope', '$element', '$timeout', '$filter', 'uisRepeatParser', 'uiSelectMinErr', 'uiSelectConfig',
+  function($scope, $element, $timeout, $filter, RepeatParser, uiSelectMinErr, uiSelectConfig) {
+
+  var ctrl = this;
+
+  var EMPTY_SEARCH = '';
+
+  ctrl.placeholder = uiSelectConfig.placeholder;
+  ctrl.searchEnabled = uiSelectConfig.searchEnabled;
+  ctrl.sortable = uiSelectConfig.sortable;
+  ctrl.refreshDelay = uiSelectConfig.refreshDelay;
+
+  ctrl.removeSelected = false; //If selected item(s) should be removed from dropdown list
+  ctrl.closeOnSelect = true; //Initialized inside uiSelect directive link function
+  ctrl.search = EMPTY_SEARCH;
+
+  ctrl.activeIndex = 0; //Dropdown of choices
+  ctrl.items = []; //All available choices
+
+  ctrl.open = false;
+  ctrl.focus = false;
+  ctrl.disabled = false;
+  ctrl.selected = undefined;
+
+  ctrl.focusser = undefined; //Reference to input element used to handle focus events
+  ctrl.resetSearchInput = true;
+  ctrl.multiple = undefined; // Initialized inside uiSelect directive link function
+  ctrl.disableChoiceExpression = undefined; // Initialized inside uiSelectChoices directive link function
+  ctrl.tagging = {isActivated: false, fct: undefined};
+  ctrl.taggingTokens = {isActivated: false, tokens: undefined};
+  ctrl.lockChoiceExpression = undefined; // Initialized inside uiSelectMatch directive link function
+  ctrl.clickTriggeredSelect = false;
+  ctrl.$filter = $filter;
+
+  ctrl.searchInput = $element.querySelectorAll('input.ui-select-search');
+  if (ctrl.searchInput.length !== 1) {
+    throw uiSelectMinErr('searchInput', "Expected 1 input.ui-select-search but got '{0}'.", ctrl.searchInput.length);
+  }
+  
+  ctrl.isEmpty = function() {
+    return angular.isUndefined(ctrl.selected) || ctrl.selected === null || ctrl.selected === '';
+  };
+
+  // Most of the time the user does not want to empty the search input when in typeahead mode
+  function _resetSearchInput() {
+    if (ctrl.resetSearchInput || (ctrl.resetSearchInput === undefined && uiSelectConfig.resetSearchInput)) {
+      ctrl.search = EMPTY_SEARCH;
+      //reset activeIndex
+      if (ctrl.selected && ctrl.items.length && !ctrl.multiple) {
+        ctrl.activeIndex = ctrl.items.indexOf(ctrl.selected);
+      }
+    }
+  }
+
+  // When the user clicks on ui-select, displays the dropdown list
+  ctrl.activate = function(initSearchValue, avoidReset) {
+    if (!ctrl.disabled  && !ctrl.open) {
+      if(!avoidReset) _resetSearchInput();
+
+      $scope.$broadcast('uis:activate');
+
+      ctrl.open = true;
+
+      ctrl.activeIndex = ctrl.activeIndex >= ctrl.items.length ? 0 : ctrl.activeIndex;
+
+      // ensure that the index is set to zero for tagging variants
+      // that where first option is auto-selected
+      if ( ctrl.activeIndex === -1 && ctrl.taggingLabel !== false ) {
+        ctrl.activeIndex = 0;
+      }
+
+      // Give it time to appear before focus
+      $timeout(function() {
+        ctrl.search = initSearchValue || ctrl.search;
+        ctrl.searchInput[0].focus();
+      });
+    }
+  };
+
+  ctrl.findGroupByName = function(name) {
+    return ctrl.groups && ctrl.groups.filter(function(group) {
+      return group.name === name;
+    })[0];
+  };
+
+  ctrl.parseRepeatAttr = function(repeatAttr, groupByExp) {
+    function updateGroups(items) {
+      ctrl.groups = [];
+      angular.forEach(items, function(item) {
+        var groupFn = $scope.$eval(groupByExp);
+        var groupName = angular.isFunction(groupFn) ? groupFn(item) : item[groupFn];
+        var group = ctrl.findGroupByName(groupName);
+        if(group) {
+          group.items.push(item);
+        }
+        else {
+          ctrl.groups.push({name: groupName, items: [item]});
+        }
+      });
+      ctrl.items = [];
+      ctrl.groups.forEach(function(group) {
+        ctrl.items = ctrl.items.concat(group.items);
+      });
+    }
+
+    function setPlainItems(items) {
+      ctrl.items = items;
+    }
+
+    ctrl.setItemsFn = groupByExp ? updateGroups : setPlainItems;
+
+    ctrl.parserResult = RepeatParser.parse(repeatAttr);
+
+    ctrl.isGrouped = !!groupByExp;
+    ctrl.itemProperty = ctrl.parserResult.itemName;
+
+    ctrl.refreshItems = function (data){
+      data = data || ctrl.parserResult.source($scope);
+      var selectedItems = ctrl.selected;
+      //TODO should implement for single mode removeSelected
+      if ((angular.isArray(selectedItems) && !selectedItems.length) || !ctrl.removeSelected) {
+        ctrl.setItemsFn(data);
+      }else{
+        if ( data !== undefined ) {
+          var filteredItems = data.filter(function(i) {return selectedItems.indexOf(i) < 0;});
+          ctrl.setItemsFn(filteredItems);
+        }
+      }
+    };
+
+    // See https://github.com/angular/angular.js/blob/v1.2.15/src/ng/directive/ngRepeat.js#L259
+    $scope.$watchCollection(ctrl.parserResult.source, function(items) {
+      if (items === undefined || items === null) {
+        // If the user specifies undefined or null => reset the collection
+        // Special case: items can be undefined if the user did not initialized the collection on the scope
+        // i.e $scope.addresses = [] is missing
+        ctrl.items = [];
+      } else {
+        if (!angular.isArray(items)) {
+          throw uiSelectMinErr('items', "Expected an array but got '{0}'.", items);
+        } else {
+          //Remove already selected items (ex: while searching)
+          //TODO Should add a test
+          ctrl.refreshItems(items);
+          ctrl.ngModel.$modelValue = null; //Force scope model value and ngModel value to be out of sync to re-run formatters
+        }
+      }
+    });
+
+  };
+
+  var _refreshDelayPromise;
+
+  /**
+   * Typeahead mode: lets the user refresh the collection using his own function.
+   *
+   * See Expose $select.search for external / remote filtering https://github.com/angular-ui/ui-select/pull/31
+   */
+  ctrl.refresh = function(refreshAttr) {
+    if (refreshAttr !== undefined) {
+
+      // Debounce
+      // See https://github.com/angular-ui/bootstrap/blob/0.10.0/src/typeahead/typeahead.js#L155
+      // FYI AngularStrap typeahead does not have debouncing: https://github.com/mgcrea/angular-strap/blob/v2.0.0-rc.4/src/typeahead/typeahead.js#L177
+      if (_refreshDelayPromise) {
+        $timeout.cancel(_refreshDelayPromise);
+      }
+      _refreshDelayPromise = $timeout(function() {
+        $scope.$eval(refreshAttr);
+      }, ctrl.refreshDelay);
+    }
+  };
+
+  ctrl.setActiveItem = function(item) {
+    ctrl.activeIndex = ctrl.items.indexOf(item);
+  };
+
+  ctrl.isActive = function(itemScope) {
+    if ( !ctrl.open ) {
+      return false;
+    }
+    var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
+    var isActive =  itemIndex === ctrl.activeIndex;
+
+    if ( !isActive || ( itemIndex < 0 && ctrl.taggingLabel !== false ) ||( itemIndex < 0 && ctrl.taggingLabel === false) ) {
+      return false;
+    }
+
+    if (isActive && !angular.isUndefined(ctrl.onHighlightCallback)) {
+      itemScope.$eval(ctrl.onHighlightCallback);
+    }
+
+    return isActive;
+  };
+
+  ctrl.isDisabled = function(itemScope) {
+
+    if (!ctrl.open) return;
+
+    var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
+    var isDisabled = false;
+    var item;
+
+    if (itemIndex >= 0 && !angular.isUndefined(ctrl.disableChoiceExpression)) {
+      item = ctrl.items[itemIndex];
+      isDisabled = !!(itemScope.$eval(ctrl.disableChoiceExpression)); // force the boolean value
+      item._uiSelectChoiceDisabled = isDisabled; // store this for later reference
+    }
+
+    return isDisabled;
+  };
+
+
+  // When the user selects an item with ENTER or clicks the dropdown
+  ctrl.select = function(item, skipFocusser, $event) {
+    if (item === undefined || !item._uiSelectChoiceDisabled) {
+
+      if ( ! ctrl.items && ! ctrl.search ) return;
+
+      if (!item || !item._uiSelectChoiceDisabled) {
+        if(ctrl.tagging.isActivated) {
+          // if taggingLabel is disabled, we pull from ctrl.search val
+          if ( ctrl.taggingLabel === false ) {
+            if ( ctrl.activeIndex < 0 ) {
+              item = ctrl.tagging.fct !== undefined ? ctrl.tagging.fct(ctrl.search) : ctrl.search;
+              if (!item || angular.equals( ctrl.items[0], item ) ) {
+                return;
+              }
+            } else {
+              // keyboard nav happened first, user selected from dropdown
+              item = ctrl.items[ctrl.activeIndex];
+            }
+          } else {
+            // tagging always operates at index zero, taggingLabel === false pushes
+            // the ctrl.search value without having it injected
+            if ( ctrl.activeIndex === 0 ) {
+              // ctrl.tagging pushes items to ctrl.items, so we only have empty val
+              // for `item` if it is a detected duplicate
+              if ( item === undefined ) return;
+
+              // create new item on the fly if we don't already have one;
+              // use tagging function if we have one
+              if ( ctrl.tagging.fct !== undefined && typeof item === 'string' ) {
+                item = ctrl.tagging.fct(ctrl.search);
+                if (!item) return;
+              // if item type is 'string', apply the tagging label
+              } else if ( typeof item === 'string' ) {
+                // trim the trailing space
+                item = item.replace(ctrl.taggingLabel,'').trim();
+              }
+            }
+          }
+          // search ctrl.selected for dupes potentially caused by tagging and return early if found
+          if ( ctrl.selected && angular.isArray(ctrl.selected) && ctrl.selected.filter( function (selection) { return angular.equals(selection, item); }).length > 0 ) {
+            ctrl.close(skipFocusser);
+            return;
+          }
+        }
+
+        $scope.$broadcast('uis:select', item);
+
+        var locals = {};
+        locals[ctrl.parserResult.itemName] = item;
+
+        $timeout(function(){
+          ctrl.onSelectCallback($scope, {
+            $item: item,
+            $model: ctrl.parserResult.modelMapper($scope, locals)
+          });
+        });
+
+        if (ctrl.closeOnSelect) {
+          ctrl.close(skipFocusser);
+        }
+        if ($event && $event.type === 'click') {
+          ctrl.clickTriggeredSelect = true;
+        }
+      }
+    }
+  };
+
+  // Closes the dropdown
+  ctrl.close = function(skipFocusser) {
+    if (!ctrl.open) return;
+    if (ctrl.ngModel && ctrl.ngModel.$setTouched) ctrl.ngModel.$setTouched();
+    _resetSearchInput();
+    ctrl.open = false;
+
+    $scope.$broadcast('uis:close', skipFocusser);
+
+  };
+
+  ctrl.setFocus = function(){
+    if (!ctrl.focus) ctrl.focusInput[0].focus();
+  };
+
+  ctrl.clear = function($event) {
+    ctrl.select(undefined);
+    $event.stopPropagation();
+    ctrl.focusser[0].focus();
+  };
+
+  // Toggle dropdown
+  ctrl.toggle = function(e) {
+    if (ctrl.open) {
+      ctrl.close();
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      ctrl.activate();
+    }
+  };
+
+  ctrl.isLocked = function(itemScope, itemIndex) {
+      var isLocked, item = ctrl.selected[itemIndex];
+
+      if (item && !angular.isUndefined(ctrl.lockChoiceExpression)) {
+          isLocked = !!(itemScope.$eval(ctrl.lockChoiceExpression)); // force the boolean value
+          item._uiSelectChoiceLocked = isLocked; // store this for later reference
+      }
+
+      return isLocked;
+  };
+
+  var sizeWatch = null;
+  ctrl.sizeSearchInput = function() {
+
+    var input = ctrl.searchInput[0],
+        container = ctrl.searchInput.parent().parent()[0],
+        calculateContainerWidth = function() {
+          // Return the container width only if the search input is visible
+          return container.clientWidth * !!input.offsetParent;
+        },
+        updateIfVisible = function(containerWidth) {
+          if (containerWidth === 0) {
+            return false;
+          }
+          var inputWidth = containerWidth - input.offsetLeft - 10;
+          if (inputWidth < 50) inputWidth = containerWidth;
+          ctrl.searchInput.css('width', inputWidth+'px');
+          return true;
+        };
+
+    ctrl.searchInput.css('width', '10px');
+    $timeout(function() { //Give tags time to render correctly
+      if (sizeWatch === null && !updateIfVisible(calculateContainerWidth())) {
+        sizeWatch = $scope.$watch(calculateContainerWidth, function(containerWidth) {
+          if (updateIfVisible(containerWidth)) {
+            sizeWatch();
+            sizeWatch = null;
+          }
+        });
+      }
+    });
+  };
+
+  function _handleDropDownSelection(key) {
+    var processed = true;
+    switch (key) {
+      case KEY.DOWN:
+        if (!ctrl.open && ctrl.multiple) ctrl.activate(false, true); //In case its the search input in 'multiple' mode
+        else if (ctrl.activeIndex < ctrl.items.length - 1) { ctrl.activeIndex++; }
+        break;
+      case KEY.UP:
+        if (!ctrl.open && ctrl.multiple) ctrl.activate(false, true); //In case its the search input in 'multiple' mode
+        else if (ctrl.activeIndex > 0 || (ctrl.search.length === 0 && ctrl.tagging.isActivated && ctrl.activeIndex > -1)) { ctrl.activeIndex--; }
+        break;
+      case KEY.TAB:
+        if (!ctrl.multiple || ctrl.open) ctrl.select(ctrl.items[ctrl.activeIndex], true);
+        break;
+      case KEY.ENTER:
+        if(ctrl.open && ctrl.activeIndex >= 0){
+          ctrl.select(ctrl.items[ctrl.activeIndex]); // Make sure at least one dropdown item is highlighted before adding.
+        } else {
+          ctrl.activate(false, true); //In case its the search input in 'multiple' mode
+        }
+        break;
+      case KEY.ESC:
+        ctrl.close();
+        break;
+      default:
+        processed = false;
+    }
+    return processed;
+  }
+
+  // Bind to keyboard shortcuts
+  ctrl.searchInput.on('keydown', function(e) {
+
+    var key = e.which;
+
+    // if(~[KEY.ESC,KEY.TAB].indexOf(key)){
+    //   //TODO: SEGURO?
+    //   ctrl.close();
+    // }
+
+    $scope.$apply(function() {
+
+      var tagged = false;
+
+      if (ctrl.items.length > 0 || ctrl.tagging.isActivated) {
+        _handleDropDownSelection(key);
+        if ( ctrl.taggingTokens.isActivated ) {
+          for (var i = 0; i < ctrl.taggingTokens.tokens.length; i++) {
+            if ( ctrl.taggingTokens.tokens[i] === KEY.MAP[e.keyCode] ) {
+              // make sure there is a new value to push via tagging
+              if ( ctrl.search.length > 0 ) {
+                tagged = true;
+              }
+            }
+          }
+          if ( tagged ) {
+            $timeout(function() {
+              ctrl.searchInput.triggerHandler('tagged');
+              var newItem = ctrl.search.replace(KEY.MAP[e.keyCode],'').trim();
+              if ( ctrl.tagging.fct ) {
+                newItem = ctrl.tagging.fct( newItem );
+              }
+              if (newItem) ctrl.select(newItem, true);
+            });
+          }
+        }
+      }
+
+    });
+
+    if(KEY.isVerticalMovement(key) && ctrl.items.length > 0){
+      _ensureHighlightVisible();
+    }
+
+  });
+
+  // If tagging try to split by tokens and add items
+  ctrl.searchInput.on('paste', function (e) {
+    var data = e.originalEvent.clipboardData.getData('text/plain');
+    if (data && data.length > 0 && ctrl.taggingTokens.isActivated && ctrl.tagging.fct) {
+      var items = data.split(ctrl.taggingTokens.tokens[0]); // split by first token only
+      if (items && items.length > 0) {
+        angular.forEach(items, function (item) {
+          var newItem = ctrl.tagging.fct(item);
+          if (newItem) {
+            ctrl.select(newItem, true);
+          }
+        });
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  });
+
+  ctrl.searchInput.on('tagged', function() {
+    $timeout(function() {
+      _resetSearchInput();
+    });
+  });
+
+  // See https://github.com/ivaynberg/select2/blob/3.4.6/select2.js#L1431
+  function _ensureHighlightVisible() {
+    var container = $element.querySelectorAll('.ui-select-choices-content');
+    var choices = container.querySelectorAll('.ui-select-choices-row');
+    if (choices.length < 1) {
+      throw uiSelectMinErr('choices', "Expected multiple .ui-select-choices-row but got '{0}'.", choices.length);
+    }
+
+    if (ctrl.activeIndex < 0) {
+      return;
+    }
+
+    var highlighted = choices[ctrl.activeIndex];
+    var posY = highlighted.offsetTop + highlighted.clientHeight - container[0].scrollTop;
+    var height = container[0].offsetHeight;
+
+    if (posY > height) {
+      container[0].scrollTop += posY - height;
+    } else if (posY < highlighted.clientHeight) {
+      if (ctrl.isGrouped && ctrl.activeIndex === 0)
+        container[0].scrollTop = 0; //To make group header visible when going all the way up
+      else
+        container[0].scrollTop -= highlighted.clientHeight - posY;
+    }
+  }
+
+  $scope.$on('$destroy', function() {
+    ctrl.searchInput.off('keyup keydown tagged blur paste');
+  });
+
+}]);
+
+uis.directive('uiSelect',
+  ['$document', 'uiSelectConfig', 'uiSelectMinErr', 'uisOffset', '$compile', '$parse', '$timeout',
+  function($document, uiSelectConfig, uiSelectMinErr, uisOffset, $compile, $parse, $timeout) {
+
+  return {
+    restrict: 'EA',
+    templateUrl: function(tElement, tAttrs) {
+      var theme = tAttrs.theme || uiSelectConfig.theme;
+      return theme + (angular.isDefined(tAttrs.multiple) ? '/select-multiple.tpl.html' : '/select.tpl.html');
+    },
+    replace: true,
+    transclude: true,
+    require: ['uiSelect', '^ngModel'],
+    scope: true,
+
+    controller: 'uiSelectCtrl',
+    controllerAs: '$select',
+    compile: function(tElement, tAttrs) {
+
+      //Multiple or Single depending if multiple attribute presence
+      if (angular.isDefined(tAttrs.multiple))
+        tElement.append("<ui-select-multiple/>").removeAttr('multiple');
+      else
+        tElement.append("<ui-select-single/>");       
+
+      return function(scope, element, attrs, ctrls, transcludeFn) {
+
+        var $select = ctrls[0];
+        var ngModel = ctrls[1];
+
+        $select.generatedId = uiSelectConfig.generateId();
+        $select.baseTitle = attrs.title || 'Select box';
+        $select.focusserTitle = $select.baseTitle + ' focus';
+        $select.focusserId = 'focusser-' + $select.generatedId;
+
+        $select.closeOnSelect = function() {
+          if (angular.isDefined(attrs.closeOnSelect)) {
+            return $parse(attrs.closeOnSelect)();
+          } else {
+            return uiSelectConfig.closeOnSelect;
+          }
+        }();
+
+        $select.onSelectCallback = $parse(attrs.onSelect);
+        $select.onRemoveCallback = $parse(attrs.onRemove);
+        
+        //Set reference to ngModel from uiSelectCtrl
+        $select.ngModel = ngModel;
+
+        $select.choiceGrouped = function(group){
+          return $select.isGrouped && group && group.name;
+        };
+
+        if(attrs.tabindex){
+          attrs.$observe('tabindex', function(value) {
+            $select.focusInput.attr("tabindex", value);
+            element.removeAttr("tabindex");
+          });
+        }
+
+        scope.$watch('searchEnabled', function() {
+            var searchEnabled = scope.$eval(attrs.searchEnabled);
+            $select.searchEnabled = searchEnabled !== undefined ? searchEnabled : uiSelectConfig.searchEnabled;
+        });
+
+        scope.$watch('sortable', function() {
+            var sortable = scope.$eval(attrs.sortable);
+            $select.sortable = sortable !== undefined ? sortable : uiSelectConfig.sortable;
+        });
+
+        attrs.$observe('disabled', function() {
+          // No need to use $eval() (thanks to ng-disabled) since we already get a boolean instead of a string
+          $select.disabled = attrs.disabled !== undefined ? attrs.disabled : false;
+        });
+
+        attrs.$observe('resetSearchInput', function() {
+          // $eval() is needed otherwise we get a string instead of a boolean
+          var resetSearchInput = scope.$eval(attrs.resetSearchInput);
+          $select.resetSearchInput = resetSearchInput !== undefined ? resetSearchInput : true;
+        });
+
+        attrs.$observe('tagging', function() {
+          if(attrs.tagging !== undefined)
+          {
+            // $eval() is needed otherwise we get a string instead of a boolean
+            var taggingEval = scope.$eval(attrs.tagging);
+            $select.tagging = {isActivated: true, fct: taggingEval !== true ? taggingEval : undefined};
+          }
+          else
+          {
+            $select.tagging = {isActivated: false, fct: undefined};
+          }
+        });
+
+        attrs.$observe('taggingLabel', function() {
+          if(attrs.tagging !== undefined )
+          {
+            // check eval for FALSE, in this case, we disable the labels
+            // associated with tagging
+            if ( attrs.taggingLabel === 'false' ) {
+              $select.taggingLabel = false;
+            }
+            else
+            {
+              $select.taggingLabel = attrs.taggingLabel !== undefined ? attrs.taggingLabel : '(new)';
+            }
+          }
+        });
+
+        attrs.$observe('taggingTokens', function() {
+          if (attrs.tagging !== undefined) {
+            var tokens = attrs.taggingTokens !== undefined ? attrs.taggingTokens.split('|') : [',','ENTER'];
+            $select.taggingTokens = {isActivated: true, tokens: tokens };
+          }
+        });
+
+        //Automatically gets focus when loaded
+        if (angular.isDefined(attrs.autofocus)){
+          $timeout(function(){
+            $select.setFocus();
+          });
+        }
+
+        //Gets focus based on scope event name (e.g. focus-on='SomeEventName')
+        if (angular.isDefined(attrs.focusOn)){
+          scope.$on(attrs.focusOn, function() {
+              $timeout(function(){
+                $select.setFocus();
+              });
+          });
+        }
+
+        function onDocumentClick(e) {
+          if (!$select.open) return; //Skip it if dropdown is close
+
+          var contains = false;
+
+          if (window.jQuery) {
+            // Firefox 3.6 does not support element.contains()
+            // See Node.contains https://developer.mozilla.org/en-US/docs/Web/API/Node.contains
+            contains = window.jQuery.contains(element[0], e.target);
+          } else {
+            contains = element[0].contains(e.target);
+          }
+
+          if (!contains && !$select.clickTriggeredSelect) {
+            //Will lose focus only with certain targets
+            var focusableControls = ['input','button','textarea'];
+            var targetScope = angular.element(e.target).scope(); //To check if target is other ui-select
+            var skipFocusser = targetScope && targetScope.$select && targetScope.$select !== $select; //To check if target is other ui-select
+            if (!skipFocusser) skipFocusser =  ~focusableControls.indexOf(e.target.tagName.toLowerCase()); //Check if target is input, button or textarea
+            $select.close(skipFocusser);
+            scope.$digest();
+          }
+          $select.clickTriggeredSelect = false;
+        }
+
+        // See Click everywhere but here event http://stackoverflow.com/questions/12931369
+        $document.on('click', onDocumentClick);
+
+        scope.$on('$destroy', function() {
+          $document.off('click', onDocumentClick);
+        });
+
+        // Move transcluded elements to their correct position in main template
+        transcludeFn(scope, function(clone) {
+          // See Transclude in AngularJS http://blog.omkarpatil.com/2012/11/transclude-in-angularjs.html
+
+          // One day jqLite will be replaced by jQuery and we will be able to write:
+          // var transcludedElement = clone.filter('.my-class')
+          // instead of creating a hackish DOM element:
+          var transcluded = angular.element('<div>').append(clone);
+
+          var transcludedMatch = transcluded.querySelectorAll('.ui-select-match');
+          transcludedMatch.removeAttr('ui-select-match'); //To avoid loop in case directive as attr
+          transcludedMatch.removeAttr('data-ui-select-match'); // Properly handle HTML5 data-attributes
+          if (transcludedMatch.length !== 1) {
+            throw uiSelectMinErr('transcluded', "Expected 1 .ui-select-match but got '{0}'.", transcludedMatch.length);
+          }
+          element.querySelectorAll('.ui-select-match').replaceWith(transcludedMatch);
+
+          var transcludedChoices = transcluded.querySelectorAll('.ui-select-choices');
+          transcludedChoices.removeAttr('ui-select-choices'); //To avoid loop in case directive as attr
+          transcludedChoices.removeAttr('data-ui-select-choices'); // Properly handle HTML5 data-attributes
+          if (transcludedChoices.length !== 1) {
+            throw uiSelectMinErr('transcluded', "Expected 1 .ui-select-choices but got '{0}'.", transcludedChoices.length);
+          }
+          element.querySelectorAll('.ui-select-choices').replaceWith(transcludedChoices);
+        });
+
+        // Support for appending the select field to the body when its open
+        var appendToBody = scope.$eval(attrs.appendToBody);
+        if (appendToBody !== undefined ? appendToBody : uiSelectConfig.appendToBody) {
+          scope.$watch('$select.open', function(isOpen) {
+            if (isOpen) {
+              positionDropdown();
+            } else {
+              resetDropdown();
+            }
+          });
+
+          // Move the dropdown back to its original location when the scope is destroyed. Otherwise
+          // it might stick around when the user routes away or the select field is otherwise removed
+          scope.$on('$destroy', function() {
+            resetDropdown();
+          });
+        }
+
+        // Hold on to a reference to the .ui-select-container element for appendToBody support
+        var placeholder = null,
+            originalWidth = '';
+
+        function positionDropdown() {
+          // Remember the absolute position of the element
+          var offset = uisOffset(element);
+
+          // Clone the element into a placeholder element to take its original place in the DOM
+          placeholder = angular.element('<div class="ui-select-placeholder"></div>');
+          placeholder[0].style.width = offset.width + 'px';
+          placeholder[0].style.height = offset.height + 'px';
+          element.after(placeholder);
+
+          // Remember the original value of the element width inline style, so it can be restored
+          // when the dropdown is closed
+          originalWidth = element[0].style.width;
+
+          // Now move the actual dropdown element to the end of the body
+          $document.find('body').append(element);
+
+          element[0].style.position = 'absolute';
+          element[0].style.left = offset.left + 'px';
+          element[0].style.top = offset.top + 'px';
+          element[0].style.width = offset.width + 'px';
+        }
+
+        function resetDropdown() {
+          if (placeholder === null) {
+            // The dropdown has not actually been display yet, so there's nothing to reset
+            return;
+          }
+
+          // Move the dropdown element back to its original location in the DOM
+          placeholder.replaceWith(element);
+          placeholder = null;
+
+          element[0].style.position = '';
+          element[0].style.left = '';
+          element[0].style.top = '';
+          element[0].style.width = originalWidth;
+        }
+      };
+    }
+  };
+}]);
+
+uis.directive('uiSelectMatch', ['uiSelectConfig', function(uiSelectConfig) {
+  return {
+    restrict: 'EA',
+    require: '^uiSelect',
+    replace: true,
+    transclude: true,
+    templateUrl: function(tElement) {
+      // Gets theme attribute from parent (ui-select)
+      var theme = tElement.parent().attr('theme') || uiSelectConfig.theme;
+      var multi = tElement.parent().attr('multiple');
+      return theme + (multi ? '/match-multiple.tpl.html' : '/match.tpl.html');
+    },
+    link: function(scope, element, attrs, $select) {
+      $select.lockChoiceExpression = attrs.uiLockChoice;
+      attrs.$observe('placeholder', function(placeholder) {
+        $select.placeholder = placeholder !== undefined ? placeholder : uiSelectConfig.placeholder;
+      });
+
+      function setAllowClear(allow) {
+        $select.allowClear = (angular.isDefined(allow)) ? (allow === '') ? true : (allow.toLowerCase() === 'true') : false;
+      }
+
+      attrs.$observe('allowClear', setAllowClear);
+      setAllowClear(attrs.allowClear);
+
+      if($select.multiple){
+        $select.sizeSearchInput();
+      }
+
+    }
+  };
+}]);
+
+uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelectMinErr, $timeout) {
+  return {
+    restrict: 'EA',
+    require: ['^uiSelect', '^ngModel'],
+
+    controller: ['$scope','$timeout', function($scope, $timeout){
+
+      var ctrl = this,
+          $select = $scope.$select,
+          ngModel;
+
+      //Wait for link fn to inject it 
+      $scope.$evalAsync(function(){ ngModel = $scope.ngModel; });
+
+      ctrl.activeMatchIndex = -1;
+
+      ctrl.updateModel = function(){
+        ngModel.$setViewValue(Date.now()); //Set timestamp as a unique string to force changes
+        ctrl.refreshComponent();
+      };
+
+      ctrl.refreshComponent = function(){
+        //Remove already selected items
+        //e.g. When user clicks on a selection, the selected array changes and 
+        //the dropdown should remove that item
+        $select.refreshItems();
+        $select.sizeSearchInput();
+      };
+
+      // Remove item from multiple select
+      ctrl.removeChoice = function(index){
+
+        var removedChoice = $select.selected[index];
+
+        // if the choice is locked, can't remove it
+        if(removedChoice._uiSelectChoiceLocked) return;
+
+        var locals = {};
+        locals[$select.parserResult.itemName] = removedChoice;
+
+        $select.selected.splice(index, 1);
+        ctrl.activeMatchIndex = -1;
+        $select.sizeSearchInput();
+
+        // Give some time for scope propagation.
+        $timeout(function(){
+          $select.onRemoveCallback($scope, {
+            $item: removedChoice,
+            $model: $select.parserResult.modelMapper($scope, locals)
+          });
+        });
+
+        ctrl.updateModel();
+
+      };
+
+      ctrl.getPlaceholder = function(){
+        //Refactor single?
+        if($select.selected.length) return;
+        return $select.placeholder;
+      };
+
+
+    }],
+    controllerAs: '$selectMultiple',
+
+    link: function(scope, element, attrs, ctrls) {
+
+      var $select = ctrls[0];
+      var ngModel = scope.ngModel = ctrls[1];
+      var $selectMultiple = scope.$selectMultiple;
+
+      //$select.selected = raw selected objects (ignoring any property binding)
+
+      $select.multiple = true;
+      $select.removeSelected = true;
+
+      //Input that will handle focus
+      $select.focusInput = $select.searchInput;
+
+      //From view --> model
+      ngModel.$parsers.unshift(function () {
+        var locals = {},
+            result,
+            resultMultiple = [];
+        for (var j = $select.selected.length - 1; j >= 0; j--) {
+          locals = {};
+          locals[$select.parserResult.itemName] = $select.selected[j];
+          result = $select.parserResult.modelMapper(scope, locals);
+          resultMultiple.unshift(result);
+        }
+        return resultMultiple;
+      });
+
+      // From model --> view
+      ngModel.$formatters.unshift(function (inputValue) {
+        var data = $select.parserResult.source (scope, { $select : {search:''}}), //Overwrite $search
+            locals = {},
+            result;
+        if (!data) return inputValue;
+        var resultMultiple = [];
+        var checkFnMultiple = function(list, value){
+          if (!list || !list.length) return;
+          for (var p = list.length - 1; p >= 0; p--) {
+            locals[$select.parserResult.itemName] = list[p];
+            result = $select.parserResult.modelMapper(scope, locals);
+            if($select.parserResult.trackByExp){
+                var matches = /\.(.+)/.exec($select.parserResult.trackByExp);
+                if(matches.length>0 && result[matches[1]] == value[matches[1]]){
+                    resultMultiple.unshift(list[p]);
+                    return true;
+                }
+            }
+            if (angular.equals(result,value)){
+              resultMultiple.unshift(list[p]);
+              return true;
+            }
+          }
+          return false;
+        };
+        if (!inputValue) return resultMultiple; //If ngModel was undefined
+        for (var k = inputValue.length - 1; k >= 0; k--) {
+          //Check model array of currently selected items 
+          if (!checkFnMultiple($select.selected, inputValue[k])){
+            //Check model array of all items available
+            if (!checkFnMultiple(data, inputValue[k])){
+              //If not found on previous lists, just add it directly to resultMultiple
+              resultMultiple.unshift(inputValue[k]);
+            }
+          }
+        }
+        return resultMultiple;
+      });
+      
+      //Watch for external model changes 
+      scope.$watchCollection(function(){ return ngModel.$modelValue; }, function(newValue, oldValue) {
+        if (oldValue != newValue){
+          ngModel.$modelValue = null; //Force scope model value and ngModel value to be out of sync to re-run formatters
+          $selectMultiple.refreshComponent();
+        }
+      });
+
+      ngModel.$render = function() {
+        // Make sure that model value is array
+        if(!angular.isArray(ngModel.$viewValue)){
+          // Have tolerance for null or undefined values
+          if(angular.isUndefined(ngModel.$viewValue) || ngModel.$viewValue === null){
+            $select.selected = [];
+          } else {
+            throw uiSelectMinErr('multiarr', "Expected model value to be array but got '{0}'", ngModel.$viewValue);
+          }
+        }
+        $select.selected = ngModel.$viewValue;
+        scope.$evalAsync(); //To force $digest
+      };
+
+      scope.$on('uis:select', function (event, item) {
+        $select.selected.push(item);
+        $selectMultiple.updateModel();
+      });
+
+      scope.$on('uis:activate', function () {
+        $selectMultiple.activeMatchIndex = -1;
+      });
+
+      scope.$watch('$select.disabled', function(newValue, oldValue) {
+        // As the search input field may now become visible, it may be necessary to recompute its size
+        if (oldValue && !newValue) $select.sizeSearchInput();
+      });
+
+      $select.searchInput.on('keydown', function(e) {
+        var key = e.which;
+        scope.$apply(function() {
+          var processed = false;
+          // var tagged = false; //Checkme
+          if(KEY.isHorizontalMovement(key)){
+            processed = _handleMatchSelection(key);
+          }
+          if (processed  && key != KEY.TAB) {
+            //TODO Check si el tab selecciona aun correctamente
+            //Crear test
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+      });
+      function _getCaretPosition(el) {
+        if(angular.isNumber(el.selectionStart)) return el.selectionStart;
+        // selectionStart is not supported in IE8 and we don't want hacky workarounds so we compromise
+        else return el.value.length;
+      }
+      // Handles selected options in "multiple" mode
+      function _handleMatchSelection(key){
+        var caretPosition = _getCaretPosition($select.searchInput[0]),
+            length = $select.selected.length,
+            // none  = -1,
+            first = 0,
+            last  = length-1,
+            curr  = $selectMultiple.activeMatchIndex,
+            next  = $selectMultiple.activeMatchIndex+1,
+            prev  = $selectMultiple.activeMatchIndex-1,
+            newIndex = curr;
+
+        if(caretPosition > 0 || ($select.search.length && key == KEY.RIGHT)) return false;
+
+        $select.close();
+
+        function getNewActiveMatchIndex(){
+          switch(key){
+            case KEY.LEFT:
+              // Select previous/first item
+              if(~$selectMultiple.activeMatchIndex) return prev;
+              // Select last item
+              else return last;
+              break;
+            case KEY.RIGHT:
+              // Open drop-down
+              if(!~$selectMultiple.activeMatchIndex || curr === last){
+                $select.activate();
+                return false;
+              }
+              // Select next/last item
+              else return next;
+              break;
+            case KEY.BACKSPACE:
+              // Remove selected item and select previous/first
+              if(~$selectMultiple.activeMatchIndex){
+                $selectMultiple.removeChoice(curr);
+                return prev;
+              }
+              // Select last item
+              else return last;
+              break;
+            case KEY.DELETE:
+              // Remove selected item and select next item
+              if(~$selectMultiple.activeMatchIndex){
+                $selectMultiple.removeChoice($selectMultiple.activeMatchIndex);
+                return curr;
+              }
+              else return false;
+          }
+        }
+
+        newIndex = getNewActiveMatchIndex();
+
+        if(!$select.selected.length || newIndex === false) $selectMultiple.activeMatchIndex = -1;
+        else $selectMultiple.activeMatchIndex = Math.min(last,Math.max(first,newIndex));
+
+        return true;
+      }
+
+      $select.searchInput.on('keyup', function(e) {
+
+        if ( ! KEY.isVerticalMovement(e.which) ) {
+          scope.$evalAsync( function () {
+            $select.activeIndex = $select.taggingLabel === false ? -1 : 0;
+          });
+        }
+        // Push a "create new" item into array if there is a search string
+        if ( $select.tagging.isActivated && $select.search.length > 0 ) {
+
+          // return early with these keys
+          if (e.which === KEY.TAB || KEY.isControl(e) || KEY.isFunctionKey(e) || e.which === KEY.ESC || KEY.isVerticalMovement(e.which) ) {
+            return;
+          }
+          // always reset the activeIndex to the first item when tagging
+          $select.activeIndex = $select.taggingLabel === false ? -1 : 0;
+          // taggingLabel === false bypasses all of this
+          if ($select.taggingLabel === false) return;
+
+          var items = angular.copy( $select.items );
+          var stashArr = angular.copy( $select.items );
+          var newItem;
+          var item;
+          var hasTag = false;
+          var dupeIndex = -1;
+          var tagItems;
+          var tagItem;
+
+          // case for object tagging via transform `$select.tagging.fct` function
+          if ( $select.tagging.fct !== undefined) {
+            tagItems = $select.$filter('filter')(items,{'isTag': true});
+            if ( tagItems.length > 0 ) {
+              tagItem = tagItems[0];
+            }
+            // remove the first element, if it has the `isTag` prop we generate a new one with each keyup, shaving the previous
+            if ( items.length > 0 && tagItem ) {
+              hasTag = true;
+              items = items.slice(1,items.length);
+              stashArr = stashArr.slice(1,stashArr.length);
+            }
+            newItem = $select.tagging.fct($select.search);
+            newItem.isTag = true;
+            // verify the the tag doesn't match the value of an existing item
+            if ( stashArr.filter( function (origItem) { return angular.equals( origItem, $select.tagging.fct($select.search) ); } ).length > 0 ) {
+              return;
+            }
+            newItem.isTag = true;
+          // handle newItem string and stripping dupes in tagging string context
+          } else {
+            // find any tagging items already in the $select.items array and store them
+            tagItems = $select.$filter('filter')(items,function (item) {
+              return item.match($select.taggingLabel);
+            });
+            if ( tagItems.length > 0 ) {
+              tagItem = tagItems[0];
+            }
+            item = items[0];
+            // remove existing tag item if found (should only ever be one tag item)
+            if ( item !== undefined && items.length > 0 && tagItem ) {
+              hasTag = true;
+              items = items.slice(1,items.length);
+              stashArr = stashArr.slice(1,stashArr.length);
+            }
+            newItem = $select.search+' '+$select.taggingLabel;
+            if ( _findApproxDupe($select.selected, $select.search) > -1 ) {
+              return;
+            }
+            // verify the the tag doesn't match the value of an existing item from
+            // the searched data set or the items already selected
+            if ( _findCaseInsensitiveDupe(stashArr.concat($select.selected)) ) {
+              // if there is a tag from prev iteration, strip it / queue the change
+              // and return early
+              if ( hasTag ) {
+                items = stashArr;
+                scope.$evalAsync( function () {
+                  $select.activeIndex = 0;
+                  $select.items = items;
+                });
+              }
+              return;
+            }
+            if ( _findCaseInsensitiveDupe(stashArr) ) {
+              // if there is a tag from prev iteration, strip it
+              if ( hasTag ) {
+                $select.items = stashArr.slice(1,stashArr.length);
+              }
+              return;
+            }
+          }
+          if ( hasTag ) dupeIndex = _findApproxDupe($select.selected, newItem);
+          // dupe found, shave the first item
+          if ( dupeIndex > -1 ) {
+            items = items.slice(dupeIndex+1,items.length-1);
+          } else {
+            items = [];
+            items.push(newItem);
+            items = items.concat(stashArr);
+          }
+          scope.$evalAsync( function () {
+            $select.activeIndex = 0;
+            $select.items = items;
+          });
+        }
+      });
+      function _findCaseInsensitiveDupe(arr) {
+        if ( arr === undefined || $select.search === undefined ) {
+          return false;
+        }
+        var hasDupe = arr.filter( function (origItem) {
+          if ( $select.search.toUpperCase() === undefined || origItem === undefined ) {
+            return false;
+          }
+          return origItem.toUpperCase() === $select.search.toUpperCase();
+        }).length > 0;
+
+        return hasDupe;
+      }
+      function _findApproxDupe(haystack, needle) {
+        var dupeIndex = -1;
+        if(angular.isArray(haystack)) {
+          var tempArr = angular.copy(haystack);
+          for (var i = 0; i <tempArr.length; i++) {
+            // handle the simple string version of tagging
+            if ( $select.tagging.fct === undefined ) {
+              // search the array for the match
+              if ( tempArr[i]+' '+$select.taggingLabel === needle ) {
+              dupeIndex = i;
+              }
+            // handle the object tagging implementation
+            } else {
+              var mockObj = tempArr[i];
+              mockObj.isTag = true;
+              if ( angular.equals(mockObj, needle) ) {
+              dupeIndex = i;
+              }
+            }
+          }
+        }
+        return dupeIndex;
+      }
+
+      $select.searchInput.on('blur', function() {
+        $timeout(function() {
+          $selectMultiple.activeMatchIndex = -1;
+        });
+      });
+
+    }
+  };
+}]);
+uis.directive('uiSelectSingle', ['$timeout','$compile', function($timeout, $compile) {
+  return {
+    restrict: 'EA',
+    require: ['^uiSelect', '^ngModel'],
+    link: function(scope, element, attrs, ctrls) {
+
+      var $select = ctrls[0];
+      var ngModel = ctrls[1];
+
+      //From view --> model
+      ngModel.$parsers.unshift(function (inputValue) {
+        var locals = {},
+            result;
+        locals[$select.parserResult.itemName] = inputValue;
+        result = $select.parserResult.modelMapper(scope, locals);
+        return result;
+      });
+
+      //From model --> view
+      ngModel.$formatters.unshift(function (inputValue) {
+        var data = $select.parserResult.source (scope, { $select : {search:''}}), //Overwrite $search
+            locals = {},
+            result;
+        if (data){
+          var checkFnSingle = function(d){
+            locals[$select.parserResult.itemName] = d;
+            result = $select.parserResult.modelMapper(scope, locals);
+            return result == inputValue;
+          };
+          //If possible pass same object stored in $select.selected
+          if ($select.selected && checkFnSingle($select.selected)) {
+            return $select.selected;
+          }
+          for (var i = data.length - 1; i >= 0; i--) {
+            if (checkFnSingle(data[i])) return data[i];
+          }
+        }
+        return inputValue;
+      });
+
+      //Update viewValue if model change
+      scope.$watch('$select.selected', function(newValue) {
+        if (ngModel.$viewValue !== newValue) {
+          ngModel.$setViewValue(newValue);
+        }
+      });
+
+      ngModel.$render = function() {
+        $select.selected = ngModel.$viewValue;
+      };
+
+      scope.$on('uis:select', function (event, item) {
+        $select.selected = item;
+      });
+
+      scope.$on('uis:close', function (event, skipFocusser) {
+        $timeout(function(){
+          $select.focusser.prop('disabled', false);
+          if (!skipFocusser) $select.focusser[0].focus();
+        },0,false);
+      });
+
+      scope.$on('uis:activate', function () {
+        focusser.prop('disabled', true); //Will reactivate it on .close()
+      });
+
+      //Idea from: https://github.com/ivaynberg/select2/blob/79b5bf6db918d7560bdd959109b7bcfb47edaf43/select2.js#L1954
+      var focusser = angular.element("<input ng-disabled='$select.disabled' class='ui-select-focusser ui-select-offscreen' type='text' id='{{ $select.focusserId }}' aria-label='{{ $select.focusserTitle }}' aria-haspopup='true' role='button' />");
+      $compile(focusser)(scope);
+      $select.focusser = focusser;
+
+      //Input that will handle focus
+      $select.focusInput = focusser;
+
+      element.parent().append(focusser);
+      focusser.bind("focus", function(){
+        scope.$evalAsync(function(){
+          $select.focus = true;
+        });
+      });
+      focusser.bind("blur", function(){
+        scope.$evalAsync(function(){
+          $select.focus = false;
+        });
+      });
+      focusser.bind("keydown", function(e){
+
+        if (e.which === KEY.BACKSPACE) {
+          e.preventDefault();
+          e.stopPropagation();
+          $select.select(undefined);
+          scope.$apply();
+          return;
+        }
+
+        if (e.which === KEY.TAB || KEY.isControl(e) || KEY.isFunctionKey(e) || e.which === KEY.ESC) {
+          return;
+        }
+
+        if (e.which == KEY.DOWN  || e.which == KEY.UP || e.which == KEY.ENTER || e.which == KEY.SPACE){
+          e.preventDefault();
+          e.stopPropagation();
+          $select.activate();
+        }
+
+        scope.$digest();
+      });
+
+      focusser.bind("keyup input", function(e){
+
+        if (e.which === KEY.TAB || KEY.isControl(e) || KEY.isFunctionKey(e) || e.which === KEY.ESC || e.which == KEY.ENTER || e.which === KEY.BACKSPACE) {
+          return;
+        }
+
+        $select.activate(focusser.val()); //User pressed some regular key, so we pass it to the search input
+        focusser.val('');
+        scope.$digest();
+
+      });
+
+
+    }
+  };
+}]);
+// Make multiple matches sortable
+uis.directive('uiSelectSort', ['$timeout', 'uiSelectConfig', 'uiSelectMinErr', function($timeout, uiSelectConfig, uiSelectMinErr) {
+  return {
+    require: '^uiSelect',
+    link: function(scope, element, attrs, $select) {
+      if (scope[attrs.uiSelectSort] === null) {
+        throw uiSelectMinErr('sort', "Expected a list to sort");
+      }
+
+      var options = angular.extend({
+          axis: 'horizontal'
+        },
+        scope.$eval(attrs.uiSelectSortOptions));
+
+      var axis = options.axis,
+        draggingClassName = 'dragging',
+        droppingClassName = 'dropping',
+        droppingBeforeClassName = 'dropping-before',
+        droppingAfterClassName = 'dropping-after';
+
+      scope.$watch(function(){
+        return $select.sortable;
+      }, function(n){
+        if (n) {
+          element.attr('draggable', true);
+        } else {
+          element.removeAttr('draggable');
+        }
+      });
+
+      element.on('dragstart', function(e) {
+        element.addClass(draggingClassName);
+
+        (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', scope.$index);
+      });
+
+      element.on('dragend', function() {
+        element.removeClass(draggingClassName);
+      });
+
+      var move = function(from, to) {
+        /*jshint validthis: true */
+        this.splice(to, 0, this.splice(from, 1)[0]);
+      };
+
+      var dragOverHandler = function(e) {
+        e.preventDefault();
+
+        var offset = axis === 'vertical' ? e.offsetY || e.layerY || (e.originalEvent ? e.originalEvent.offsetY : 0) : e.offsetX || e.layerX || (e.originalEvent ? e.originalEvent.offsetX : 0);
+
+        if (offset < (this[axis === 'vertical' ? 'offsetHeight' : 'offsetWidth'] / 2)) {
+          element.removeClass(droppingAfterClassName);
+          element.addClass(droppingBeforeClassName);
+
+        } else {
+          element.removeClass(droppingBeforeClassName);
+          element.addClass(droppingAfterClassName);
+        }
+      };
+
+      var dropTimeout;
+
+      var dropHandler = function(e) {
+        e.preventDefault();
+
+        var droppedItemIndex = parseInt((e.dataTransfer || e.originalEvent.dataTransfer).getData('text/plain'), 10);
+
+        // prevent event firing multiple times in firefox
+        $timeout.cancel(dropTimeout);
+        dropTimeout = $timeout(function() {
+          _dropHandler(droppedItemIndex);
+        }, 20);
+      };
+
+      var _dropHandler = function(droppedItemIndex) {
+        var theList = scope.$eval(attrs.uiSelectSort),
+          itemToMove = theList[droppedItemIndex],
+          newIndex = null;
+
+        if (element.hasClass(droppingBeforeClassName)) {
+          if (droppedItemIndex < scope.$index) {
+            newIndex = scope.$index - 1;
+          } else {
+            newIndex = scope.$index;
+          }
+        } else {
+          if (droppedItemIndex < scope.$index) {
+            newIndex = scope.$index;
+          } else {
+            newIndex = scope.$index + 1;
+          }
+        }
+
+        move.apply(theList, [droppedItemIndex, newIndex]);
+
+        scope.$apply(function() {
+          scope.$emit('uiSelectSort:change', {
+            array: theList,
+            item: itemToMove,
+            from: droppedItemIndex,
+            to: newIndex
+          });
+        });
+
+        element.removeClass(droppingClassName);
+        element.removeClass(droppingBeforeClassName);
+        element.removeClass(droppingAfterClassName);
+
+        element.off('drop', dropHandler);
+      };
+
+      element.on('dragenter', function() {
+        if (element.hasClass(draggingClassName)) {
+          return;
+        }
+
+        element.addClass(droppingClassName);
+
+        element.on('dragover', dragOverHandler);
+        element.on('drop', dropHandler);
+      });
+
+      element.on('dragleave', function(e) {
+        if (e.target != element) {
+          return;
+        }
+        element.removeClass(droppingClassName);
+        element.removeClass(droppingBeforeClassName);
+        element.removeClass(droppingAfterClassName);
+
+        element.off('dragover', dragOverHandler);
+        element.off('drop', dropHandler);
+      });
+    }
+  };
+}]);
+
+/**
+ * Parses "repeat" attribute.
+ *
+ * Taken from AngularJS ngRepeat source code
+ * See https://github.com/angular/angular.js/blob/v1.2.15/src/ng/directive/ngRepeat.js#L211
+ *
+ * Original discussion about parsing "repeat" attribute instead of fully relying on ng-repeat:
+ * https://github.com/angular-ui/ui-select/commit/5dd63ad#commitcomment-5504697
+ */
+
+uis.service('uisRepeatParser', ['uiSelectMinErr','$parse', function(uiSelectMinErr, $parse) {
+  var self = this;
+
+  /**
+   * Example:
+   * expression = "address in addresses | filter: {street: $select.search} track by $index"
+   * itemName = "address",
+   * source = "addresses | filter: {street: $select.search}",
+   * trackByExp = "$index",
+   */
+  self.parse = function(expression) {
+
+    var match = expression.match(/^\s*(?:([\s\S]+?)\s+as\s+)?([\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
+
+    if (!match) {
+      throw uiSelectMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+              expression);
+    }
+
+    return {
+      itemName: match[2], // (lhs) Left-hand side,
+      source: $parse(match[3]),
+      trackByExp: match[4],
+      modelMapper: $parse(match[1] || match[2])
+    };
+
+  };
+
+  self.getGroupNgRepeatExpression = function() {
+    return '$group in $select.groups';
+  };
+
+  self.getNgRepeatExpression = function(itemName, source, trackByExp, grouped) {
+    var expression = itemName + ' in ' + (grouped ? '$group.items' : source);
+    if (trackByExp) {
+      expression += ' track by ' + trackByExp;
+    }
+    return expression;
+  };
+}]);
+
+}());
+angular.module("ui.select").run(["$templateCache", function($templateCache) {$templateCache.put("bootstrap/choices.tpl.html","<ul class=\"ui-select-choices ui-select-choices-content dropdown-menu\" role=\"listbox\" ng-show=\"$select.items.length > 0\"><li class=\"ui-select-choices-group\" id=\"ui-select-choices-{{ $select.generatedId }}\"><div class=\"divider\" ng-show=\"$select.isGrouped && $index > 0\"></div><div ng-show=\"$select.isGrouped\" class=\"ui-select-choices-group-label dropdown-header\" ng-bind=\"$group.name\"></div><div id=\"ui-select-choices-row-{{ $select.generatedId }}-{{$index}}\" class=\"ui-select-choices-row\" ng-class=\"{active: $select.isActive(this), disabled: $select.isDisabled(this)}\" role=\"option\"><a href=\"javascript:void(0)\" class=\"ui-select-choices-row-inner\"></a></div></li></ul>");
+$templateCache.put("bootstrap/match-multiple.tpl.html","<span class=\"ui-select-match\"><span ng-repeat=\"$item in $select.selected\"><span class=\"ui-select-match-item btn btn-default btn-xs\" tabindex=\"-1\" type=\"button\" ng-disabled=\"$select.disabled\" ng-click=\"$selectMultiple.activeMatchIndex = $index;\" ng-class=\"{\'btn-primary\':$selectMultiple.activeMatchIndex === $index, \'select-locked\':$select.isLocked(this, $index)}\" ui-select-sort=\"$select.selected\"><span class=\"close ui-select-match-close\" ng-hide=\"$select.disabled\" ng-click=\"$selectMultiple.removeChoice($index)\">&nbsp;&times;</span> <span uis-transclude-append=\"\"></span></span></span></span>");
+$templateCache.put("bootstrap/match.tpl.html","<div class=\"ui-select-match\" ng-hide=\"$select.open\" ng-disabled=\"$select.disabled\" ng-class=\"{\'btn-default-focus\':$select.focus}\"><span tabindex=\"-1\" class=\"btn btn-default form-control ui-select-toggle\" aria-label=\"{{ $select.baseTitle }} activate\" ng-disabled=\"$select.disabled\" ng-click=\"$select.activate()\" style=\"outline: 0;\"><span ng-show=\"$select.isEmpty()\" class=\"ui-select-placeholder text-muted\">{{$select.placeholder}}</span> <span ng-hide=\"$select.isEmpty()\" class=\"ui-select-match-text pull-left\" ng-class=\"{\'ui-select-allow-clear\': $select.allowClear && !$select.isEmpty()}\" ng-transclude=\"\"></span> <i class=\"caret pull-right\" ng-click=\"$select.toggle($event)\"></i> <a ng-show=\"$select.allowClear && !$select.isEmpty()\" aria-label=\"{{ $select.baseTitle }} clear\" style=\"margin-right: 10px\" ng-click=\"$select.clear($event)\" class=\"btn btn-xs btn-link pull-right\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></a></span></div>");
+$templateCache.put("bootstrap/select-multiple.tpl.html","<div class=\"ui-select-container ui-select-multiple ui-select-bootstrap dropdown form-control\" ng-class=\"{open: $select.open}\"><div><div class=\"ui-select-match\"></div><input type=\"text\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"off\" spellcheck=\"false\" class=\"ui-select-search input-xs\" placeholder=\"{{$selectMultiple.getPlaceholder()}}\" ng-disabled=\"$select.disabled\" ng-hide=\"$select.disabled\" ng-click=\"$select.activate()\" ng-model=\"$select.search\" role=\"combobox\" aria-label=\"{{ $select.baseTitle }}\" ondrop=\"return false;\"></div><div class=\"ui-select-choices\"></div></div>");
+$templateCache.put("bootstrap/select.tpl.html","<div class=\"ui-select-container ui-select-bootstrap dropdown\" ng-class=\"{open: $select.open}\"><div class=\"ui-select-match\"></div><input type=\"text\" autocomplete=\"off\" tabindex=\"-1\" aria-expanded=\"true\" aria-label=\"{{ $select.baseTitle }}\" aria-owns=\"ui-select-choices-{{ $select.generatedId }}\" aria-activedescendant=\"ui-select-choices-row-{{ $select.generatedId }}-{{ $select.activeIndex }}\" class=\"form-control ui-select-search\" placeholder=\"{{$select.placeholder}}\" ng-model=\"$select.search\" ng-show=\"$select.searchEnabled && $select.open\"><div class=\"ui-select-choices\"></div></div>");
+$templateCache.put("select2/choices.tpl.html","<ul class=\"ui-select-choices ui-select-choices-content select2-results\"><li class=\"ui-select-choices-group\" ng-class=\"{\'select2-result-with-children\': $select.choiceGrouped($group) }\"><div ng-show=\"$select.choiceGrouped($group)\" class=\"ui-select-choices-group-label select2-result-label\" ng-bind=\"$group.name\"></div><ul role=\"listbox\" id=\"ui-select-choices-{{ $select.generatedId }}\" ng-class=\"{\'select2-result-sub\': $select.choiceGrouped($group), \'select2-result-single\': !$select.choiceGrouped($group) }\"><li role=\"option\" id=\"ui-select-choices-row-{{ $select.generatedId }}-{{$index}}\" class=\"ui-select-choices-row\" ng-class=\"{\'select2-highlighted\': $select.isActive(this), \'select2-disabled\': $select.isDisabled(this)}\"><div class=\"select2-result-label ui-select-choices-row-inner\"></div></li></ul></li></ul>");
+$templateCache.put("select2/match-multiple.tpl.html","<span class=\"ui-select-match\"><li class=\"ui-select-match-item select2-search-choice\" ng-repeat=\"$item in $select.selected\" ng-class=\"{\'select2-search-choice-focus\':$selectMultiple.activeMatchIndex === $index, \'select2-locked\':$select.isLocked(this, $index)}\" ui-select-sort=\"$select.selected\"><span uis-transclude-append=\"\"></span> <a href=\"javascript:;\" class=\"ui-select-match-close select2-search-choice-close\" ng-click=\"$selectMultiple.removeChoice($index)\" tabindex=\"-1\"></a></li></span>");
+$templateCache.put("select2/match.tpl.html","<a class=\"select2-choice ui-select-match\" ng-class=\"{\'select2-default\': $select.isEmpty()}\" ng-click=\"$select.toggle($event)\" aria-label=\"{{ $select.baseTitle }} select\"><span ng-show=\"$select.isEmpty()\" class=\"select2-chosen\">{{$select.placeholder}}</span> <span ng-hide=\"$select.isEmpty()\" class=\"select2-chosen\" ng-transclude=\"\"></span> <abbr ng-if=\"$select.allowClear && !$select.isEmpty()\" class=\"select2-search-choice-close\" ng-click=\"$select.clear($event)\"></abbr> <span class=\"select2-arrow ui-select-toggle\"><b></b></span></a>");
+$templateCache.put("select2/select-multiple.tpl.html","<div class=\"ui-select-container ui-select-multiple select2 select2-container select2-container-multi\" ng-class=\"{\'select2-container-active select2-dropdown-open open\': $select.open, \'select2-container-disabled\': $select.disabled}\"><ul class=\"select2-choices\"><span class=\"ui-select-match\"></span><li class=\"select2-search-field\"><input type=\"text\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"off\" spellcheck=\"false\" role=\"combobox\" aria-expanded=\"true\" aria-owns=\"ui-select-choices-{{ $select.generatedId }}\" aria-label=\"{{ $select.baseTitle }}\" aria-activedescendant=\"ui-select-choices-row-{{ $select.generatedId }}-{{ $select.activeIndex }}\" class=\"select2-input ui-select-search\" placeholder=\"{{$selectMultiple.getPlaceholder()}}\" ng-disabled=\"$select.disabled\" ng-hide=\"$select.disabled\" ng-model=\"$select.search\" ng-click=\"$select.activate()\" style=\"width: 34px;\" ondrop=\"return false;\"></li></ul><div class=\"select2-drop select2-with-searchbox select2-drop-active\" ng-class=\"{\'select2-display-none\': !$select.open}\"><div class=\"ui-select-choices\"></div></div></div>");
+$templateCache.put("select2/select.tpl.html","<div class=\"ui-select-container select2 select2-container\" ng-class=\"{\'select2-container-active select2-dropdown-open open\': $select.open, \'select2-container-disabled\': $select.disabled, \'select2-container-active\': $select.focus, \'select2-allowclear\': $select.allowClear && !$select.isEmpty()}\"><div class=\"ui-select-match\"></div><div class=\"select2-drop select2-with-searchbox select2-drop-active\" ng-class=\"{\'select2-display-none\': !$select.open}\"><div class=\"select2-search\" ng-show=\"$select.searchEnabled\"><input type=\"text\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"off\" spellcheck=\"false\" role=\"combobox\" aria-expanded=\"true\" aria-owns=\"ui-select-choices-{{ $select.generatedId }}\" aria-label=\"{{ $select.baseTitle }}\" aria-activedescendant=\"ui-select-choices-row-{{ $select.generatedId }}-{{ $select.activeIndex }}\" class=\"ui-select-search select2-input\" ng-model=\"$select.search\"></div><div class=\"ui-select-choices\"></div></div></div>");
+$templateCache.put("selectize/choices.tpl.html","<div ng-show=\"$select.open\" class=\"ui-select-choices selectize-dropdown single\"><div class=\"ui-select-choices-content selectize-dropdown-content\"><div class=\"ui-select-choices-group optgroup\" role=\"listbox\"><div ng-show=\"$select.isGrouped\" class=\"ui-select-choices-group-label optgroup-header\" ng-bind=\"$group.name\"></div><div role=\"option\" class=\"ui-select-choices-row\" ng-class=\"{active: $select.isActive(this), disabled: $select.isDisabled(this)}\"><div class=\"option ui-select-choices-row-inner\" data-selectable=\"\"></div></div></div></div></div>");
+$templateCache.put("selectize/match.tpl.html","<div ng-hide=\"($select.open || $select.isEmpty())\" class=\"ui-select-match\" ng-transclude=\"\"></div>");
+$templateCache.put("selectize/select.tpl.html","<div class=\"ui-select-container selectize-control single\" ng-class=\"{\'open\': $select.open}\"><div class=\"selectize-input\" ng-class=\"{\'focus\': $select.open, \'disabled\': $select.disabled, \'selectize-focus\' : $select.focus}\" ng-click=\"$select.activate()\"><div class=\"ui-select-match\"></div><input type=\"text\" autocomplete=\"off\" tabindex=\"-1\" class=\"ui-select-search ui-select-toggle\" ng-click=\"$select.toggle($event)\" placeholder=\"{{$select.placeholder}}\" ng-model=\"$select.search\" ng-hide=\"!$select.searchEnabled || ($select.selected && !$select.open)\" ng-disabled=\"$select.disabled\" aria-label=\"{{ $select.baseTitle }}\"></div><div class=\"ui-select-choices\"></div></div>");}]);
+/*!
+ * ngTagsInput v2.3.0
+ * http://mbenford.github.io/ngTagsInput
+ *
+ * Copyright (c) 2013-2015 Michael Benford
+ * License: MIT
+ *
+ * Generated at 2015-03-23 18:16:24 -0300
+ */
+(function() {
+'use strict';
+
+var KEYS = {
+    backspace: 8,
+    tab: 9,
+    enter: 13,
+    escape: 27,
+    space: 32,
+    up: 38,
+    down: 40,
+    left: 37,
+    right: 39,
+    delete: 46,
+    comma: 188
+};
+
+var MAX_SAFE_INTEGER = 9007199254740991;
+var SUPPORTED_INPUT_TYPES = ['text', 'email', 'url'];
+
+var tagsInput = angular.module('ngTagsInput', []);
+
+/**
+ * @ngdoc directive
+ * @name tagsInput
+ * @module ngTagsInput
+ *
+ * @description
+ * Renders an input box with tag editing support.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.
+ * @param {string=} [displayProperty=text] Property to be rendered as the tag label.
+ * @param {string=} [keyProperty=text] Property to be used as a unique identifier for the tag.
+ * @param {string=} [type=text] Type of the input element. Only 'text', 'email' and 'url' are supported values.
+ * @param {number=} tabindex Tab order of the control.
+ * @param {string=} [placeholder=Add a tag] Placeholder text for the control.
+ * @param {number=} [minLength=3] Minimum length for a new tag.
+ * @param {number=} [maxLength=MAX_SAFE_INTEGER] Maximum length allowed for a new tag.
+ * @param {number=} [minTags=0] Sets minTags validation error key if the number of tags added is less than minTags.
+ * @param {number=} [maxTags=MAX_SAFE_INTEGER] Sets maxTags validation error key if the number of tags added is greater than maxTags.
+ * @param {boolean=} [allowLeftoverText=false] Sets leftoverText validation error key if there is any leftover text in
+ *                                             the input element when the directive loses focus.
+ * @param {string=} [removeTagSymbol=×] Symbol character for the remove tag button.
+ * @param {boolean=} [addOnEnter=true] Flag indicating that a new tag will be added on pressing the ENTER key.
+ * @param {boolean=} [addOnSpace=false] Flag indicating that a new tag will be added on pressing the SPACE key.
+ * @param {boolean=} [addOnComma=true] Flag indicating that a new tag will be added on pressing the COMMA key.
+ * @param {boolean=} [addOnBlur=true] Flag indicating that a new tag will be added when the input field loses focus.
+ * @param {boolean=} [addOnPaste=false] Flag indicating that the text pasted into the input field will be split into tags.
+ * @param {string=} [pasteSplitPattern=,] Regular expression used to split the pasted text into tags.
+ * @param {boolean=} [replaceSpacesWithDashes=true] Flag indicating that spaces will be replaced with dashes.
+ * @param {string=} [allowedTagsPattern=.+] Regular expression that determines whether a new tag is valid.
+ * @param {boolean=} [enableEditingLastTag=false] Flag indicating that the last tag will be moved back into
+ *                                                the new tag input box instead of being removed when the backspace key
+ *                                                is pressed and the input box is empty.
+ * @param {boolean=} [addFromAutocompleteOnly=false] Flag indicating that only tags coming from the autocomplete list will be allowed.
+ *                                                   When this flag is true, addOnEnter, addOnComma, addOnSpace, addOnBlur and
+ *                                                   allowLeftoverText values are ignored.
+ * @param {boolean=} [spellcheck=true] Flag indicating whether the browser's spellcheck is enabled for the input field or not.
+ * @param {expression} onTagAdding Expression to evaluate that will be invoked before adding a new tag. The new tag is available as $tag. This method must return either true or false. If false, the tag will not be added.
+ * @param {expression} onTagAdded Expression to evaluate upon adding a new tag. The new tag is available as $tag.
+ * @param {expression} onInvalidTag Expression to evaluate when a tag is invalid. The invalid tag is available as $tag.
+ * @param {expression} onTagRemoving Expression to evaluate that will be invoked before removing a tag. The tag is available as $tag. This method must return either true or false. If false, the tag will not be removed.
+ * @param {expression} onTagRemoved Expression to evaluate upon removing an existing tag. The removed tag is available as $tag.
+ */
+tagsInput.directive('tagsInput', ["$timeout","$document","$window","tagsInputConfig","tiUtil", function($timeout, $document, $window, tagsInputConfig, tiUtil) {
+    function TagList(options, events, onTagAdding, onTagRemoving) {
+        var self = {}, getTagText, setTagText, tagIsValid;
+
+        getTagText = function(tag) {
+            return tiUtil.safeToString(tag[options.displayProperty]);
+        };
+
+        setTagText = function(tag, text) {
+            tag[options.displayProperty] = text;
+        };
+
+        tagIsValid = function(tag) {
+            var tagText = getTagText(tag);
+
+            return tagText &&
+                   tagText.length >= options.minLength &&
+                   tagText.length <= options.maxLength &&
+                   options.allowedTagsPattern.test(tagText) &&
+                   !tiUtil.findInObjectArray(self.items, tag, options.keyProperty || options.displayProperty) &&
+                   onTagAdding({ $tag: tag });
+        };
+
+        self.items = [];
+
+        self.addText = function(text) {
+            var tag = {};
+            setTagText(tag, text);
+            return self.add(tag);
+        };
+
+        self.add = function(tag) {
+            var tagText = getTagText(tag);
+
+            if (options.replaceSpacesWithDashes) {
+                tagText = tiUtil.replaceSpacesWithDashes(tagText);
+            }
+
+            setTagText(tag, tagText);
+
+            if (tagIsValid(tag)) {
+                self.items.push(tag);
+                events.trigger('tag-added', { $tag: tag });
+            }
+            else if (tagText) {
+                events.trigger('invalid-tag', { $tag: tag });
+            }
+
+            return tag;
+        };
+
+        self.remove = function(index) {
+            var tag = self.items[index];
+
+            if (onTagRemoving({ $tag: tag }))  {
+                self.items.splice(index, 1);
+                self.clearSelection();
+                events.trigger('tag-removed', { $tag: tag });
+                return tag;
+            }
+        };
+
+        self.select = function(index) {
+            if (index < 0) {
+                index = self.items.length - 1;
+            }
+            else if (index >= self.items.length) {
+                index = 0;
+            }
+
+            self.index = index;
+            self.selected = self.items[index];
+        };
+
+        self.selectPrior = function() {
+            self.select(--self.index);
+        };
+
+        self.selectNext = function() {
+            self.select(++self.index);
+        };
+
+        self.removeSelected = function() {
+            return self.remove(self.index);
+        };
+
+        self.clearSelection = function() {
+            self.selected = null;
+            self.index = -1;
+        };
+
+        self.clearSelection();
+
+        return self;
+    }
+
+    function validateType(type) {
+        return SUPPORTED_INPUT_TYPES.indexOf(type) !== -1;
+    }
+
+    return {
+        restrict: 'E',
+        require: 'ngModel',
+        scope: {
+            tags: '=ngModel',
+            onTagAdding: '&',
+            onTagAdded: '&',
+            onInvalidTag: '&',
+            onTagRemoving: '&',
+            onTagRemoved: '&'
+        },
+        replace: false,
+        transclude: true,
+        templateUrl: 'ngTagsInput/tags-input.html',
+        controller: ["$scope","$attrs","$element", function($scope, $attrs, $element) {
+            $scope.events = tiUtil.simplePubSub();
+
+            tagsInputConfig.load('tagsInput', $scope, $attrs, {
+                template: [String, 'ngTagsInput/tag-item.html'],
+                type: [String, 'text', validateType],
+                placeholder: [String, 'Add a tag'],
+                tabindex: [Number, null],
+                removeTagSymbol: [String, String.fromCharCode(215)],
+                replaceSpacesWithDashes: [Boolean, true],
+                minLength: [Number, 3],
+                maxLength: [Number, MAX_SAFE_INTEGER],
+                addOnEnter: [Boolean, true],
+                addOnSpace: [Boolean, false],
+                addOnComma: [Boolean, true],
+                addOnBlur: [Boolean, true],
+                addOnPaste: [Boolean, false],
+                pasteSplitPattern: [RegExp, /,/],
+                allowedTagsPattern: [RegExp, /.+/],
+                enableEditingLastTag: [Boolean, false],
+                minTags: [Number, 0],
+                maxTags: [Number, MAX_SAFE_INTEGER],
+                displayProperty: [String, 'text'],
+                keyProperty: [String, ''],
+                allowLeftoverText: [Boolean, false],
+                addFromAutocompleteOnly: [Boolean, false],
+                spellcheck: [Boolean, true]
+            });
+
+            $scope.tagList = new TagList($scope.options, $scope.events,
+                tiUtil.handleUndefinedResult($scope.onTagAdding, true),
+                tiUtil.handleUndefinedResult($scope.onTagRemoving, true));
+
+            this.registerAutocomplete = function() {
+                var input = $element.find('input');
+
+                return {
+                    addTag: function(tag) {
+                        return $scope.tagList.add(tag);
+                    },
+                    focusInput: function() {
+                        input[0].focus();
+                    },
+                    getTags: function() {
+                        return $scope.tags;
+                    },
+                    getCurrentTagText: function() {
+                        return $scope.newTag.text;
+                    },
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    on: function(name, handler) {
+                        $scope.events.on(name, handler);
+                        return this;
+                    }
+                };
+            };
+
+            this.registerTagItem = function() {
+                return {
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    removeTag: function(index) {
+                        if ($scope.disabled) {
+                            return;
+                        }
+                        $scope.tagList.remove(index);
+                    }
+                };
+            };
+        }],
+        link: function(scope, element, attrs, ngModelCtrl) {
+            var hotkeys = [KEYS.enter, KEYS.comma, KEYS.space, KEYS.backspace, KEYS.delete, KEYS.left, KEYS.right],
+                tagList = scope.tagList,
+                events = scope.events,
+                options = scope.options,
+                input = element.find('input'),
+                validationOptions = ['minTags', 'maxTags', 'allowLeftoverText'],
+                setElementValidity;
+
+            setElementValidity = function() {
+                ngModelCtrl.$setValidity('maxTags', scope.tags.length <= options.maxTags);
+                ngModelCtrl.$setValidity('minTags', scope.tags.length >= options.minTags);
+                ngModelCtrl.$setValidity('leftoverText', scope.hasFocus || options.allowLeftoverText ? true : !scope.newTag.text);
+            };
+
+            ngModelCtrl.$isEmpty = function(value) {
+                return !value || !value.length;
+            };
+
+            scope.newTag = {
+                text: '',
+                invalid: null,
+                setText: function(value) {
+                    this.text = value;
+                    events.trigger('input-change', value);
+                }
+            };
+
+            scope.track = function(tag) {
+                return tag[options.keyProperty || options.displayProperty];
+            };
+
+            scope.$watch('tags', function(value) {
+                scope.tags = tiUtil.makeObjectArray(value, options.displayProperty);
+                tagList.items = scope.tags;
+            });
+
+            scope.$watch('tags.length', function() {
+                setElementValidity();
+            });
+
+            attrs.$observe('disabled', function(value) {
+                scope.disabled = value;
+            });
+
+            scope.eventHandlers = {
+                input: {
+                    change: function(text) {
+                        events.trigger('input-change', text);
+                    },
+                    keydown: function($event) {
+                        events.trigger('input-keydown', $event);
+                    },
+                    focus: function() {
+                        if (scope.hasFocus) {
+                            return;
+                        }
+
+                        scope.hasFocus = true;
+                        events.trigger('input-focus');
+                    },
+                    blur: function() {
+                        $timeout(function() {
+                            var activeElement = $document.prop('activeElement'),
+                                lostFocusToBrowserWindow = activeElement === input[0],
+                                lostFocusToChildElement = element[0].contains(activeElement);
+
+                            if (lostFocusToBrowserWindow || !lostFocusToChildElement) {
+                                scope.hasFocus = false;
+                                events.trigger('input-blur');
+                            }
+                        });
+                    },
+                    paste: function($event) {
+                        $event.getTextData = function() {
+                            var clipboardData = $event.clipboardData || ($event.originalEvent && $event.originalEvent.clipboardData);
+                            return clipboardData ? clipboardData.getData('text/plain') : $window.clipboardData.getData('Text');
+                        };
+                        events.trigger('input-paste', $event);
+                    }
+                },
+                host: {
+                    click: function() {
+                        if (scope.disabled) {
+                            return;
+                        }
+                        input[0].focus();
+                    }
+                }
+            };
+
+            events
+                .on('tag-added', scope.onTagAdded)
+                .on('invalid-tag', scope.onInvalidTag)
+                .on('tag-removed', scope.onTagRemoved)
+                .on('tag-added', function() {
+                    scope.newTag.setText('');
+                })
+                .on('tag-added tag-removed', function() {
+                    // Sets the element to its dirty state
+                    // In Angular 1.3 this will be replaced with $setDirty.
+                    ngModelCtrl.$setViewValue(scope.tags);
+                })
+                .on('invalid-tag', function() {
+                    scope.newTag.invalid = true;
+                })
+                .on('option-change', function(e) {
+                    if (validationOptions.indexOf(e.name) !== -1) {
+                        setElementValidity();
+                    }
+                })
+                .on('input-change', function() {
+                    tagList.clearSelection();
+                    scope.newTag.invalid = null;
+                })
+                .on('input-focus', function() {
+                    element.triggerHandler('focus');
+                    ngModelCtrl.$setValidity('leftoverText', true);
+                })
+                .on('input-blur', function() {
+                    if (options.addOnBlur && !options.addFromAutocompleteOnly) {
+                        tagList.addText(scope.newTag.text);
+                    }
+                    element.triggerHandler('blur');
+                    setElementValidity();
+                })
+                .on('input-keydown', function(event) {
+                    var key = event.keyCode,
+                        isModifier = event.shiftKey || event.altKey || event.ctrlKey || event.metaKey,
+                        addKeys = {},
+                        shouldAdd, shouldRemove, shouldSelect, shouldEditLastTag;
+
+                    if (isModifier || hotkeys.indexOf(key) === -1) {
+                        return;
+                    }
+
+                    addKeys[KEYS.enter] = options.addOnEnter;
+                    addKeys[KEYS.comma] = options.addOnComma;
+                    addKeys[KEYS.space] = options.addOnSpace;
+
+                    shouldAdd = !options.addFromAutocompleteOnly && addKeys[key];
+                    shouldRemove = (key === KEYS.backspace || key === KEYS.delete) && tagList.selected;
+                    shouldEditLastTag = key === KEYS.backspace && scope.newTag.text.length === 0 && options.enableEditingLastTag;
+                    shouldSelect = (key === KEYS.backspace || key === KEYS.left || key === KEYS.right) && scope.newTag.text.length === 0 && !options.enableEditingLastTag;
+
+                    if (shouldAdd) {
+                        tagList.addText(scope.newTag.text);
+                    }
+                    else if (shouldEditLastTag) {
+                        var tag;
+
+                        tagList.selectPrior();
+                        tag = tagList.removeSelected();
+
+                        if (tag) {
+                            scope.newTag.setText(tag[options.displayProperty]);
+                        }
+                    }
+                    else if (shouldRemove) {
+                        tagList.removeSelected();
+                    }
+                    else if (shouldSelect) {
+                        if (key === KEYS.left || key === KEYS.backspace) {
+                            tagList.selectPrior();
+                        }
+                        else if (key === KEYS.right) {
+                            tagList.selectNext();
+                        }
+                    }
+
+                    if (shouldAdd || shouldSelect || shouldRemove || shouldEditLastTag) {
+                        event.preventDefault();
+                    }
+                })
+                .on('input-paste', function(event) {
+                    if (options.addOnPaste) {
+                        var data = event.getTextData();
+                        var tags = data.split(options.pasteSplitPattern);
+
+                        if (tags.length > 1) {
+                            tags.forEach(function(tag) {
+                                tagList.addText(tag);
+                            });
+                            event.preventDefault();
+                        }
+                    }
+                });
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name tiTagItem
+ * @module ngTagsInput
+ *
+ * @description
+ * Represents a tag item. Used internally by the tagsInput directive.
+ */
+tagsInput.directive('tiTagItem', ["tiUtil", function(tiUtil) {
+    return {
+        restrict: 'E',
+        require: '^tagsInput',
+        template: '<ng-include src="$$template"></ng-include>',
+        scope: { data: '=' },
+        link: function(scope, element, attrs, tagsInputCtrl) {
+            var tagsInput = tagsInputCtrl.registerTagItem(),
+                options = tagsInput.getOptions();
+
+            scope.$$template = options.template;
+            scope.$$removeTagSymbol = options.removeTagSymbol;
+
+            scope.$getDisplayText = function() {
+                return tiUtil.safeToString(scope.data[options.displayProperty]);
+            };
+            scope.$removeTag = function() {
+                tagsInput.removeTag(scope.$index);
+            };
+
+            scope.$watch('$parent.$index', function(value) {
+                scope.$index = value;
+            });
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name autoComplete
+ * @module ngTagsInput
+ *
+ * @description
+ * Provides autocomplete support for the tagsInput directive.
+ *
+ * @param {expression} source Expression to evaluate upon changing the input content. The input value is available as
+ *                            $query. The result of the expression must be a promise that eventually resolves to an
+ *                            array of strings.
+ * @param {string=} [displayProperty=text] Property to be rendered as the autocomplete label.
+ * @param {number=} [debounceDelay=100] Amount of time, in milliseconds, to wait before evaluating the expression in
+ *                                      the source option after the last keystroke.
+ * @param {number=} [minLength=3] Minimum number of characters that must be entered before evaluating the expression
+ *                                 in the source option.
+ * @param {boolean=} [highlightMatchedText=true] Flag indicating that the matched text will be highlighted in the
+ *                                               suggestions list.
+ * @param {number=} [maxResultsToShow=10] Maximum number of results to be displayed at a time.
+ * @param {boolean=} [loadOnDownArrow=false] Flag indicating that the source option will be evaluated when the down arrow
+ *                                           key is pressed and the suggestion list is closed. The current input value
+ *                                           is available as $query.
+ * @param {boolean=} {loadOnEmpty=false} Flag indicating that the source option will be evaluated when the input content
+ *                                       becomes empty. The $query variable will be passed to the expression as an empty string.
+ * @param {boolean=} {loadOnFocus=false} Flag indicating that the source option will be evaluated when the input element
+ *                                       gains focus. The current input value is available as $query.
+ * @param {boolean=} [selectFirstMatch=true] Flag indicating that the first match will be automatically selected once
+ *                                           the suggestion list is shown.
+ * @param {string=} [template=] URL or id of a custom template for rendering each element of the autocomplete list.
+ */
+tagsInput.directive('autoComplete', ["$document","$timeout","$sce","$q","tagsInputConfig","tiUtil", function($document, $timeout, $sce, $q, tagsInputConfig, tiUtil) {
+    function SuggestionList(loadFn, options, events) {
+        var self = {}, getDifference, lastPromise, getTagId;
+
+        getTagId = function() {
+            return options.tagsInput.keyProperty || options.tagsInput.displayProperty;
+        };
+
+        getDifference = function(array1, array2) {
+            return array1.filter(function(item) {
+                return !tiUtil.findInObjectArray(array2, item, getTagId(), function(a, b) {
+                    if (options.tagsInput.replaceSpacesWithDashes) {
+                        a = tiUtil.replaceSpacesWithDashes(a);
+                        b = tiUtil.replaceSpacesWithDashes(b);
+                    }
+                    return tiUtil.defaultComparer(a, b);
+                });
+            });
+        };
+
+        self.reset = function() {
+            lastPromise = null;
+
+            self.items = [];
+            self.visible = false;
+            self.index = -1;
+            self.selected = null;
+            self.query = null;
+        };
+        self.show = function() {
+            if (options.selectFirstMatch) {
+                self.select(0);
+            }
+            else {
+                self.selected = null;
+            }
+            self.visible = true;
+        };
+        self.load = tiUtil.debounce(function(query, tags) {
+            self.query = query;
+
+            var promise = $q.when(loadFn({ $query: query }));
+            lastPromise = promise;
+
+            promise.then(function(items) {
+                if (promise !== lastPromise) {
+                    return;
+                }
+
+                items = tiUtil.makeObjectArray(items.data || items, getTagId());
+                items = getDifference(items, tags);
+                self.items = items.slice(0, options.maxResultsToShow);
+
+                if (self.items.length > 0) {
+                    self.show();
+                }
+                else {
+                    self.reset();
+                }
+            });
+        }, options.debounceDelay);
+
+        self.selectNext = function() {
+            self.select(++self.index);
+        };
+        self.selectPrior = function() {
+            self.select(--self.index);
+        };
+        self.select = function(index) {
+            if (index < 0) {
+                index = self.items.length - 1;
+            }
+            else if (index >= self.items.length) {
+                index = 0;
+            }
+            self.index = index;
+            self.selected = self.items[index];
+            events.trigger('suggestion-selected', index);
+        };
+
+        self.reset();
+
+        return self;
+    }
+
+    function scrollToElement(root, index) {
+        var element = root.find('li').eq(index),
+            parent = element.parent(),
+            elementTop = element.prop('offsetTop'),
+            elementHeight = element.prop('offsetHeight'),
+            parentHeight = parent.prop('clientHeight'),
+            parentScrollTop = parent.prop('scrollTop');
+
+        if (elementTop < parentScrollTop) {
+            parent.prop('scrollTop', elementTop);
+        }
+        else if (elementTop + elementHeight > parentHeight + parentScrollTop) {
+            parent.prop('scrollTop', elementTop + elementHeight - parentHeight);
+        }
+    }
+
+    return {
+        restrict: 'E',
+        require: '^tagsInput',
+        scope: { source: '&' },
+        templateUrl: 'ngTagsInput/auto-complete.html',
+        controller: ["$scope","$element","$attrs", function($scope, $element, $attrs) {
+            $scope.events = tiUtil.simplePubSub();
+
+            tagsInputConfig.load('autoComplete', $scope, $attrs, {
+                template: [String, 'ngTagsInput/auto-complete-match.html'],
+                debounceDelay: [Number, 100],
+                minLength: [Number, 3],
+                highlightMatchedText: [Boolean, true],
+                maxResultsToShow: [Number, 10],
+                loadOnDownArrow: [Boolean, false],
+                loadOnEmpty: [Boolean, false],
+                loadOnFocus: [Boolean, false],
+                selectFirstMatch: [Boolean, true],
+                displayProperty: [String, '']
+            });
+
+            $scope.suggestionList = new SuggestionList($scope.source, $scope.options, $scope.events);
+
+            this.registerAutocompleteMatch = function() {
+                return {
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    getQuery: function() {
+                        return $scope.suggestionList.query;
+                    }
+                };
+            };
+        }],
+        link: function(scope, element, attrs, tagsInputCtrl) {
+            var hotkeys = [KEYS.enter, KEYS.tab, KEYS.escape, KEYS.up, KEYS.down],
+                suggestionList = scope.suggestionList,
+                tagsInput = tagsInputCtrl.registerAutocomplete(),
+                options = scope.options,
+                events = scope.events,
+                shouldLoadSuggestions;
+
+            options.tagsInput = tagsInput.getOptions();
+
+            shouldLoadSuggestions = function(value) {
+                return value && value.length >= options.minLength || !value && options.loadOnEmpty;
+            };
+
+            scope.addSuggestionByIndex = function(index) {
+                suggestionList.select(index);
+                scope.addSuggestion();
+            };
+
+            scope.addSuggestion = function() {
+                var added = false;
+
+                if (suggestionList.selected) {
+                    tagsInput.addTag(angular.copy(suggestionList.selected));
+                    suggestionList.reset();
+                    tagsInput.focusInput();
+
+                    added = true;
+                }
+                return added;
+            };
+
+            scope.track = function(item) {
+                return item[options.tagsInput.keyProperty || options.tagsInput.displayProperty];
+            };
+
+            tagsInput
+                .on('tag-added invalid-tag input-blur', function() {
+                    suggestionList.reset();
+                })
+                .on('input-change', function(value) {
+                    if (shouldLoadSuggestions(value)) {
+                        suggestionList.load(value, tagsInput.getTags());
+                    }
+                    else {
+                        suggestionList.reset();
+                    }
+                })
+                .on('input-focus', function() {
+                    var value = tagsInput.getCurrentTagText();
+                    if (options.loadOnFocus && shouldLoadSuggestions(value)) {
+                        suggestionList.load(value, tagsInput.getTags());
+                    }
+                })
+                .on('input-keydown', function(event) {
+                    var key = event.keyCode,
+                        handled = false;
+
+                    if (hotkeys.indexOf(key) === -1) {
+                        return;
+                    }
+
+                    if (suggestionList.visible) {
+
+                        if (key === KEYS.down) {
+                            suggestionList.selectNext();
+                            handled = true;
+                        }
+                        else if (key === KEYS.up) {
+                            suggestionList.selectPrior();
+                            handled = true;
+                        }
+                        else if (key === KEYS.escape) {
+                            suggestionList.reset();
+                            handled = true;
+                        }
+                        else if (key === KEYS.enter || key === KEYS.tab) {
+                            handled = scope.addSuggestion();
+                        }
+                    }
+                    else {
+                        if (key === KEYS.down && scope.options.loadOnDownArrow) {
+                            suggestionList.load(tagsInput.getCurrentTagText(), tagsInput.getTags());
+                            handled = true;
+                        }
+                    }
+
+                    if (handled) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        return false;
+                    }
+                });
+
+            events.on('suggestion-selected', function(index) {
+                scrollToElement(element, index);
+            });
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name tiAutocompleteMatch
+ * @module ngTagsInput
+ *
+ * @description
+ * Represents an autocomplete match. Used internally by the autoComplete directive.
+ */
+tagsInput.directive('tiAutocompleteMatch', ["$sce","tiUtil", function($sce, tiUtil) {
+    return {
+        restrict: 'E',
+        require: '^autoComplete',
+        template: '<ng-include src="$$template"></ng-include>',
+        scope: { data: '=' },
+        link: function(scope, element, attrs, autoCompleteCtrl) {
+            var autoComplete = autoCompleteCtrl.registerAutocompleteMatch(),
+                options = autoComplete.getOptions();
+
+            scope.$$template = options.template;
+            scope.$index = scope.$parent.$index;
+
+            scope.$highlight = function(text) {
+                if (options.highlightMatchedText) {
+                    text = tiUtil.safeHighlight(text, autoComplete.getQuery());
+                }
+                return $sce.trustAsHtml(text);
+            };
+            scope.$getDisplayText =  function() {
+                return tiUtil.safeToString(scope.data[options.displayProperty || options.tagsInput.displayProperty]);
+            };
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name tiTranscludeAppend
+ * @module ngTagsInput
+ *
+ * @description
+ * Re-creates the old behavior of ng-transclude. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiTranscludeAppend', function() {
+    return function(scope, element, attrs, ctrl, transcludeFn) {
+        transcludeFn(function(clone) {
+            element.append(clone);
+        });
+    };
+});
+
+/**
+ * @ngdoc directive
+ * @name tiAutosize
+ * @module ngTagsInput
+ *
+ * @description
+ * Automatically sets the input's width so its content is always visible. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiAutosize', ["tagsInputConfig", function(tagsInputConfig) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, ctrl) {
+            var threshold = tagsInputConfig.getTextAutosizeThreshold(),
+                span, resize;
+
+            span = angular.element('<span class="input"></span>');
+            span.css('display', 'none')
+                .css('visibility', 'hidden')
+                .css('width', 'auto')
+                .css('white-space', 'pre');
+
+            element.parent().append(span);
+
+            resize = function(originalValue) {
+                var value = originalValue, width;
+
+                if (angular.isString(value) && value.length === 0) {
+                    value = attrs.placeholder;
+                }
+
+                if (value) {
+                    span.text(value);
+                    span.css('display', '');
+                    width = span.prop('offsetWidth');
+                    span.css('display', 'none');
+                }
+
+                element.css('width', width ? width + threshold + 'px' : '');
+
+                return originalValue;
+            };
+
+            ctrl.$parsers.unshift(resize);
+            ctrl.$formatters.unshift(resize);
+
+            attrs.$observe('placeholder', function(value) {
+                if (!ctrl.$modelValue) {
+                    resize(value);
+                }
+            });
+        }
+    };
+}]);
+
+/**
+ * @ngdoc directive
+ * @name tiBindAttrs
+ * @module ngTagsInput
+ *
+ * @description
+ * Binds attributes to expressions. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiBindAttrs', function() {
+    return function(scope, element, attrs) {
+        scope.$watch(attrs.tiBindAttrs, function(value) {
+            angular.forEach(value, function(value, key) {
+                attrs.$set(key, value);
+            });
+        }, true);
+    };
+});
+
+/**
+ * @ngdoc service
+ * @name tagsInputConfig
+ * @module ngTagsInput
+ *
+ * @description
+ * Sets global configuration settings for both tagsInput and autoComplete directives. It's also used internally to parse and
+ * initialize options from HTML attributes.
+ */
+tagsInput.provider('tagsInputConfig', function() {
+    var globalDefaults = {},
+        interpolationStatus = {},
+        autosizeThreshold = 3;
+
+    /**
+     * @ngdoc method
+     * @name setDefaults
+     * @description Sets the default configuration option for a directive.
+     * @methodOf tagsInputConfig
+     *
+     * @param {string} directive Name of the directive to be configured. Must be either 'tagsInput' or 'autoComplete'.
+     * @param {object} defaults Object containing options and their values.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setDefaults = function(directive, defaults) {
+        globalDefaults[directive] = defaults;
+        return this;
+    };
+
+    /***
+     * @ngdoc method
+     * @name setActiveInterpolation
+     * @description Sets active interpolation for a set of options.
+     * @methodOf tagsInputConfig
+     *
+     * @param {string} directive Name of the directive to be configured. Must be either 'tagsInput' or 'autoComplete'.
+     * @param {object} options Object containing which options should have interpolation turned on at all times.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setActiveInterpolation = function(directive, options) {
+        interpolationStatus[directive] = options;
+        return this;
+    };
+
+    /***
+     * @ngdoc method
+     * @name setTextAutosizeThreshold
+     * @description Sets the threshold used by the tagsInput directive to re-size the inner input field element based on its contents.
+     * @methodOf tagsInputConfig
+     *
+     * @param {number} threshold Threshold value, in pixels.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setTextAutosizeThreshold = function(threshold) {
+        autosizeThreshold = threshold;
+        return this;
+    };
+
+    this.$get = ["$interpolate", function($interpolate) {
+        var converters = {};
+        converters[String] = function(value) { return value; };
+        converters[Number] = function(value) { return parseInt(value, 10); };
+        converters[Boolean] = function(value) { return value.toLowerCase() === 'true'; };
+        converters[RegExp] = function(value) { return new RegExp(value); };
+
+        return {
+            load: function(directive, scope, attrs, options) {
+                var defaultValidator = function() { return true; };
+
+                scope.options = {};
+
+                angular.forEach(options, function(value, key) {
+                    var type, localDefault, validator, converter, getDefault, updateValue;
+
+                    type = value[0];
+                    localDefault = value[1];
+                    validator = value[2] || defaultValidator;
+                    converter = converters[type];
+
+                    getDefault = function() {
+                        var globalValue = globalDefaults[directive] && globalDefaults[directive][key];
+                        return angular.isDefined(globalValue) ? globalValue : localDefault;
+                    };
+
+                    updateValue = function(value) {
+                        scope.options[key] = value && validator(value) ? converter(value) : getDefault();
+                    };
+
+                    if (interpolationStatus[directive] && interpolationStatus[directive][key]) {
+                        attrs.$observe(key, function(value) {
+                            updateValue(value);
+                            scope.events.trigger('option-change', { name: key, newValue: value });
+                        });
+                    }
+                    else {
+                        updateValue(attrs[key] && $interpolate(attrs[key])(scope.$parent));
+                    }
+                });
+            },
+            getTextAutosizeThreshold: function() {
+                return autosizeThreshold;
+            }
+        };
+    }];
+});
+
+
+/***
+ * @ngdoc factory
+ * @name tiUtil
+ * @module ngTagsInput
+ *
+ * @description
+ * Helper methods used internally by the directive. Should not be called directly from user code.
+ */
+tagsInput.factory('tiUtil', ["$timeout", function($timeout) {
+    var self = {};
+
+    self.debounce = function(fn, delay) {
+        var timeoutId;
+        return function() {
+            var args = arguments;
+            $timeout.cancel(timeoutId);
+            timeoutId = $timeout(function() { fn.apply(null, args); }, delay);
+        };
+    };
+
+    self.makeObjectArray = function(array, key) {
+        array = array || [];
+        if (array.length > 0 && !angular.isObject(array[0])) {
+            array.forEach(function(item, index) {
+                array[index] = {};
+                array[index][key] = item;
+            });
+        }
+        return array;
+    };
+
+    self.findInObjectArray = function(array, obj, key, comparer) {
+        var item = null;
+        comparer = comparer || self.defaultComparer;
+
+        array.some(function(element) {
+            if (comparer(element[key], obj[key])) {
+                item = element;
+                return true;
+            }
+        });
+
+        return item;
+    };
+
+    self.defaultComparer = function(a, b) {
+        // I'm aware of the internationalization issues regarding toLowerCase()
+        // but I couldn't come up with a better solution right now
+        return self.safeToString(a).toLowerCase() === self.safeToString(b).toLowerCase();
+    };
+
+    self.safeHighlight = function(str, value) {
+        if (!value) {
+            return str;
+        }
+
+        function escapeRegexChars(str) {
+            return str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+        }
+
+        str = self.encodeHTML(str);
+        value = self.encodeHTML(value);
+
+        var expression = new RegExp('&[^;]+;|' + escapeRegexChars(value), 'gi');
+        return str.replace(expression, function(match) {
+            return match.toLowerCase() === value.toLowerCase() ? '<em>' + match + '</em>' : match;
+        });
+    };
+
+    self.safeToString = function(value) {
+        return angular.isUndefined(value) || value == null ? '' : value.toString().trim();
+    };
+
+    self.encodeHTML = function(value) {
+        return self.safeToString(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    };
+
+    self.handleUndefinedResult = function(fn, valueIfUndefined) {
+        return function() {
+            var result = fn.apply(null, arguments);
+            return angular.isUndefined(result) ? valueIfUndefined : result;
+        };
+    };
+
+    self.replaceSpacesWithDashes = function(str) {
+        return self.safeToString(str).replace(/\s/g, '-');
+    };
+
+    self.simplePubSub = function() {
+        var events = {};
+        return {
+            on: function(names, handler) {
+                names.split(' ').forEach(function(name) {
+                    if (!events[name]) {
+                        events[name] = [];
+                    }
+                    events[name].push(handler);
+                });
+                return this;
+            },
+            trigger: function(name, args) {
+                var handlers = events[name] || [];
+                handlers.every(function(handler) {
+                    return self.handleUndefinedResult(handler, true)(args);
+                });
+                return this;
+            }
+        };
+    };
+
+    return self;
+}]);
+
+/* HTML templates */
+tagsInput.run(["$templateCache", function($templateCache) {
+    $templateCache.put('ngTagsInput/tags-input.html',
+    "<div class=\"host\" tabindex=\"-1\" ng-click=\"eventHandlers.host.click()\" ti-transclude-append=\"\"><div class=\"tags\" ng-class=\"{focused: hasFocus}\"><ul class=\"tag-list\"><li class=\"tag-item\" ng-repeat=\"tag in tagList.items track by track(tag)\" ng-class=\"{ selected: tag == tagList.selected }\"><ti-tag-item data=\"tag\"></ti-tag-item></li></ul><input class=\"input\" autocomplete=\"off\" ng-model=\"newTag.text\" ng-change=\"eventHandlers.input.change(newTag.text)\" ng-keydown=\"eventHandlers.input.keydown($event)\" ng-focus=\"eventHandlers.input.focus($event)\" ng-blur=\"eventHandlers.input.blur($event)\" ng-paste=\"eventHandlers.input.paste($event)\" ng-trim=\"false\" ng-class=\"{'invalid-tag': newTag.invalid}\" ng-disabled=\"disabled\" ti-bind-attrs=\"{type: options.type, placeholder: options.placeholder, tabindex: options.tabindex, spellcheck: options.spellcheck}\" ti-autosize=\"\"></div></div>"
+  );
+
+  $templateCache.put('ngTagsInput/tag-item.html',
+    "<span ng-bind=\"$getDisplayText()\"></span> <a class=\"remove-button\" ng-click=\"$removeTag()\" ng-bind=\"$$removeTagSymbol\"></a>"
+  );
+
+  $templateCache.put('ngTagsInput/auto-complete.html',
+    "<div class=\"autocomplete\" ng-if=\"suggestionList.visible\"><ul class=\"suggestion-list\"><li class=\"suggestion-item\" ng-repeat=\"item in suggestionList.items track by track(item)\" ng-class=\"{selected: item == suggestionList.selected}\" ng-click=\"addSuggestionByIndex($index)\" ng-mouseenter=\"suggestionList.select($index)\"><ti-autocomplete-match data=\"item\"></ti-autocomplete-match></li></ul></div>"
+  );
+
+  $templateCache.put('ngTagsInput/auto-complete-match.html',
+    "<span ng-bind-html=\"$highlight($getDisplayText())\"></span>"
+  );
+}]);
+
+}());
+/*global angular*/
+(function () {
+  'use strict';
+
+  try {
+    angular.module('decipher.tags.templates');
+  } catch (e) {
+    angular.module('decipher.tags.templates', []);
+  }
+
+  var tags = angular.module('decipher.tags',
+    ['ui.bootstrap.typeahead', 'decipher.tags.templates']);
+
+  var defaultOptions = {
+      delimiter: ',', // if given a string model, it splits on this
+      classes: {}, // obj of group names to classes
+      templateUrl: 'templates/tags.html', // default template
+      tagTemplateUrl: 'templates/tag.html' // default 'tag' template
+    },
+
+  // for parsing comprehension expression
+    SRC_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/,
+
+  // keycodes
+    kc = {
+      enter: 13,
+      esc: 27,
+      backspace: 8
+    },
+    kcCompleteTag = [kc.enter],
+    kcRemoveTag = [kc.backspace],
+    kcCancelInput = [kc.esc],
+    id = 0;
+
+  tags.constant('decipherTagsOptions', {});
+
+  /**
+   * TODO: do we actually share functionality here?  We're using this
+   * controller on both the subdirective and its parent, but I'm not sure
+   * if we actually use the same functions in both.
+   */
+  tags.controller('TagsCtrl',
+    ['$scope', '$timeout', '$q', function ($scope, $timeout, $q) {
+
+      /**
+       * Figures out what classes to put on the tag span.  It'll add classes
+       * if defined by group, and it'll add a selected class if the tag
+       * is preselected to delete.
+       * @param tag
+       * @returns {{}}
+       */
+      $scope.getClasses = function getGroupClass(tag) {
+        var r = {};
+
+        if (tag === $scope.toggles.selectedTag) {
+          r.selected = true;
+        }
+        angular.forEach($scope.options.classes, function (klass, groupName) {
+          if (tag.group === groupName) {
+            r[klass] = true;
+          }
+        });
+        return r;
+      };
+
+      /**
+       * Finds a tag in the src list and removes it.
+       * @param tag
+       * @returns {boolean}
+       */
+      $scope._filterSrcTags = function filterSrcTags(tag) {
+        // wrapped in timeout or typeahead becomes confused
+        return $timeout(function () {
+          var idx = $scope.srcTags.indexOf(tag);
+          if (idx >= 0) {
+            $scope.srcTags.splice(idx, 1);
+            $scope._deletedSrcTags.push(tag);
+            return;
+          }
+          return $q.reject();
+        });
+      };
+
+      /**
+       * Adds a tag to the list of tags, and if in the typeahead list,
+       * removes it from that list (and saves it).  emits decipher.tags.added
+       * @param tag
+       */
+      $scope.add = function add(tag) {
+        var _add = function _add(tag) {
+            $scope.tags.push(tag);
+            delete $scope.inputTag;
+            $scope.$emit('decipher.tags.added', {
+              tag: tag,
+              $id: $scope.$id
+            });
+          },
+          fail = function fail() {
+            $scope.$emit('decipher.tags.addfailed', {
+              tag: tag,
+              $id: $scope.$id
+            });
+            dfrd.reject();
+          },
+          i,
+          dfrd = $q.defer();
+
+        // don't add dupe names
+        i = $scope.tags.length;
+        while (i--) {
+          if ($scope.tags[i].name === tag.name) {
+            fail();
+          }
+        }
+
+        $scope._filterSrcTags(tag)
+          .then(function () {
+            _add(tag);
+          }, function () {
+            if ($scope.options.addable) {
+              _add(tag);
+              dfrd.resolve();
+            }
+            else {
+              fail();
+            }
+          });
+
+        return dfrd.promise;
+      };
+
+      /**
+       * Toggle the input box active.
+       */
+      $scope.selectArea = function selectArea() {
+        $scope.toggles.inputActive = true;
+      };
+
+      /**
+       * Removes a tag.  Restores stuff into srcTags if it came from there.
+       * Kills any selected tag.  Emit a decipher.tags.removed event.
+       * @param tag
+       */
+      $scope.remove = function remove(tag) {
+        var idx;
+        $scope.tags.splice($scope.tags.indexOf(tag), 1);
+
+        if (idx = $scope._deletedSrcTags.indexOf(tag) >= 0) {
+          $scope._deletedSrcTags.splice(idx, 1);
+          if ($scope.srcTags.indexOf(tag) === -1) {
+            $scope.srcTags.push(tag);
+          }
+        }
+
+        delete $scope.toggles.selectedTag;
+
+        $scope.$emit('decipher.tags.removed', {
+          tag: tag,
+          $id: $scope.$id
+        });
+      };
+
+    }]);
+
+  /**
+   * Directive for the 'input' tag itself, which is of class
+   * decipher-tags-input.
+   */
+  tags.directive('decipherTagsInput',
+    ['$timeout', '$filter', '$rootScope',
+     function ($timeout, $filter, $rootScope) {
+       return {
+         restrict: 'C',
+         require: 'ngModel',
+         link: function (scope, element, attrs, ngModel) {
+           var delimiterRx = new RegExp('^' +
+                                        scope.options.delimiter +
+                                        '+$'),
+
+             /**
+              * Cancels the text input box.
+              */
+               cancel = function cancel() {
+               ngModel.$setViewValue('');
+               ngModel.$render();
+             },
+
+             /**
+              * Adds a tag you typed/pasted in unless it's a bunch of delimiters.
+              * @param value
+              */
+               addTag = function addTag(value) {
+               if (value) {
+                 if (value.match(delimiterRx)) {
+                   cancel();
+                   return;
+                 }
+                 if (scope.add({
+                   name: value
+                 })) {
+                   cancel();
+                 }
+               }
+             },
+
+             /**
+              * Adds multiple tags in case you pasted them.
+              * @param tags
+              */
+               addTags = function (tags) {
+               var i;
+               for (i = 0; i < tags.length;
+                    i++) {
+                 addTag(tags[i]);
+               }
+             },
+
+             /**
+              * Backspace one to select, and a second time to delete.
+              */
+               removeLastTag = function removeLastTag() {
+               var orderedTags;
+               if (scope.toggles.selectedTag) {
+                 scope.remove(scope.toggles.selectedTag);
+                 delete scope.toggles.selectedTag;
+               }
+               // only do this if the input field is empty.
+               else if (!ngModel.$viewValue) {
+                 orderedTags =
+                 $filter('orderBy')(scope.tags,
+                   scope.orderBy);
+                 scope.toggles.selectedTag =
+                 orderedTags[orderedTags.length - 1];
+               }
+             };
+
+           /**
+            * When we focus the text input area, drop the selected tag
+            */
+           element.bind('focus', function () {
+             // this avoids what looks like a bug in typeahead.  It seems
+             // to be calling element[0].focus() somewhere within a digest loop.
+             if ($rootScope.$$phase) {
+               delete scope.toggles.selectedTag;
+             } else {
+               scope.$apply(function () {
+                 delete scope.toggles.selectedTag;
+               });
+             }
+           });
+
+           /**
+            * Detects the delimiter.
+            */
+           element.bind('keypress',
+             function (evt) {
+               scope.$apply(function () {
+                 if (scope.options.delimiter.charCodeAt() ===
+                     evt.which) {
+                   addTag(ngModel.$viewValue);
+                 }
+               });
+             });
+
+           /**
+            * Inspects whatever you typed to see if there were character(s) of
+            * concern.
+            */
+           element.bind('keyup',
+             function (evt) {
+               scope.$apply(function () {
+                 // to "complete" a tag
+
+                 if (kcCompleteTag.indexOf(evt.which) >=
+                     0) {
+                   addTag(ngModel.$viewValue);
+
+                   // or if you want to get out of the text area
+                 } else if (kcCancelInput.indexOf(evt.which) >=
+                            0) {
+                   cancel();
+                   scope.toggles.inputActive =
+                   false;
+
+                   // or if you're trying to delete something
+                 } else if (kcRemoveTag.indexOf(evt.which) >=
+                            0) {
+                   removeLastTag();
+
+                   // otherwise if we're typing in here, just drop the selected tag.
+                 } else {
+                   delete scope.toggles.selectedTag;
+                   scope.$emit('decipher.tags.keyup',
+                     {
+                       value: ngModel.$viewValue,
+                       $id: scope.$id
+                     });
+                 }
+               });
+             });
+
+           /**
+            * When inputActive toggle changes to true, focus the input.
+            * And no I have no idea why this has to be in a timeout.
+            */
+           scope.$watch('toggles.inputActive',
+             function (newVal) {
+               if (newVal) {
+                 $timeout(function () {
+                   element[0].focus();
+                 });
+               }
+             });
+
+           /**
+            * Detects a paste or someone jamming on the delimiter key.
+            */
+           ngModel.$parsers.unshift(function (value) {
+             var values = value.split(scope.options.delimiter);
+             if (values.length > 1) {
+               addTags(values);
+             }
+             if (value.match(delimiterRx)) {
+               element.val('');
+               return;
+             }
+             return value;
+           });
+
+           /**
+            * Resets the input field if we selected something from typeahead.
+            */
+           ngModel.$formatters.push(function (tag) {
+             if (tag && tag.value) {
+               element.val('');
+               return;
+             }
+             return tag;
+           });
+         }
+       };
+     }]);
+
+  /**
+   * Main directive
+   */
+  tags.directive('tags',
+    ['$document', '$timeout', '$parse', 'decipherTagsOptions',
+     function ($document, $timeout, $parse, decipherTagsOptions) {
+
+       return {
+         controller: 'TagsCtrl',
+         restrict: 'E',
+         replace: true,
+         // IE8 is really, really fussy about this.
+         template: '<div><div data-ng-include="options.templateUrl"></div></div>',
+         scope: {
+           model: '='
+         },
+         link: function (scope, element, attrs) {
+           var srcResult,
+             source,
+             tags,
+             group,
+             i,
+             tagsWatch,
+             srcWatch,
+             modelWatch,
+             model,
+             pureStrings = false,
+             stringArray = false,
+             defaults = angular.copy(defaultOptions),
+             userDefaults = angular.copy(decipherTagsOptions),
+
+             /**
+              * Parses the comprehension expression and gives us interesting bits.
+              * @param input
+              * @returns {{itemName: *, source: *, viewMapper: *, modelMapper: *}}
+              */
+               parse = function parse(input) {
+               var match = input.match(SRC_REGEXP);
+               if (!match) {
+                 throw new Error(
+                   "Expected src specification in form of '_modelValue_ (as _label_)? for _item_ in _collection_'" +
+                   " but got '" + input + "'.");
+               }
+
+               return {
+                 itemName: match[3],
+                 source: $parse(match[4]),
+                 sourceName: match[4],
+                 viewMapper: $parse(match[2] || match[1]),
+                 modelMapper: $parse(match[1])
+               };
+
+             },
+
+             watchModel = function watchModel() {
+               modelWatch = scope.$watch('model', function (newVal) {
+                 var deletedTag, idx;
+                 if (angular.isDefined(newVal)) {
+                   tagsWatch();
+                   scope.tags = format(newVal);
+
+                   // remove already used tags
+                   i = scope.tags.length;
+                   while (i--) {
+                     scope._filterSrcTags(scope.tags[i]);
+                   }
+
+                   // restore any deleted things to the src array that happen to not
+                   // be in the new value.
+                   i = scope._deletedSrcTags.length;
+                   while (i--) {
+                     deletedTag = scope._deletedSrcTags[i];
+                     if (idx = newVal.indexOf(deletedTag) === -1 &&
+                               scope.srcTags.indexOf(deletedTag) === -1) {
+                       scope.srcTags.push(deletedTag);
+                       scope._deletedSrcTags.splice(i, 1);
+                     }
+                   }
+
+                   watchTags();
+                 }
+               }, true);
+
+             },
+
+             watchTags = function watchTags() {
+
+               /**
+                * Watches tags for changes and propagates to outer model
+                * in the format which we originally specified (see below)
+                */
+               tagsWatch = scope.$watch('tags', function (value, oldValue) {
+                 var i;
+                 if (value !== oldValue) {
+                   modelWatch();
+                   if (stringArray || pureStrings) {
+                     value = value.map(function (tag) {
+                       return tag.name;
+                     });
+                     if (angular.isArray(scope.model)) {
+                       scope.model.length = 0;
+                       for (i = 0; i < value.length; i++) {
+                         scope.model.push(value[i]);
+                       }
+                     }
+                     if (pureStrings) {
+                       scope.model = value.join(scope.options.delimiter);
+                     }
+                   }
+                   else {
+                     scope.model.length = 0;
+                     for (i = 0; i < value.length; i++) {
+                       scope.model.push(value[i]);
+                     }
+                   }
+                   watchModel();
+
+                 }
+               }, true);
+             },
+             /**
+              * Takes a raw model value and returns something suitable
+              * to assign to scope.tags
+              * @param value
+              */
+               format = function format(value) {
+               var arr = [],
+                 sanitize = function sanitize(tag) {
+                   return tag
+                     .replace(/&/g, '&amp;')
+                     .replace(/</g, '&lt;')
+                     .replace(/>/g, '&gt;')
+                     .replace(/'/g, '&#39;')
+                     .replace(/"/g, '&quot;');
+                 };
+               if (angular.isUndefined(value)) {
+                 return;
+               }
+               if (angular.isString(value)) {
+                 arr = value
+                   .split(scope.options.delimiter)
+                   .map(function (item) {
+                     return {
+                       name: sanitize(item.trim())
+                     };
+                   });
+               }
+               else if (angular.isArray(value)) {
+                 arr = value.map(function (item) {
+                   if (angular.isString(item)) {
+                     return {
+                       name: sanitize(item.trim())
+                     };
+                   }
+                   else if (item.name) {
+                     item.name = sanitize(item.name.trim());
+                   }
+                   return item;
+                 });
+               }
+               else if (angular.isDefined(value)) {
+                 throw 'list of tags must be an array or delimited string';
+               }
+               return arr;
+             },
+             /**
+              * Updates the source tag information.  Sets a watch so we
+              * know if the source values change.
+              */
+               updateSrc = function updateSrc() {
+               var locals,
+                 i,
+                 o,
+                 obj;
+               // default to NOT letting users add new tags in this case.
+               scope.options.addable = scope.options.addable || false;
+               scope.srcTags = [];
+               srcResult = parse(attrs.src);
+               source = srcResult.source(scope.$parent);
+               if (angular.isUndefined(source)) {
+                 return;
+               }
+               if (angular.isFunction(srcWatch)) {
+                 srcWatch();
+               }
+               locals = {};
+               if (angular.isDefined(source)) {
+                 for (i = 0; i < source.length; i++) {
+                   locals[srcResult.itemName] = source[i];
+                   obj = {};
+                   obj.value = srcResult.modelMapper(scope.$parent, locals);
+                   o = {};
+                   if (angular.isObject(obj.value)) {
+                     o = angular.extend(obj.value, {
+                       name: srcResult.viewMapper(scope.$parent, locals),
+                       value: obj.value.value,
+                       group: obj.value.group
+                     });
+                   }
+                   else {
+                     o = {
+                       name: srcResult.viewMapper(scope.$parent, locals),
+                       value: obj.value,
+                       group: group
+                     };
+                   }
+                   scope.srcTags.push(o);
+                 }
+               }
+
+               srcWatch =
+               scope.$parent.$watch(srcResult.sourceName,
+                 function (newVal, oldVal) {
+                   if (newVal !== oldVal) {
+                     updateSrc();
+                   }
+                 }, true);
+             };
+
+           // merge options
+           scope.options = angular.extend(defaults,
+             angular.extend(userDefaults, scope.$eval(attrs.options)));
+           // break out orderBy for view
+           scope.orderBy = scope.options.orderBy;
+
+           // this should be named something else since it's just a collection
+           // of random shit.
+           scope.toggles = {
+             inputActive: false
+           };
+
+           /**
+            * When we receive this event, sort.
+            */
+           scope.$on('decipher.tags.sort', function (evt, data) {
+             scope.orderBy = data;
+           });
+
+           // pass typeahead options through
+           attrs.$observe('typeaheadOptions', function (newVal) {
+             if (newVal) {
+               scope.typeaheadOptions = $parse(newVal)(scope.$parent);
+             } else {
+               scope.typeaheadOptions = {};
+             }
+           });
+
+           // determine what format we're in
+           model = scope.model;
+           if (angular.isString(model)) {
+             pureStrings = true;
+           }
+           else if (angular.isArray(model)) {
+             stringArray = true;
+             i = model.length;
+             while (i--) {
+               if (!angular.isString(model[i])) {
+                 stringArray = false;
+                 break;
+               }
+             }
+           }
+
+           // watch model for changes and update tags as appropriate
+           scope.tags = [];
+           scope._deletedSrcTags = [];
+           watchTags();
+           watchModel();
+
+           // this stuff takes the parsed comprehension expression and
+           // makes a srcTags array full of tag objects out of it.
+           scope.srcTags = [];
+           if (angular.isDefined(attrs.src)) {
+             updateSrc();
+           } else {
+             // if you didn't specify a src, you must be able to type in new tags.
+             scope.options.addable = true;
+           }
+
+           // emit identifier
+           scope.$id = ++id;
+           scope.$emit('decipher.tags.initialized', {
+             $id: scope.$id,
+             model: scope.model
+           });
+         }
+       };
+     }]);
+
+})();
+
+angular.module('decipher.tags.templates', ['templates/tags.html', 'templates/tag.html']);
+
+angular.module("templates/tags.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/tags.html",
+    "<div class=\"decipher-tags\" data-ng-mousedown=\"selectArea()\">\n" +
+    "\n" +
+    "  <div class=\"decipher-tags-taglist\">\n" +
+    "    <span data-ng-repeat=\"tag in tags|orderBy:orderBy\"\n" +
+    "          data-ng-mousedown=\"$event.stopPropagation()\">\n" +
+    "      <ng-include src=\"options.tagTemplateUrl\"></ng-include>\n" +
+    "    </span>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <span class=\"container-fluid\" data-ng-show=\"toggles.inputActive\">\n" +
+    "    <input ng-if=\"!srcTags.length\"\n" +
+    "           type=\"text\"\n" +
+    "           data-ng-model=\"inputTag\"\n" +
+    "           class=\"decipher-tags-input\"/>\n" +
+    "    <!-- may want to fiddle with limitTo here, but it was inhibiting my results\n" +
+    "    so perhaps there is another way -->\n" +
+    "    <input ng-if=\"srcTags.length\"\n" +
+    "           type=\"text\"\n" +
+    "           data-ng-model=\"inputTag\"\n" +
+    "           class=\"decipher-tags-input\"\n" +
+    "           data-typeahead=\"stag as stag.name for stag in srcTags|filter:$viewValue|orderBy:orderBy\"\n" +
+    "           data-typeahead-input-formatter=\"{{typeaheadOptions.inputFormatter}}\"\n" +
+    "           data-typeahead-loading=\"{{typeaheadOptions.loading}}\"\n" +
+    "           data-typeahead-min-length=\"{{typeaheadOptions.minLength}}\"\n" +
+    "           data-typeahead-template-url=\"{{typeaheadOptions.templateUrl}}\"\n" +
+    "           data-typeahead-wait-ms=\"{{typeaheadOptions.waitMs}}\"\n" +
+    "\n" +
+    "           data-typeahead-editable=\"{{typeaheadOptions.allowsEditable}}\"\n" +
+    "           data-typeahead-on-select=\"add($item) && selectArea() && typeaheadOptions.onSelect()\"\n" +
+    "        />\n" +
+    "\n" +
+    "  </span>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("templates/tag.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/tag.html",
+    "<span class=\"decipher-tags-tag\"\n" +
+    "      data-ng-class=\"getClasses(tag)\">{{tag.name}}\n" +
+    "      <i class=\"icon-remove\"\n" +
+    "         data-ng-click=\"remove(tag)\">\n" +
+    "      </i>\n" +
+    "</span>\n" +
+    "");
+}]);
+
+/*global angular*/
+(function () {
+  'use strict';
+
+  try {
+    angular.module('decipher.tags.templates');
+  } catch (e) {
+    angular.module('decipher.tags.templates', []);
+  }
+
+  var tags = angular.module('decipher.tags',
+    ['ui.bootstrap.typeahead', 'decipher.tags.templates']);
+
+  var defaultOptions = {
+      delimiter: ',', // if given a string model, it splits on this
+      classes: {}, // obj of group names to classes
+      templateUrl: 'templates/tags.html', // default template
+      tagTemplateUrl: 'templates/tag.html' // default 'tag' template
+    },
+
+  // for parsing comprehension expression
+    SRC_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/,
+
+  // keycodes
+    kc = {
+      enter: 13,
+      esc: 27,
+      backspace: 8
+    },
+    kcCompleteTag = [kc.enter],
+    kcRemoveTag = [kc.backspace],
+    kcCancelInput = [kc.esc],
+    id = 0;
+
+  tags.constant('decipherTagsOptions', {});
+
+  /**
+   * TODO: do we actually share functionality here?  We're using this
+   * controller on both the subdirective and its parent, but I'm not sure
+   * if we actually use the same functions in both.
+   */
+  tags.controller('TagsCtrl',
+    ['$scope', '$timeout', '$q', function ($scope, $timeout, $q) {
+
+      /**
+       * Figures out what classes to put on the tag span.  It'll add classes
+       * if defined by group, and it'll add a selected class if the tag
+       * is preselected to delete.
+       * @param tag
+       * @returns {{}}
+       */
+      $scope.getClasses = function getGroupClass(tag) {
+        var r = {};
+
+        if (tag === $scope.toggles.selectedTag) {
+          r.selected = true;
+        }
+        angular.forEach($scope.options.classes, function (klass, groupName) {
+          if (tag.group === groupName) {
+            r[klass] = true;
+          }
+        });
+        return r;
+      };
+
+      /**
+       * Finds a tag in the src list and removes it.
+       * @param tag
+       * @returns {boolean}
+       */
+      $scope._filterSrcTags = function filterSrcTags(tag) {
+        // wrapped in timeout or typeahead becomes confused
+        return $timeout(function () {
+          var idx = $scope.srcTags.indexOf(tag);
+          if (idx >= 0) {
+            $scope.srcTags.splice(idx, 1);
+            $scope._deletedSrcTags.push(tag);
+            return;
+          }
+          return $q.reject();
+        });
+      };
+
+      /**
+       * Adds a tag to the list of tags, and if in the typeahead list,
+       * removes it from that list (and saves it).  emits decipher.tags.added
+       * @param tag
+       */
+      $scope.add = function add(tag) {
+        var _add = function _add(tag) {
+            $scope.tags.push(tag);
+            delete $scope.inputTag;
+            $scope.$emit('decipher.tags.added', {
+              tag: tag,
+              $id: $scope.$id
+            });
+          },
+          fail = function fail() {
+            $scope.$emit('decipher.tags.addfailed', {
+              tag: tag,
+              $id: $scope.$id
+            });
+            dfrd.reject();
+          },
+          i,
+          dfrd = $q.defer();
+
+        // don't add dupe names
+        i = $scope.tags.length;
+        while (i--) {
+          if ($scope.tags[i].name === tag.name) {
+            fail();
+          }
+        }
+
+        $scope._filterSrcTags(tag)
+          .then(function () {
+            _add(tag);
+          }, function () {
+            if ($scope.options.addable) {
+              _add(tag);
+              dfrd.resolve();
+            }
+            else {
+              fail();
+            }
+          });
+
+        return dfrd.promise;
+      };
+
+      /**
+       * Toggle the input box active.
+       */
+      $scope.selectArea = function selectArea() {
+        $scope.toggles.inputActive = true;
+      };
+
+      /**
+       * Removes a tag.  Restores stuff into srcTags if it came from there.
+       * Kills any selected tag.  Emit a decipher.tags.removed event.
+       * @param tag
+       */
+      $scope.remove = function remove(tag) {
+        var idx;
+        $scope.tags.splice($scope.tags.indexOf(tag), 1);
+
+        if (idx = $scope._deletedSrcTags.indexOf(tag) >= 0) {
+          $scope._deletedSrcTags.splice(idx, 1);
+          if ($scope.srcTags.indexOf(tag) === -1) {
+            $scope.srcTags.push(tag);
+          }
+        }
+
+        delete $scope.toggles.selectedTag;
+
+        $scope.$emit('decipher.tags.removed', {
+          tag: tag,
+          $id: $scope.$id
+        });
+      };
+
+    }]);
+
+  /**
+   * Directive for the 'input' tag itself, which is of class
+   * decipher-tags-input.
+   */
+  tags.directive('decipherTagsInput',
+    ['$timeout', '$filter', '$rootScope',
+     function ($timeout, $filter, $rootScope) {
+       return {
+         restrict: 'C',
+         require: 'ngModel',
+         link: function (scope, element, attrs, ngModel) {
+           var delimiterRx = new RegExp('^' +
+                                        scope.options.delimiter +
+                                        '+$'),
+
+             /**
+              * Cancels the text input box.
+              */
+               cancel = function cancel() {
+               ngModel.$setViewValue('');
+               ngModel.$render();
+             },
+
+             /**
+              * Adds a tag you typed/pasted in unless it's a bunch of delimiters.
+              * @param value
+              */
+               addTag = function addTag(value) {
+               if (value) {
+                 if (value.match(delimiterRx)) {
+                   cancel();
+                   return;
+                 }
+                 if (scope.add({
+                   name: value
+                 })) {
+                   cancel();
+                 }
+               }
+             },
+
+             /**
+              * Adds multiple tags in case you pasted them.
+              * @param tags
+              */
+               addTags = function (tags) {
+               var i;
+               for (i = 0; i < tags.length;
+                    i++) {
+                 addTag(tags[i]);
+               }
+             },
+
+             /**
+              * Backspace one to select, and a second time to delete.
+              */
+               removeLastTag = function removeLastTag() {
+               var orderedTags;
+               if (scope.toggles.selectedTag) {
+                 scope.remove(scope.toggles.selectedTag);
+                 delete scope.toggles.selectedTag;
+               }
+               // only do this if the input field is empty.
+               else if (!ngModel.$viewValue) {
+                 orderedTags =
+                 $filter('orderBy')(scope.tags,
+                   scope.orderBy);
+                 scope.toggles.selectedTag =
+                 orderedTags[orderedTags.length - 1];
+               }
+             };
+
+           /**
+            * When we focus the text input area, drop the selected tag
+            */
+           element.bind('focus', function () {
+             // this avoids what looks like a bug in typeahead.  It seems
+             // to be calling element[0].focus() somewhere within a digest loop.
+             if ($rootScope.$$phase) {
+               delete scope.toggles.selectedTag;
+             } else {
+               scope.$apply(function () {
+                 delete scope.toggles.selectedTag;
+               });
+             }
+           });
+
+           /**
+            * Detects the delimiter.
+            */
+           element.bind('keypress',
+             function (evt) {
+               scope.$apply(function () {
+                 if (scope.options.delimiter.charCodeAt() ===
+                     evt.which) {
+                   addTag(ngModel.$viewValue);
+                 }
+               });
+             });
+
+           /**
+            * Inspects whatever you typed to see if there were character(s) of
+            * concern.
+            */
+           element.bind('keyup',
+             function (evt) {
+               scope.$apply(function () {
+                 // to "complete" a tag
+
+                 if (kcCompleteTag.indexOf(evt.which) >=
+                     0) {
+                   addTag(ngModel.$viewValue);
+
+                   // or if you want to get out of the text area
+                 } else if (kcCancelInput.indexOf(evt.which) >=
+                            0) {
+                   cancel();
+                   scope.toggles.inputActive =
+                   false;
+
+                   // or if you're trying to delete something
+                 } else if (kcRemoveTag.indexOf(evt.which) >=
+                            0) {
+                   removeLastTag();
+
+                   // otherwise if we're typing in here, just drop the selected tag.
+                 } else {
+                   delete scope.toggles.selectedTag;
+                   scope.$emit('decipher.tags.keyup',
+                     {
+                       value: ngModel.$viewValue,
+                       $id: scope.$id
+                     });
+                 }
+               });
+             });
+
+           /**
+            * When inputActive toggle changes to true, focus the input.
+            * And no I have no idea why this has to be in a timeout.
+            */
+           scope.$watch('toggles.inputActive',
+             function (newVal) {
+               if (newVal) {
+                 $timeout(function () {
+                   element[0].focus();
+                 });
+               }
+             });
+
+           /**
+            * Detects a paste or someone jamming on the delimiter key.
+            */
+           ngModel.$parsers.unshift(function (value) {
+             var values = value.split(scope.options.delimiter);
+             if (values.length > 1) {
+               addTags(values);
+             }
+             if (value.match(delimiterRx)) {
+               element.val('');
+               return;
+             }
+             return value;
+           });
+
+           /**
+            * Resets the input field if we selected something from typeahead.
+            */
+           ngModel.$formatters.push(function (tag) {
+             if (tag && tag.value) {
+               element.val('');
+               return;
+             }
+             return tag;
+           });
+         }
+       };
+     }]);
+
+  /**
+   * Main directive
+   */
+  tags.directive('tags',
+    ['$document', '$timeout', '$parse', 'decipherTagsOptions',
+     function ($document, $timeout, $parse, decipherTagsOptions) {
+
+       return {
+         controller: 'TagsCtrl',
+         restrict: 'E',
+         replace: true,
+         // IE8 is really, really fussy about this.
+         template: '<div><div data-ng-include="options.templateUrl"></div></div>',
+         scope: {
+           model: '='
+         },
+         link: function (scope, element, attrs) {
+           var srcResult,
+             source,
+             tags,
+             group,
+             i,
+             tagsWatch,
+             srcWatch,
+             modelWatch,
+             model,
+             pureStrings = false,
+             stringArray = false,
+             defaults = angular.copy(defaultOptions),
+             userDefaults = angular.copy(decipherTagsOptions),
+
+             /**
+              * Parses the comprehension expression and gives us interesting bits.
+              * @param input
+              * @returns {{itemName: *, source: *, viewMapper: *, modelMapper: *}}
+              */
+               parse = function parse(input) {
+               var match = input.match(SRC_REGEXP);
+               if (!match) {
+                 throw new Error(
+                   "Expected src specification in form of '_modelValue_ (as _label_)? for _item_ in _collection_'" +
+                   " but got '" + input + "'.");
+               }
+
+               return {
+                 itemName: match[3],
+                 source: $parse(match[4]),
+                 sourceName: match[4],
+                 viewMapper: $parse(match[2] || match[1]),
+                 modelMapper: $parse(match[1])
+               };
+
+             },
+
+             watchModel = function watchModel() {
+               modelWatch = scope.$watch('model', function (newVal) {
+                 var deletedTag, idx;
+                 if (angular.isDefined(newVal)) {
+                   tagsWatch();
+                   scope.tags = format(newVal);
+
+                   // remove already used tags
+                   i = scope.tags.length;
+                   while (i--) {
+                     scope._filterSrcTags(scope.tags[i]);
+                   }
+
+                   // restore any deleted things to the src array that happen to not
+                   // be in the new value.
+                   i = scope._deletedSrcTags.length;
+                   while (i--) {
+                     deletedTag = scope._deletedSrcTags[i];
+                     if (idx = newVal.indexOf(deletedTag) === -1 &&
+                               scope.srcTags.indexOf(deletedTag) === -1) {
+                       scope.srcTags.push(deletedTag);
+                       scope._deletedSrcTags.splice(i, 1);
+                     }
+                   }
+
+                   watchTags();
+                 }
+               }, true);
+
+             },
+
+             watchTags = function watchTags() {
+
+               /**
+                * Watches tags for changes and propagates to outer model
+                * in the format which we originally specified (see below)
+                */
+               tagsWatch = scope.$watch('tags', function (value, oldValue) {
+                 var i;
+                 if (value !== oldValue) {
+                   modelWatch();
+                   if (stringArray || pureStrings) {
+                     value = value.map(function (tag) {
+                       return tag.name;
+                     });
+                     if (angular.isArray(scope.model)) {
+                       scope.model.length = 0;
+                       for (i = 0; i < value.length; i++) {
+                         scope.model.push(value[i]);
+                       }
+                     }
+                     if (pureStrings) {
+                       scope.model = value.join(scope.options.delimiter);
+                     }
+                   }
+                   else {
+                     scope.model.length = 0;
+                     for (i = 0; i < value.length; i++) {
+                       scope.model.push(value[i]);
+                     }
+                   }
+                   watchModel();
+
+                 }
+               }, true);
+             },
+             /**
+              * Takes a raw model value and returns something suitable
+              * to assign to scope.tags
+              * @param value
+              */
+               format = function format(value) {
+               var arr = [],
+                 sanitize = function sanitize(tag) {
+                   return tag
+                     .replace(/&/g, '&amp;')
+                     .replace(/</g, '&lt;')
+                     .replace(/>/g, '&gt;')
+                     .replace(/'/g, '&#39;')
+                     .replace(/"/g, '&quot;');
+                 };
+               if (angular.isUndefined(value)) {
+                 return;
+               }
+               if (angular.isString(value)) {
+                 arr = value
+                   .split(scope.options.delimiter)
+                   .map(function (item) {
+                     return {
+                       name: sanitize(item.trim())
+                     };
+                   });
+               }
+               else if (angular.isArray(value)) {
+                 arr = value.map(function (item) {
+                   if (angular.isString(item)) {
+                     return {
+                       name: sanitize(item.trim())
+                     };
+                   }
+                   else if (item.name) {
+                     item.name = sanitize(item.name.trim());
+                   }
+                   return item;
+                 });
+               }
+               else if (angular.isDefined(value)) {
+                 throw 'list of tags must be an array or delimited string';
+               }
+               return arr;
+             },
+             /**
+              * Updates the source tag information.  Sets a watch so we
+              * know if the source values change.
+              */
+               updateSrc = function updateSrc() {
+               var locals,
+                 i,
+                 o,
+                 obj;
+               // default to NOT letting users add new tags in this case.
+               scope.options.addable = scope.options.addable || false;
+               scope.srcTags = [];
+               srcResult = parse(attrs.src);
+               source = srcResult.source(scope.$parent);
+               if (angular.isUndefined(source)) {
+                 return;
+               }
+               if (angular.isFunction(srcWatch)) {
+                 srcWatch();
+               }
+               locals = {};
+               if (angular.isDefined(source)) {
+                 for (i = 0; i < source.length; i++) {
+                   locals[srcResult.itemName] = source[i];
+                   obj = {};
+                   obj.value = srcResult.modelMapper(scope.$parent, locals);
+                   o = {};
+                   if (angular.isObject(obj.value)) {
+                     o = angular.extend(obj.value, {
+                       name: srcResult.viewMapper(scope.$parent, locals),
+                       value: obj.value.value,
+                       group: obj.value.group
+                     });
+                   }
+                   else {
+                     o = {
+                       name: srcResult.viewMapper(scope.$parent, locals),
+                       value: obj.value,
+                       group: group
+                     };
+                   }
+                   scope.srcTags.push(o);
+                 }
+               }
+
+               srcWatch =
+               scope.$parent.$watch(srcResult.sourceName,
+                 function (newVal, oldVal) {
+                   if (newVal !== oldVal) {
+                     updateSrc();
+                   }
+                 }, true);
+             };
+
+           // merge options
+           scope.options = angular.extend(defaults,
+             angular.extend(userDefaults, scope.$eval(attrs.options)));
+           // break out orderBy for view
+           scope.orderBy = scope.options.orderBy;
+
+           // this should be named something else since it's just a collection
+           // of random shit.
+           scope.toggles = {
+             inputActive: false
+           };
+
+           /**
+            * When we receive this event, sort.
+            */
+           scope.$on('decipher.tags.sort', function (evt, data) {
+             scope.orderBy = data;
+           });
+
+           // pass typeahead options through
+           attrs.$observe('typeaheadOptions', function (newVal) {
+             if (newVal) {
+               scope.typeaheadOptions = $parse(newVal)(scope.$parent);
+             } else {
+               scope.typeaheadOptions = {};
+             }
+           });
+
+           // determine what format we're in
+           model = scope.model;
+           if (angular.isString(model)) {
+             pureStrings = true;
+           }
+           else if (angular.isArray(model)) {
+             stringArray = true;
+             i = model.length;
+             while (i--) {
+               if (!angular.isString(model[i])) {
+                 stringArray = false;
+                 break;
+               }
+             }
+           }
+
+           // watch model for changes and update tags as appropriate
+           scope.tags = [];
+           scope._deletedSrcTags = [];
+           watchTags();
+           watchModel();
+
+           // this stuff takes the parsed comprehension expression and
+           // makes a srcTags array full of tag objects out of it.
+           scope.srcTags = [];
+           if (angular.isDefined(attrs.src)) {
+             updateSrc();
+           } else {
+             // if you didn't specify a src, you must be able to type in new tags.
+             scope.options.addable = true;
+           }
+
+           // emit identifier
+           scope.$id = ++id;
+           scope.$emit('decipher.tags.initialized', {
+             $id: scope.$id,
+             model: scope.model
+           });
+         }
+       };
+     }]);
+
+})();

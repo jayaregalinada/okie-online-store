@@ -1,0 +1,85 @@
+.review-container {
+    .review {
+        padding: @review-padding;
+        min-height: @review-image-size + ( @review-padding * 2 );
+        background-color: @message-background;
+        border: @message-border;
+        position: relative;
+        &:hover {
+            cursor: pointer;
+            border: @message-border-hover;
+        }
+        &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+            .transition-delay( .1s );
+        }
+        &.ng-enter, &.ng-leave, &.ng-move {
+            .transition( all .3s );
+        }
+        &.ng-enter-stagger {
+            .transition-duration( 0s );
+        }
+        &.ng-enter {
+            opacity: 0;
+            .translate3d(0, 10%, 0);
+            &.ng-enter-active {
+                opacity: 1;
+                transform: none;
+                -webkit-transform: none;
+            }
+        }
+        &.ng-leave {
+            opacity: 1;
+            .animation( fadeOut .3s );
+            &.ng-leave-active {
+                .transition( all .3s );
+                opacity: 0;
+            }
+        }
+        &.approved {
+            background-color: lighten( @brand-success, 30% );
+        }
+        .media-left {
+            a {
+                display: block;
+            }
+            img {
+                width: @review-image-size + 20px;
+                height: @review-image-size + 20px;
+            }
+        }
+        .media-body {
+            .message-body {
+                font-family: @font-family-descriptive;
+                p {
+                    margin-bottom: 0;
+                }
+            }
+        }
+        .panel-group {
+            margin-bottom: 0;
+        }
+        .rating-star {
+            font-size: @font-size-h4;
+            margin-bottom: 5px;
+            i {
+                cursor: pointer;
+            }
+            .glyphicon-star {
+                color: @brand-primary;
+            }
+            .glyphicon-star-empty {
+                color: @gray-light;
+            }
+        }
+        .media-heading {
+            span {
+                font-size: ceil( ( @font-size-base * 0.70 ) );
+            }
+        }
+    }
+    .media-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}

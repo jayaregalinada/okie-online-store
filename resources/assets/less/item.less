@@ -9,10 +9,33 @@
             }
         }
     }
+    .item-price {
+        &.item-sale {
+            .orig-price {
+                display: block;
+                text-decoration: line-through;
+                font-size: @font-size-base;
+                color: @gray-light;
+            }
+            .sale-price {
+                color: @brand-danger;
+            }
+        }
+        font-size: @font-size-h2;
+        color: @brand-primary;
+        font-style: italic;
+        margin-bottom: 0;
+        font-family: @font-family-serif;
+    }
     .item-carousel {
         @media (min-width: @screen-lg-min) {
             width: 400px;
             height: 400px;
+            &.affix {
+                position: fixed!important;
+                top: 84px;
+                margin-left: 22px;
+            }
         }
         margin-left: auto;
         margin-right: auto;
@@ -61,11 +84,54 @@
         }
     }
     .item-info {
+        color: @gray-base;
         .item-inquire {
             a {
                 // .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
                 @media (min-width: @screen-md-min) {
                     .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+                }
+            }
+        }
+    }
+    .item-rating {
+        font-size: @font-size-h4;
+        i {
+            cursor: pointer;
+            text-shadow: 0 1px 0 @gray-light;
+            letter-spacing: 4px;
+        }
+        .glyphicon-star {
+            color: #ffd700;
+        }
+        .glyphicon-star-empty {
+            color: @gray-light;
+        }
+        .collapse {
+            .rating-star {
+                font-size: @font-size-h3;
+                padding-top: @padding-base-vertical;
+                padding-bottom: @padding-base-vertical;
+                > span {
+                    font-style: italic;
+                }
+            }
+            [text-angular] {
+                font-size: @font-size-base;
+                .placeholder-text {
+                    color: @gray-light;
+                }
+            }
+            .buttons {
+                margin-top: @padding-base-vertical;
+            }
+        }
+        #ratingCollapse {
+            form {
+                .transition( .1s linear all );
+                opacity: 1;
+                &.ng-hide {
+                    opacity: 0;
                 }
             }
         }
@@ -101,7 +167,5 @@
         .btn-group {
             font-family: @font-family-descriptive;
         }
-
-
     }
 }

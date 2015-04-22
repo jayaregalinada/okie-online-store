@@ -1,0 +1,18 @@
+<div class="search-form">
+    <form name="form_global_search" class="animate navbar-form navbar-left" role="search">
+        <div class="form-group">
+            <input ng-focus="onFocus( $event )" ng-blur="onBlur( $event )" name="search" ng-model-options="{ debounce: 1000 }" ng-model="search" type="text" class="animate form-control" placeholder="Search" />
+        </div>
+    </form>
+    <div class="search-results" style="display: none">
+        <ul class="list-group clearfix" ng-if="results.length" ng-hide="resultErrorState">
+            <li class="result list-group-item" ng-repeat="result in results">
+                <a href="#" ui-sref="item({ itemId: result.id })">{# result.name #}</a>
+            </li>
+        </ul>
+        <div class="alert alert-danger text-center" ng-show="resultErrorState">
+            {# resultErrorMessage #}
+        </div>
+    </div>
+</div>
+

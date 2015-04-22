@@ -1,0 +1,88 @@
+.ribbon {
+   &.ribbon-relative {
+      position: relative;
+      left: 0;
+      top: 0;
+   }
+   position: absolute;
+   left: 5px;
+   top: 6px;
+   padding-top: 1px;
+   padding-bottom: 1px;
+   &.letter-spacing-1 {
+      letter-spacing: 1px;
+   }
+   &.letter-spacing-2 {
+      letter-spacing: 2px;
+   }
+   &.letter-spacing-3 {
+      letter-spacing: 3px;
+   }
+   &.letter-spacing-4 {
+      letter-spacing: 4px;
+   }
+   &.letter-spacing-5 {
+      letter-spacing: 5px;
+   }
+   &.letter-spacing-6 {
+      letter-spacing: 6px;
+   }
+   &:before {
+      content: '';
+      position: absolute;
+      border-style: solid;
+      border-color: transparent;
+      bottom: -10px;
+      border-width: 0 10px 10px 0;
+      left: 0;
+   }
+   &.ribbon-default {
+      background-color: @gray-darker;
+      &:before {
+         border-right-color: darken( @gray-darker, 15% );
+      }
+      &.ribbon-primary {
+         background-color: @brand-primary;
+         &:before {
+            border-right-color: darken( @brand-primary, 15% );
+         }
+      }
+      &.ribbon-success {
+         background-color: @brand-success;
+         &:before {
+            border-right-color: darken( @brand-success, 15% );
+         }
+      }
+      &.ribbon-info {
+         background-color: @brand-info;
+         &:before {
+            border-right-color: darken( @brand-info, 15% );
+         }
+      }
+      &.ribbon-warning {
+         background-color: @brand-warning;
+         &:before {
+            border-right-color: darken( @brand-warning, 15% );
+         }
+      }
+      &.ribbon-danger {
+         background-color: @brand-danger;
+         &:before {
+            border-right-color: darken( @brand-danger, 15% );
+         }
+      }
+   }
+   font-family: @font-family-sans-serif;
+   font-size: @font-size-small;
+}
+.ribbon > span {
+   color: #fff;
+   display: block;
+   margin: 1px 0;
+   padding: 10px 50px;
+   text-align: center;
+   text-decoration: none;
+   text-shadow: 0 0 5px #444;
+   border-top: 1px dashed fade( #FFF, 30% );
+   border-bottom: 1px dashed fade( #FFF, 30% );
+}

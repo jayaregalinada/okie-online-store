@@ -1,0 +1,57 @@
+.ui-notification {
+    position: fixed;
+    right: 10px;
+    top: -100px;
+    z-index: 9999;
+    .box-shadow( 0 1px 5px @gray );
+    cursor: pointer;
+    width: 300px;
+    color: @btn-primary-color;
+    background: @brand-primary;
+    font-family: @font-family-sans-serif;
+    .transition(all ease 0.5s);
+    &.killed {
+        opacity: 0;
+        .transition(opacity ease 1s);
+    }
+    & > h3 {
+        display: block;
+        margin: 10px 10px 0 10px;
+        padding: 0 0 5px 0;
+        text-align: left;
+        font-size: @font-size-h4;
+        text-transform: uppercase;
+        border-bottom: 1px solid fadeout(@btn-primary-color, 70%);
+        font-family: @font-family-sans-serif;
+        letter-spacing: 2px;
+    }
+    & a {
+        color: @btn-primary-color;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    & > .message {
+        margin: 10px 10px 10px 10px;
+        font-family: @font-family-descriptive;
+    }
+    &.warning {
+        color: @btn-warning-color;
+        background: @brand-warning;
+    }
+    &.error {
+        color: @btn-danger-color;
+        background: @brand-danger;
+    }
+    &.success {
+        color: @btn-success-color;
+        background: @brand-success;
+    }
+    &.info {
+        color: @btn-info-color;
+        background: @brand-info;
+    }
+    &:hover {
+        opacity: 0.7;
+    }
+}

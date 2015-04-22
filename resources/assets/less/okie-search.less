@@ -1,0 +1,40 @@
+.okie-search {
+    .navbar-form .form-group {
+        display: inline;
+    }
+    form {
+        @media (min-width: @screen-md-min) {
+            width: 40%;
+        }
+    }
+    form.searching {
+        
+        // input {
+        //     width: 100%!important;
+        // }
+    }
+    .search-results {
+        margin-top: 2px;
+        border-top: 3px solid @brand-primary;
+        position: absolute;
+        z-index: @zindex-tooltip + 1;
+        .result {
+            .product-thumbnail {
+                width: 25px;
+                height: 25px;
+            }
+            &:hover, &.selected {
+                background-color: @brand-primary;
+                color: #FFF;
+                cursor: pointer;
+                a {
+                    color: #FFF;
+                }
+            }
+            a {
+                display: block;
+                color: @gray-dark;
+            }
+        }
+    }
+}

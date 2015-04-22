@@ -14,7 +14,7 @@ class AddThumbnailId extends Migration {
 	{
 		Schema::table('products', function(Blueprint $table)
 		{
-			$table->integer('thumbnail_id')->unsigned();
+			$table->unsignedInteger('thumbnail_id')->after( 'unit' );
 		});
 	}
 

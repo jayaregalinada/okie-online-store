@@ -45,7 +45,7 @@ class Product extends Model {
 	/**
 	 * @var array
 	 */
-	protected $fillable = [ 'name', 'code', 'description', 'price', 'unit', 'user_id', 'thumbnail_id' ];
+	protected $fillable = [ 'name', 'code', 'description', 'price', 'unit', 'user_id', 'thumbnail_id', 'badge', 'sale_price' ];
 
 	/**
 	 * @var array
@@ -65,7 +65,7 @@ class Product extends Model {
 	/**
 	 * @var array
 	 */
-	protected $appends = [ 'thumbnail' ];
+	protected $appends = [ 'thumbnail', 'rating' ];
 
 	/**
 	 * @var array
@@ -79,7 +79,16 @@ class Product extends Model {
 		'id' => 'integer',
 		'unit' => 'integer',
 		'user_id' => 'integer',
-		'thumbnail_id' => 'integer'
+		'thumbnail_id' => 'integer',
+	];
+
+	/**
+	 * Possible object key for badge column
+	 * 
+	 * @type array
+	 */
+	public $badgeAttributes = [
+		'title', 'description', 'slug', 'class', 'class_array'
 	];
 
 	/**
@@ -133,7 +142,158 @@ class Product extends Model {
 	 */
 	public function getThumbnailAttribute()
 	{
-		return $this->attributes['thumbnail'] = $this->getThumbnail()['sizes'];
+		if( is_null( $this->getThumbnail()['sizes'] ) )
+			return $this->defaultThumbnail();
+
+		return $this->getThumbnail()['sizes'];
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function reviews()
+	{
+		return $this->hasMany( 'Okie\Review' );
+	}
+
+	/**
+	 * @param $query
+	 *
+	 * @return float
+	 */
+	public function scopeCalculateRating( $query )
+	{
+		$reviews = $this->reviews()->whereNotNull( 'approved_by' );
+		$avgRating = $reviews->avg( 'rating' );
+
+		return round( $avgRating, 1 );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getRatingAttribute()
+	{
+		return [
+			'average' => $this->calculateRating(),
+			'count'   => $this->reviews()->whereNotNull( 'approved_by' )->count()
+		];
+	}
+
+	/**
+	 * If product do not have any thumbnail
+	 *
+	 * @return array
+	 */
+	private function defaultThumbnail()
+	{
+		return [
+			[
+				'width' => 600,
+				'height' => 600,
+				'url' => url( '/images/defaults/product_org.jpg' ),
+				'base_dir' => '/images/defaults/product_org.jpg'
+			],
+			[
+				'width' => 50,
+				'height' => 50,
+				'url' => url( '/images/defaults/product_sqr.jpg' ),
+				'base_dir' => '/images/defaults/product_sqr.jpg'
+			],
+			[
+				'width' => 280,
+				'height' => 280,
+				'url' => url( '/images/defaults/product_thn.jpg' ),
+				'base_dir' => '/images/defaults/product_thn.jpg'
+			],
+			[
+				'width' => 150,
+				'height' => 150,
+				'url' => url( '/images/defaults/product_sml.jpg' ),
+				'base_dir' => '/images/defaults/product_sml.jpg'
+			],
+			[
+				'width' => 300,
+				'height' => 300,
+				'url' => url( '/images/defaults/product_mdm.jpg' ),
+				'base_dir' => '/images/defaults/product_mdm.jpg'
+			],
+			[
+				'width' => 600,
+				'height' => 600,
+				'url' => url( '/images/defaults/product_lrg.jpg' ),
+				'base_dir' => '/images/defaults/product_lrg.jpg'
+			]
+		];
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return null|string
+	 */
+	public function setBadgeAttribute( $value )
+	{
+		if( is_null( $value ) )
+			return $this->attributes[ 'badge' ] = null;
+		else
+			return $this->attributes[ 'badge' ] = serialize( $value );
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return array|mixed
+	 */
+	public function getBadgeAttribute( $value )
+	{
+		if( ! ( $this->attributes[ 'badge' ] ) )
+			return [
+				'class' => 'ribbon-default',
+				'class_array' => [ 'ribbon-default' ]
+			];
+
+		return unserialize( $value );
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return bool|int
+	 */
+	public function editBadge( array $data )
+	{
+		return $this->update( [
+			'badge' => [
+				'title' => $data[ 'title' ],
+				'description' => $data[ 'description' ],
+				'slug' => str_slug( $data[ 'title' ] ),
+				'class' => $data[ 'class' ],
+				'class_array' => explode( ' ', $data[ 'class' ] )
+			]
+		] );
+	}
+
+	/**
+	 * @return bool|int
+	 */
+	public function destroyBadge()
+	{
+		return $this->update( [
+			'badge' => null ]
+		);
+	}
+
+	/**
+	 * @param     $query
+	 * @param     $id
+	 * @param int $limit
+	 *
+	 * @return mixed
+	 */
+	public function scopeGetRelated( $query, $id, $limit = 5 )
+	{
+		return $query->where( 'id', '!=', $id )->orderByRaw( "RAND()" )->limit( $limit )->get();
 	}
 
 }

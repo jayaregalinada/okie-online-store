@@ -80,12 +80,17 @@ class Conversation extends Model {
 	/**
 	 * @type array
 	 */
-	protected $hidden = [ 'deleted_at', 'updated_at', 'created_at', 'taggable_id', 'taggable_type' ];
+	protected $hidden = [ 'deleted_at', 'updated_at', 'taggable_id', 'taggable_type' ];
 
 	/**
 	 * @type array
 	 */
 	protected $with = [ 'user' ];
+
+	/**
+	 * @type int
+	 */
+	protected $perPage = 20;
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

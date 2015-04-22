@@ -1,5 +1,5 @@
 (function() {
-  _okie.controller('MessageController', function($scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory) {
+  _okie.controller('MessageController', function($scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory) {
     $scope.heading = 'Messages';
     $scope.messages = [];
     $scope.conversation = [];
@@ -19,6 +19,8 @@
     $scope.inquiryLoadingState = false;
     $scope.inquiryErrorState = false;
     $scope.inquiriesKey = 'inquiries';
+    $scope.inquiryStateReserve = false;
+    $scope.reserve = 0;
     $scope.inbox = [];
     $scope.inboxConversations = [];
     $scope.inboxInfo = {};
@@ -209,6 +211,7 @@
         $scope.alerts.push(data.error);
         $timeout(function() {
           $scope.alerts = [];
+          $scope.inquiryConversations = [];
           $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId);
           $scope.replySubmitButton.state = false;
         }, 4000);
@@ -375,9 +378,12 @@
      * @return {void}
      */
     $scope.createMessage = function() {
-      var name;
       $log.info('Create a message');
       $scope.changeHeading('Create');
+      UserFactory.getNotify($scope.creatingMessage);
+    };
+    $scope.creatingMessage = function() {
+      var name;
       name = $rootScope.me.user.is_permitted ? $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name : 'You';
       $scope.message.subject = 'Message from ' + name;
     };
@@ -469,11 +475,11 @@
         $state.go('messages.viewInbox', {
           inboxId: data.success.data.inbox.id
         });
-      }).error(function(data, xhr) {
+      }).error(function(error, xhr) {
         $scope.message.recipient = null;
         $scope.message.send = null;
         $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state;
-        $scope.alerts.push(data.error);
+        Notification.error(error.error);
       });
     };
 
@@ -521,7 +527,6 @@
      * @return {void}
      */
     $scope.getToInboxMessages = function(inboxId, pageNumber) {
-      $scope.inboxConversations = [];
       $scope.changeHeading('Loading conversations');
       $scope.inboxState = true;
       InboxFactory.getConversations(inboxId, pageNumber).success(function(data, xhr) {
@@ -547,6 +552,47 @@
         }, 3000);
       });
     };
+    $scope.inquiryReserve = function(event) {
+      event.preventDefault();
+      $scope.inquiryStateReserve = !$scope.inquiryStateReserve;
+    };
+    $scope.reserveItem = function() {
+      InquiryFactory.reserveInquiry({
+        inquiry: $scope.inquiryInfo.id,
+        reserve: $scope.reserve
+      }).success(function(success) {
+        $log.log('MessageController.reserveItem::success', success);
+        $log.log($scope.reserve);
+        $scope.inquiryStateReserve = !$scope.inquiryStateReserve;
+        Notification.success(success.success);
+        $scope.reserve = 0;
+        $scope.inquiryInfo = success.success.data.inquiry;
+        $log.log($scope.reserve);
+      }).error(function(error) {
+        Notification.error(error.error);
+      }).then(function(data) {
+        $scope.reserve = 0;
+        $log.log($scope.reserve);
+      });
+    };
+    $scope.destroyConversation = function(id, index) {
+      InboxFactory.removeConversation(id).success(function(success) {
+        Notification.success(success.success);
+        $scope.inboxConversations.splice(index, 1);
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+    };
+    $scope.reserveButton = function(e) {
+      switch (e) {
+        case 'minus':
+          $scope.reserve = $scope.reserve > 1 ? $scope.reserve - 1 : 0;
+          break;
+        case 'add':
+          $scope.reserve = $scope.reserve < $scope.inquiryInfo.product.unit ? $scope.reserve + 1 : $scope.reserve + 0;
+          break;
+      }
+    };
   });
 
 }).call(this);
@@ -564,11 +610,27 @@
 }).call(this);
 
 (function() {
-  _okie.controller('UserSettingsController', function($scope, $http, $state, $stateParams, $rootScope, $log, UserSettingsFactory) {
+  _okie.controller('UserSettingsController', function($scope, $http, $state, $stateParams, $rootScope, $modal, $log, UserSettingsFactory, Notification) {
     $scope.alerts = [];
     $scope.email = /^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/;
     $scope.emails = [];
     $scope.settings = {};
+    $scope.state = {
+      newsletterUnsubscribe: false
+    };
+
+    /**
+     * Change the heading
+     *
+     * @param  {string} heading
+     *
+     * @return {void}
+     */
+    $scope.changeHeading = function(heading, prepend) {
+      $scope.heading = heading;
+      $('.profile-container .profile-full-name').text(heading);
+      $('.profile-container .profile-full-name').prepend(prepend);
+    };
 
     /**
      * Close the alert
@@ -581,14 +643,23 @@
       $scope.alerts.splice(index, 1);
     };
     $scope.getEmailSubscribe = function() {
+      $scope.heading = 'Newsletter Subscription';
+      $scope.changeHeading('Newsletter Subscription');
       $scope.emails = [];
       UserSettingsFactory.getEmailSubscribe('/newsletter').success(function(response, xhr) {
         $log.info('UserSettingsController.getEmailSubscribe::response', response);
-        angular.forEach(response.success.data, function(value, key) {
-          $scope.emails.push(value);
-        });
+        $scope.pushToEmails(response.success.data);
       }).error(function(response, xhr) {
-        $scope.alerts.push(response.error);
+        Notification.error({
+          title: 'Opps, somethings went wrong',
+          message: response.error.message
+        });
+      });
+    };
+    $scope.pushToEmails = function(data) {
+      $scope.emails = [];
+      angular.forEach(data, function(value, key) {
+        return $scope.emails.push(value);
       });
     };
     $scope.subscribeNewsletter = function(event, form) {
@@ -597,6 +668,7 @@
       $log.log('form', form);
       UserSettingsFactory.subscribeToNewsletter($scope.settings, event.target.action).success(function(response, xhr) {
         $log.log('UserSettingsController.subscribeNewsletter::response', response);
+        Notification.success(response.success);
         $scope.emails = [];
         angular.forEach(response.success.emails, function(value, key) {
           $scope.emails.push(value);
@@ -607,15 +679,56 @@
         if (response.email) {
           res = {
             message: response.email.join(' | '),
-            raw: response
+            raw: response,
+            title: 'Opps, :('
           };
-          $scope.alerts.push(res);
+          Notification.error(res);
         } else {
-          $scope.alerts.push(response.error);
+          Notification.error(response.error);
         }
       }).then(function(data, xhr) {
         $scope.settings.email = null;
       });
+    };
+    $scope.unsubscribing = function(email) {
+      $scope.hotSeatNewsletterEmail = email;
+      $scope.modalInstance = $modal.open({
+        templateUrl: '/views/settings/confirm-unsubscribe.html',
+        controller: 'UserSettingsController',
+        size: 'sm',
+        scope: $scope
+      });
+      $scope.modalInstance.result.then(function(email) {
+        $scope.getEmailSubscribe();
+        $log.info('Remove', email);
+        $scope.hotSeatNewsletterEmail = null;
+      });
+    };
+    $scope.unsubscribeNewsletter = function(event, form) {
+      event.preventDefault();
+    };
+    $scope.newsletterConfirm = function(event, form) {
+      event.preventDefault();
+      $log.log($scope.hotSeatNewsletterEmail);
+      $scope.state.newsletterUnsubscribe = true;
+      UserSettingsFactory.unsubscribeToNewsletter({
+        email: $scope.hotSeatNewsletterEmail
+      }, event.target.action).success(function(successResponse, xhr) {
+        $log.log('UserSettingsController.newsletterConfirm::successResponse', successResponse);
+        Notification.success(successResponse.success);
+        $scope.state.newsletterUnsubscribe = false;
+      }).error(function(errorResponse, xhr) {
+        $log.error('UserSettingsController.newsletterConfirm::errorResponse', errorResponse);
+        Notification.error(errorResponse.error);
+      }).then(function(data) {
+        $log.log('UserSettingsController.newsletterConfirm::data', data);
+        $scope.modalInstance.close($scope.hotSeatNewsletterEmail);
+        $scope.hotSeatNewsletterEmail = null;
+      });
+    };
+    $scope.newsletterCancel = function(event) {
+      event.preventDefault();
+      $scope.modalInstance.dismiss('cancel');
     };
   });
 
@@ -657,6 +770,12 @@
         data: data,
         method: method ? method : "POST",
         params: params
+      });
+    };
+    _i.removeConversation = function(id, method) {
+      return $http({
+        url: $window._url.inbox.removeConversation.replace('_CONVERSATION_ID_', id),
+        method: method ? method : "POST"
       });
     };
     return _i;
@@ -748,6 +867,23 @@
     _i.markAsDeliver = function(data, url, method, params) {
       return $http({
         url: url ? url : $window._url.inquiry.delivered,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+
+    /**
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+     */
+    _i.reserveInquiry = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.inquiry.reserve,
         data: data,
         method: method ? method : "POST",
         params: params
@@ -859,7 +995,7 @@
 }).call(this);
 
 (function() {
-  _okie.factory('UserSettingsFactory', function($http) {
+  _okie.factory('UserSettingsFactory', function($http, $window) {
     var _u;
     _u = {};
 
@@ -885,6 +1021,14 @@
       return $http({
         url: url,
         method: method ? method : "GET",
+        params: params
+      });
+    };
+    _u.unsubscribeToNewsletter = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.settings.unsubscribeNewsletter,
+        method: method ? method : "POST",
+        data: data,
         params: params
       });
     };

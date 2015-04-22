@@ -18,9 +18,8 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
             url: '/item/:itemId'
             views:
                 'items':
-                    controller: 'ItemController'
                     templateUrl: '/views/items/item.html'
-
+                    controller: 'ItemController'
 
         .state 'category',
             url: '/category/:categoryId'
@@ -55,6 +54,14 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
                 $scope.getProducts()
 
                 return
+            # views:
+            #     'products':
+            #         templateUrl: '/views/products/index.html'
+            #         controller: ( $scope )->
+            #             $scope.header = 'Products'
+            #             $scope.getProducts()
+
+            #             return
 
     # Messages
     $stateProvider
@@ -166,6 +173,48 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
             templateUrl: '/views/settings/newsletter.html'
             controller: ( $scope )->
                 $scope.getEmailSubscribe()
+
+                return
+
+    # Settings (Admin)
+    $stateProvider
+        .state 'asettings',
+            abstract: true
+            controller: 'AdminSettingsController'
+            template: '<ui-view/>'
+            url: '/settings'
+
+        .state 'asettings.permissions',
+            parent: 'asettings'
+            url: '^/permissions'
+            templateUrl: '/views/settings/permissions.html'
+            controller: ( $scope )->
+                $scope.getPermissions()
+
+                return
+
+        .state 'asettings.general',
+            parent: 'asettings'
+            url: '^/general'
+            templateUrl: '/views/settings/general.html'
+            controller: ( $scope )->
+                $scope.getGeneral()
+
+                return
+
+    $stateProvider
+        .state 'reviews',
+            abstract: true
+            controller: 'ReviewController'
+            template: '<ui-view/>'
+            url: '/review'
+
+        .state 'reviews.all',
+            parent: 'reviews'
+            url: '/all'
+            templateUrl: '/views/reviews/all.html'
+            controller: ( $scope )->
+                $scope.getAllReviews()
 
                 return
 

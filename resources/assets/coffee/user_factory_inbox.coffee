@@ -30,4 +30,9 @@ _okie.factory 'InboxFactory', ( $http, $rootScope, $window )->
 			method: if method then method else "POST"
 			params: params
 
+	_i.removeConversation = ( id, method )->
+		$http
+			url: $window._url.inbox.removeConversation.replace '_CONVERSATION_ID_', id
+			method: if method then method else "POST"
+
 	_i

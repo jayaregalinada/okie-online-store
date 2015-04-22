@@ -5,6 +5,7 @@ _okie.factory 'ItemFactory', ( $http, $q )->
         base: '/items/'
         category: '/items/category/'
         inquiry: '/item/inquire'
+        rate: '/item/_ITEM_ID_/rate'
 
     ###*
      * Get all items by page number
@@ -14,11 +15,11 @@ _okie.factory 'ItemFactory', ( $http, $q )->
      * @return $http
     ###
     _i.getAll = ( pageNumber )->
-        $http(
+        $http
             url: urls.base
             params:
-                page: ( if ( pageNumber ) then pageNumber else 1 )
-        )
+                page: if pageNumber then pageNumber else 1
+        
 
     ###*
      * Get item by id
@@ -28,9 +29,9 @@ _okie.factory 'ItemFactory', ( $http, $q )->
      * @return $http
     ###
     _i.getItem = ( id )->
-        $http(
+        $http
             url: urls.base + id
-        )
+        
 
     ###*
      * Get all items by its category
@@ -41,11 +42,11 @@ _okie.factory 'ItemFactory', ( $http, $q )->
      * @return $http
     ###
     _i.getAllByCategory = ( category, pageNumber )->
-        $http(
+        $http
             url: urls.category + category
             params:
-                page: ( if ( pageNumber ) then pageNumber else 1 )
-        )
+                page: if pageNumber then pageNumber else 1
+        
 
     ###*
      * Get Item Url
@@ -75,12 +76,26 @@ _okie.factory 'ItemFactory', ( $http, $q )->
      * @return $http
     ###
     _i.sendInquiryMessage = ( message, params )->
-        $http(
+        $http
             url: urls.inquiry
             data: message
             params: params
             method: "POST"
-        )
+
+    ###*
+     * Rate the item
+     *
+     * @param  {int} id
+     * @param  {object} data
+     * @param  {string} method
+     *
+     * @return $http
+    ###
+    _i.rateItem = ( id, data, method )->
+        $http
+            url: urls.rate.replace '_ITEM_ID_', id
+            data: data
+            method: if method then method else "POST"
 
 
 

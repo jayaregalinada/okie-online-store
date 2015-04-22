@@ -1,3 +1,19 @@
+.message-mine-mine {
+    from {
+        background-color: @brand-primary;
+    }
+    to {
+        background-color: darken( @conversation-body-background, 10% );
+    }
+}
+.message-conversation {
+    from {
+        background-color: @brand-primary;
+    }
+    to {
+        background-color: @conversation-body-background;
+    }
+}
 .msg-container {
     .msg-nav-icon {
         width: 16px;
@@ -77,8 +93,45 @@
         }
     }
     &.conversation {
+        .media-body {
+            > .btn {
+                padding: 0;
+                width: 18px;
+                height: 18px;
+                float: right;
+                font-size: .7em;
+            }
+        }
+        .marker {
+            a {
+                &.inactive {
+                    opacity: 0.5;
+                }
+                &.active {
+                    border-bottom-color: transparent;
+                }
+            }
+        }
+        .inquiry-reserve-container {
+            .clearfix();
+            background-color: darken( @btn-info-bg, 10% );
+            border-color: darken( @btn-info-border, 12% );
+            > div {
+                padding: @alert-padding;
+            }
+        }
         .message {
             padding: @message-conversation-padding;
+            &.reply-reply {
+                .message-body {
+                    @-webkit-keyframes message-min { .message-mine-mine; }
+                    @-moz-keyframes message-min { .message-mine-mine; }
+                    @-ms-keyframes message-min { .message-mine-mine; }
+                    @-o-keyframes message-min { .message-mine-mine; }
+                    @keyframes message-min { .message-mine-mine; }
+                    .animation( message-min 1s );
+                }
+            }
             &:last-child {
                 margin-bottom: @padding-large-horizontal;
             }
@@ -111,22 +164,30 @@
             &.message-mine {
                 .media-body {
                     .message-body {
-                        background: darken( @message-conversation-body-background, 10% )!important;
+                        background-color: darken( @conversation-body-background, 10% )!important;
+                    }
+                }
+            }
+            &.message-same-user {
+                margin-top: 2px;
+                .media-left {
+                    img {
+                        opacity: 0;
                     }
                 }
             }
             .media-left {
                 img {
-                    width: @message-conversation-image-size;
-                    height: @message-conversation-image-size;
+                    width: @conversation-image-size;
+                    height: @conversation-image-size;
                 }
             }
             .media-body {
                 .message-body {
                     font-family: @font-family-descriptive;
-                    padding: @message-conversation-padding-body;
-                    background: @message-conversation-body-background;
-                    border-radius: @message-conversation-body-border-radius;
+                    padding: @conversation-padding-body;
+                    background-color: @conversation-body-background;
+                    border-radius: @conversation-body-border-radius;
                     word-break: break-word;
                     .time {
                         color: @gray-light;
@@ -136,10 +197,15 @@
                         max-width: 100%;
                         height: auto;
                     }
+                    p {
+                        margin: 0;
+                    }
+                    &:hover {
+                        .animation( message-conversation 1s );
+                    }
                 }
             }
         }
-
         .message-reply {
             padding-top: @padding-base-horizontal;
             margin-top: @padding-base-horizontal;
@@ -190,6 +256,11 @@
                     cursor: pointer;
                     background-color: @brand-primary;
                     color: #FFF;
+                }
+                img {
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 5px;
                 }
             }
         }

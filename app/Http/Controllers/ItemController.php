@@ -69,10 +69,7 @@ class ItemController extends Controller {
 		if( ! $find )
 			throw new ProductException( 'We do not have that kind of product', 404 );
 
-		if( $request->ajax() || $request->wantsJSON() )
-			return $this->responseInJSON( $find );
-
-		return view('item', [ 'product' => $find ] );
+		return $this->responseInJSON( $find );
 	}
 
 	/**

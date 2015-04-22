@@ -11,7 +11,7 @@
     </div>
     @endif
 
-    <div ng-class="{ 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('deliver-', '') #} message media animate" ng-repeat="message in deliverConversations"
+    <div ng-class="{ 'message-same-user': (deliverConversations[ $index - 1 ].user_id == message.user_id), 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('deliver-', '') #} message media animate" ng-repeat="message in deliverConversations"
         data-type="{# message.type #}"
         data-id="{# message.id #}"
         data-user="{# message.user_id #}"

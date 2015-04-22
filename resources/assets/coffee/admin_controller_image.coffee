@@ -1,4 +1,4 @@
-_okie.controller 'ImageController', ( $scope, $window, Lightbox, $rootScope, $http, localStorageService )->
+_okie.controller 'ImageController', ( $scope, $window, Lightbox, $rootScope, $http, localStorageService, Notification )->
 
     $scope.productKey = 'product_info'
     $scope.product = {}
@@ -20,7 +20,8 @@ _okie.controller 'ImageController', ( $scope, $window, Lightbox, $rootScope, $ht
                 id: $rootScope.images[ index ].id
             ).success ( data, xhr )->
                 Lightbox.closeModal()
-                $('.product-images .image-' + index).remove()
+                Notification.success data.success
+                $( '.product-images .image-' + index ).remove()
                 return
             .then ( data )->
                 $scope.getImages()
@@ -41,7 +42,8 @@ _okie.controller 'ImageController', ( $scope, $window, Lightbox, $rootScope, $ht
             method: "POST"
             data:
                 id: $rootScope.images[ index ].id
-            ).success ( data, xhr )->
+            ).success ( response, xhr )->
+                Notification.success response.success
                 Lightbox.closeModal()
                 return 
 

@@ -1,7 +1,11 @@
 <?php namespace Okie\Repositories;
 
+use Hash;
+use Crypt;
 use Okie\User;
 use GuzzleHttp\Client;
+use Okie\Services\Registrar;
+use Okie\Exceptions\UserException;
 
 class UserRepository {
 
@@ -37,24 +41,22 @@ class UserRepository {
 	 */
 	public function findByUserNameOrCreate( $userData, $provider )
 	{
-		$user = User::where( 'provider_id', '=', $userData->id )->first();
+		$user = User::whereProviderId( $userData->id )->first();
 		if( ! $user )
 		{
-			$user = User::create([
-				'provider_id'   => $userData->id,
-				'email'         => $userData->email,
-				'avatar'        => $this->getAvatarUrl( $userData->avatar ),
-				'verified'      => $userData->verified,
-				'provider'      => $provider,
-				'first_name'    => $userData->user['first_name'],
-				'last_name'     => $userData->user['last_name'],
-				'gender'        => $userData->user['gender'],
-				'link'          => $userData->user['link']
-			]);
+			if( is_null( User::find( 1 ) ) )
+			{
+				return $this->createAdmin( $userData, $provider );
+			}
+			else
+			{	
+				return $this->createUser( $userData, $provider );
+			}
 		}
-		$this->checkIfUserNeedsUpdating( $userData, $user );
-
-		return $user;
+		else
+		{
+			return $this->checkIfUserNeedsUpdating( $userData, $user );
+		}
 	}
 
 	/**
@@ -64,16 +66,16 @@ class UserRepository {
 	 * @param  object $userData
 	 * @param  \Okie\User $user
 	 *
-	 * @return void
+	 * @return \Okie\User
 	 */
 	public function checkIfUserNeedsUpdating( $userData, $user )
 	{
 		$socialData = 
 		[
-			'avatar'        => $this->getAvatarUrl( $userData->avatar ),
-			'email'         => $userData->email,
-			'first_name'    => $userData->user[ 'first_name' ],
-			'last_name'     => $userData->user[ 'last_name' ],
+			'avatar'         => $this->getAvatarUrl( $userData->avatar ),
+			'email'          => $userData->email,
+			'first_name'     => $userData->user[ 'first_name' ],
+			'last_name'      => $userData->user[ 'last_name' ],
 		];
 		$dbData = 
 		[
@@ -83,14 +85,82 @@ class UserRepository {
 			'last_name'     => $user->last_name,
 		];
 
-		if ( !empty( array_diff( $socialData, $dbData ) ) )
+		if ( ! empty( array_diff( $socialData, $dbData ) ) )
 		{
 			$user->avatar       = $this->getAvatarUrl( $userData->avatar );
 			$user->email        = $userData->email;
 			$user->first_name   = $userData->user[ 'first_name' ];
 			$user->last_name    = $userData->user[ 'last_name' ];
-			$user->save();
 		}
+
+		$user->provider_token   = Crypt::encrypt( $userData->token );
+		$user->save();
+
+		return $user;
+	}
+
+	/**
+	 * @param $userData
+	 * @param $provider
+	 *
+	 * @return \Okie\User
+	 * @throws \Okie\Exceptions\UserException
+	 */
+	private function createAdmin( $userData, $provider )
+	{
+		$user = new Registrar;
+		$password = $userData->token . $userData->id . $userData->name;
+		$data = [
+			'permission'     => 0,
+			'provider_id'    => $userData->id,
+			'email'          => $userData->email,
+			'avatar'         => $this->getAvatarUrl( $userData->avatar ),
+			'verified'       => $userData->user['verified'],
+			'provider'       => $provider,
+			'first_name'     => $userData->user[ 'first_name' ],
+			'last_name'      => $userData->user[ 'last_name' ],
+			'gender'         => $userData->user[ 'gender' ],
+			'link'           => $userData->user[ 'link' ],
+			'password'       => $password,
+			'password_confirmation' => $password,
+			'provider_token' => $userData->token
+		];
+		if( $user->validator( $data )->fails() )
+			throw new UserException( $user->validator( $data )->errors(), 500 );
+
+		return $user->create( $data );
+	}
+
+	/**
+	 * @param $userData
+	 * @param $provider
+	 *
+	 * @return \Okie\User
+	 * @throws \Okie\Exceptions\UserException
+	 */
+	private function createUser( $userData, $provider )
+	{
+		$user = new Registrar;
+		$password = $userData->token . $userData->id . $userData->name;
+		$data = [
+			'permission'     => 1,
+			'provider_id'    => $userData->id,
+			'email'          => $userData->email,
+			'avatar'         => $this->getAvatarUrl( $userData->avatar ),
+			'verified'       => $userData->user['verified'],
+			'provider'       => $provider,
+			'first_name'     => $userData->user['first_name'],
+			'last_name'      => $userData->user['last_name'],
+			'gender'         => $userData->user['gender'],
+			'link'           => $userData->user['link'],
+			'password'       => $password,
+			'password_confirmation' => $password,
+			'provider_token' => $userData->token
+		];
+		if( $user->validator( $data )->fails() )
+			throw new UserException( $user->validator( $data )->errors(), 500 );
+		
+		return $user->create( $data );
 	}
 
 }

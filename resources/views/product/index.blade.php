@@ -1,6 +1,6 @@
 @extends('templates.profile')
 
-@section('profile.attr', 'ng-controller="ProductController"')
+@section('title', ' - Products')
 
 @section('settings.heading', '{# header #}')
 

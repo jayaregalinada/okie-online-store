@@ -37,6 +37,7 @@ _okie.controller 'DeliverController', ( DeliverFactory, textAngularManager, $tim
 
     $scope.getAllDeliver = ( pageNumber )->
         $scope.deliveries = []
+        $scope.deliverConversations = []
         page = if pageNumber then pageNumber else 1
         $scope.changeHeading 'Delivered'
         $scope.deliverState = true
@@ -77,7 +78,6 @@ _okie.controller 'DeliverController', ( DeliverFactory, textAngularManager, $tim
         return
 
     $scope.getToConversation = ( deliverId, pageNumber )->
-        $scope.deliverConversations = []
         $scope.changeHeading 'Loading conversations'
         $scope.deliverState = true
         DeliverFactory.getConversations deliverId, pageNumber
@@ -93,7 +93,7 @@ _okie.controller 'DeliverController', ( DeliverFactory, textAngularManager, $tim
                 $scope.deliverErrorState = true
                 $log.error 'DeliverController.getToConversation::data', data
                 $scope.changeHeading 'ERROR'
-                $scope.deliverErrorMessage = data.error.deliverErrorMessage
+                $scope.deliverErrorMessage = data.error.message.replace '[DELIVER] ', ''
 
                 return
             .then ( data, xhr )->

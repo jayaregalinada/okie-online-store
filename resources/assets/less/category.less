@@ -1,0 +1,53 @@
+.category-container {
+    .categories {
+        .category-item {
+            position: relative;
+            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+                .transition-delay( .1s );
+            }
+            &.ng-enter, &.ng-leave, &.ng-move {
+                .transition( all .3s );
+            }
+            &.ng-enter-stagger {
+                .transition-duration( 0s );
+            }
+            &.ng-enter {
+                opacity: 0;
+                .translate3d(0, 10%, 0);
+                &.ng-enter-active {
+                    opacity: 1;
+                    transform: none;
+                    -webkit-transform: none;
+                }
+            }
+            &.ng-leave {
+                opacity: 1;
+                &.ng-leave-active {
+                    .transition( all 0 );
+                    opacity: 0;
+                }
+            }
+        }
+    }
+    .include-navigation {
+        .btn {
+            &.active {
+                background-color: @btn-success-bg;
+                border-color: @btn-success-border;
+                color: @btn-success-color;
+            }
+        }
+    }
+    .ui-select-container {
+        width: 100%;
+        .ui-select-match {
+            height: auto!important;
+            padding: 8px 18px;
+            border-radius: 0;
+        }
+        .ui-select-toggle {
+            border-radius: 0;
+            cursor: pointer;
+        }
+    }
+}

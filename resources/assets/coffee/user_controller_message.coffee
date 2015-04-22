@@ -1,4 +1,4 @@
-_okie.controller 'MessageController', ( $scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory )->
+_okie.controller 'MessageController', ( $scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory )->
 
     $scope.heading = 'Messages'
     $scope.messages = []
@@ -18,6 +18,9 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.inquiryLoadingState = false
     $scope.inquiryErrorState = false
     $scope.inquiriesKey = 'inquiries'
+    $scope.inquiryStateReserve = false
+    $scope.reserve = 0
+
     ## INBOX
     $scope.inbox = []
     $scope.inboxConversations = []
@@ -26,7 +29,6 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.inboxLoadingState = false
     $scope.inboxErrorState = false
     $scope.inboxKey = 'inbox'
-
     $scope.threadDeliveries = []
     $scope.threadInboxes = []
     $scope.intervalSeconds = 3000
@@ -213,6 +215,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                 $scope.alerts.push data.error
                 $timeout(->
                     $scope.alerts = []
+                    $scope.inquiryConversations = []
                     $scope.getToInquiryMessages $rootScope.$stateParams.inquiryId
                     $scope.replySubmitButton.state = false
                     return
@@ -434,9 +437,13 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.createMessage = ->
         $log.info 'Create a message'
         $scope.changeHeading 'Create'
+        UserFactory.getNotify( $scope.creatingMessage )
+        return
+
+    $scope.creatingMessage = ->
         name = if $rootScope.me.user.is_permitted then $rootScope.me.user.first_name + ' ' + $rootScope.me.user.last_name else 'You'
         $scope.message.subject = 'Message from ' + name
-        
+
         return
 
     ###*
@@ -529,11 +536,11 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                     inboxId: data.success.data.inbox.id
 
                 return
-            .error ( data, xhr )->
+            .error ( error, xhr )->
                 $scope.message.recipient = null
                 $scope.message.send = null
                 $scope.messageSubmitButton.state = !$scope.messageSubmitButton.state
-                $scope.alerts.push data.error
+                Notification.error error.error
 
                 return
 
@@ -588,7 +595,6 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
      * @return {void}
     ###
     $scope.getToInboxMessages = ( inboxId, pageNumber )->
-        $scope.inboxConversations = []
         $scope.changeHeading 'Loading conversations'
         $scope.inboxState = true
         InboxFactory.getConversations( inboxId, pageNumber )
@@ -620,6 +626,63 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                 , 3000 )
 
                 return
+
+        return
+
+    $scope.inquiryReserve = ( event )->
+        event.preventDefault()
+        $scope.inquiryStateReserve = !$scope.inquiryStateReserve
+
+        return
+
+    $scope.reserveItem = ->
+        InquiryFactory.reserveInquiry(
+            inquiry: $scope.inquiryInfo.id
+            reserve: $scope.reserve
+        ).success ( success )->
+            $log.log 'MessageController.reserveItem::success', success
+            $log.log $scope.reserve
+            $scope.inquiryStateReserve = !$scope.inquiryStateReserve
+            Notification.success success.success
+            $scope.reserve = 0
+            $scope.inquiryInfo = success.success.data.inquiry
+            $log.log $scope.reserve
+
+            return
+        .error ( error )->
+            Notification.error error.error
+
+            return
+
+        .then ( data )->
+            $scope.reserve = 0
+            $log.log $scope.reserve
+
+            return
+
+        return
+
+    $scope.destroyConversation = ( id, index )->
+        InboxFactory.removeConversation id
+            .success ( success )->
+                Notification.success success.success
+                $scope.inboxConversations.splice( index, 1 )
+                
+                return
+            .error ( error )->
+                Notification.error error.error
+
+                return
+
+        return
+
+    $scope.reserveButton = ( e )->
+        switch e
+            when 'minus'
+                $scope.reserve = if ( $scope.reserve > 1 ) then $scope.reserve - 1 else 0
+            when 'add'
+                $scope.reserve = if ( $scope.reserve < $scope.inquiryInfo.product.unit ) then $scope.reserve + 1 else $scope.reserve + 0
+            else
 
         return
 

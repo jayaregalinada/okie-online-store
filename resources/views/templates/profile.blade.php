@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', ' - Categories')
+@section('title', ' - Profile')
 
 @section('content')
 
@@ -26,31 +26,7 @@
 
 @endsection
 
-@section('head.post')
-<script type="text/javascript">
-window._url = {
-   'inquiry': {
-        'all': '{{ route( 'messages.inquiries' ) }}',
-        'find': '{{ route( 'inquiry', '_INQUIRY_ID_' ) }}',
-        'conversations': '{{ route( 'inquiry.conversations', '_INQUIRY_ID_' ) }}',
-        'reply': '{{ route( 'inquiry.reply' ) }}',
-        'delivered': '{{ route( 'inquiry.delivered' ) }}'
-   },
-   'inbox': {
-        'all': '{{ route( 'messages.inbox' ) }}',
-        'conversations': '{{ route( 'inbox.conversations', '_INQUIRY_ID_' ) }}',
-        'find': '{{ route( 'inbox', '_INQUIRY_ID_' ) }}',
-        'reply': '{{ route( 'inbox.reply' ) }}'
-   }
-@if ( Auth::user()->isPermitted() )
-  ,'deliver': {
-    'all': '{{ route( 'messages.delivered' ) }}',
-    'find': '{{ route( 'delivered', '_DELIVER_ID' ) }}',
-    'conversations': '{{ route( 'delivered.conversations', '_DELIVER_ID' ) }}',
-    'reply': '{{ route( 'delivered.reply' ) }}'
-  }
-@endif
-}
-</script>
+@section( 'head.post' )
+@include( 'templates.js-routes' )
 
 @stop

@@ -17,6 +17,7 @@
 		"barryvdh/laravel-ide-helper": "~2.0",
 		"doctrine/dbal": "~2.3",
 		"orangehill/iseed": "dev-master",
+		"filp/whoops": "~1.1",
 		"itsgoingd/clockwork": "~1.7"
 	},
 	"autoload": {

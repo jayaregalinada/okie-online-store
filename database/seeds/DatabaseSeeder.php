@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder {
 		// $this->call('MessagesTableSeeder');
 		// $this->call('MessageThreadTableSeeder');
 		// $this->call('ThreadsTableSeeder');
+		$this->call('OptionsTableSeeder');
 	}
 
 }

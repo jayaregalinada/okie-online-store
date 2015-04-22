@@ -1,8 +1,8 @@
 @extends('templates.profile')
 
-@section('profile.attr', 'ng-controller="UserSettingsController"')
+@section('title', ' - Settings')
 
-@section('settings.heading', '{# header #}')
+@section('settings.heading', 'Settings')
 
 @section('navigate.settings', 'in')
 

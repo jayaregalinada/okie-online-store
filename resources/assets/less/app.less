@@ -1,5 +1,9 @@
 @import "../../../vendor/bower_components/bootstrap/less/bootstrap";
 @import "../../../vendor/bower_components/font-awesome/less/variables";
+@import url( "vendor.css" );
+@import url( "//fonts.googleapis.com/css?family=Lato:300,400" );
+@import url( "//fonts.googleapis.com/css?family=Lobster" );
+@import url( "http://weloveiconfonts.com/api/?family=fontelico" );
 @import "variables";
 @import "bootswatch";
 @import "badges";
@@ -7,11 +11,22 @@
 @import "message";
 @import "profile";
 @import "product";
+@import "category";
 @import "item";
 @import "footer";
 @import "settings";
-@import url("vendor.css");
-@import url("//fonts.googleapis.com/css?family=Lato:300,400");
+@import "ui-notification";
+@import "okie-search";
+@import "ribbon";
+@import "text-angular";
+@import "review";
+
+
+/* fontelico */
+[class*="fontelico-"]:before {
+    font-family: 'fontelico', sans-serif;
+    font-style: normal;
+}
 
 // @btn-font-weight: 300;
 // @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
@@ -31,7 +46,7 @@
 @conversation-padding-body: 5px 10px 10px 10px;
 @conversation-background:   @gray;
 @conversation-body-background: #FFF;
-@conversation-body-border-radius: 3px;
+@conversation-body-border-radius: 0;
 // [DEPRECATED]
 @message-conversation-image-size: 50px;
 @message-conversation-padding: 0;
@@ -44,6 +59,10 @@
 @product-item-background: #FFF;
 @product-item-color: @link-color;
 
+// REVIEW
+@review-image-size:        100px;
+@review-padding:           15px;
+
 
 
 
@@ -51,20 +70,35 @@ body, label, .checkbox label {
 	font-weight: 400;
 }
 .font-light {
-    font-weight: 300;
+    font-weight: 300!important;
 }
 .font-bold {
-    font-weight: 700;
+    font-weight: 700!important;
 }
 .font-normal {
-    font-weight: 400;
+    font-weight: normal!important;
 }
 body {
     padding-top: @navbar-height;
 }
 
 .content-description {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: @font-family-descriptive;
+    }
     font-family: @font-family-descriptive;
+    &.important {
+        font-family: @font-family-descriptive!important;
+    }
+}
+.content-serif {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: @font-family-descriptive;
+    }
+    font-family: @font-family-serif;
+    &.important {
+        font-family: @font-family-descriptive!important;
+    }
 }
 
 .content-container {
@@ -170,9 +204,52 @@ body {
 }
 
 #nprogress .bar, #loading-bar .bar {
-    height: 3px;
+    height: 4px;
 }
 
+.show-when-hover {
+    &:hover {
+        .show-when-hover {
+            opacity: 1;
+        }
+    }
+    .show-when-hover {
+        opacity: 0;
+    }
+}
+body.dz-drag-hover {
+    .dropzone-indicator {
+        display: block;
+    }
+}
+.dropzone-indicator {
+    display: none;
+    div {
+        position: fixed;
+        border: 4px solid @brand-info;
+        z-index: @zindex-tooltip + 1;
+    }
+    .top {
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .right {
+        right: 0;
+        top: 0;
+        height: 100%;
+    }
+    .bottom {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+    .left {
+        left: 0;
+        top: 0;
+        height: 100%;
+    }
+}
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/
 // .ui-view-container {

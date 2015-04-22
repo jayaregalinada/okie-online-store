@@ -1,4 +1,71 @@
 .settings-container {
-	padding: @jumbotron-padding;
-	background-color: #FFF;
+    padding: @jumbotron-padding;
+    background-color: #FFF;
+    &.settings-permissions {
+        .user {
+            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
+                .transition-delay( .1s );
+            }
+            &.ng-enter, &.ng-leave, &.ng-move {
+                .transition( all .3s );
+            }
+            &.ng-enter-stagger {
+                .transition-duration( 0s );
+            }
+            &.ng-enter {
+                opacity: 0;
+                .translate3d(0, 10%, 0);
+                &.ng-enter-active {
+                    opacity: 1;
+                    transform: none;
+                    -webkit-transform: none;
+                }
+            }
+            &.ng-leave {
+                opacity: 1;
+                .animation( fadeOut .1s );
+                &.ng-leave-active {
+                    .transition( all .1s );
+                    opacity: 0;
+                }
+            }
+        }
+        img {
+            width: 70px;
+            height: 70px;
+        }
+        .media-body {
+            a {
+                border: 1px solid @link-color;
+                &:hover, &:focus {
+                    border: 1px solid @link-hover-color;
+                    color: @link-hover-color;
+                }
+                width: 31px;
+                padding: 4px;
+                text-align: center;
+            }
+            .permission-radio {
+                label {
+                    &.active {
+                        background-color: @btn-danger-bg;
+                        border-color: @btn-danger-border;
+                    }
+                }
+            }
+        }
+    }
+    &.settings-general {
+        .logo-brand-image {
+            img {
+                width: auto;
+                max-height: 100px;
+            }
+        }
+        .input-description {
+            color: @gray;
+            margin-top: @padding-small-vertical;
+            font-size: @font-size-small;
+        }
+    }
 }

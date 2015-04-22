@@ -68,9 +68,24 @@ _okie.factory 'InquiryFactory', ( $http, $window )->
      *
      * @return {$http}
     ###
-    _i.markAsDeliver = ( data, url,method, params )->
+    _i.markAsDeliver = ( data, url, method, params )->
         $http
             url: if url then url else $window._url.inquiry.delivered
+            data: data
+            method: if method then method else "POST"
+            params: params
+
+    ###*
+     * @param  {object} data
+     * @param  {string} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+    ###
+    _i.reserveInquiry = ( data, url, method, params )->
+        $http
+            url: if url then url else $window._url.inquiry.reserve
             data: data
             method: if method then method else "POST"
             params: params

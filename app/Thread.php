@@ -123,6 +123,4 @@ class Thread extends Model {
 		return $this->attributes[ 'type' ] == $this->types[ 0 ];
 	}
 
-
-
 }

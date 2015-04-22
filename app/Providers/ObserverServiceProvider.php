@@ -1,8 +1,8 @@
 <?php namespace Okie\Providers;
 
-use Okie\Inquiry;
-use Okie\Conversation;
 use Illuminate\Support\ServiceProvider;
+use Okie\Conversation;
+use Okie\Option;
 
 class ObserverServiceProvider extends ServiceProvider {
 
@@ -13,8 +13,8 @@ class ObserverServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		Inquiry::observe( new \Okie\Observers\InquiryObserver );
 		Conversation::observe( new \Okie\Observers\ConversationObserver );
+		// Option::observe( new \Okie\Observers\OptionObserver );
 	}
 
 	/**

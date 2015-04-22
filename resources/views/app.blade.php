@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>{{ Config::get('app.title') }} @yield('title')</title>
+	<title>{{ config('app.title') }} @yield('title')</title>
 	
 	<link href="{{ asset('/vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet" type="text/css" />
@@ -33,24 +33,16 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="{{ route('index') }}/#/">
-					<img src="{{ asset('images/logo.png') }}" alt="logo" /> {{ Config::get('app.logo.name') }}
+					<img src="{{ asset('images/logo.png') }}" alt="logo" /> {{ config('app.logo.name') }}
 				</a>
 			</div>
 
 			<div class="collapse navbar-collapse" id="navbar-collapse-1">
-				<form class="navbar-form navbar-left" role="search">
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Search">
-					</div>
-					<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-				</form>
-				<!-- <ul class="nav navbar-nav">
-					<li><a href="{{ url('/') }}">HOME</a></li>
-				</ul> -->
+				<div class="okie-search">LOADING...</div>
 
 				<ul class="nav navbar-nav navbar-right text-center">
 					@if ( Auth::guest() )
-						<li><a class="btn facebook color" href="{{ url('/login/facebook') }}"><i class="fa fa-facebook-official"></i> Login with Facebook</a></li>
+						<li><a class="btn facebook color" href="{{ url( '/login/facebook' ) }}"><i class="fa fa-facebook-official"></i> Login with Facebook</a></li>
 					@else
 						@if( Auth::user()->isAdmin() )
 						<li>
@@ -97,17 +89,23 @@
 
 	@yield('content')
 
-@include('templates.footer')
+@include('templates.footer', [ 'products' => \Okie\Product::latest() ])
 
 	<!-- Scripts -->
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> -->
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script> -->
 	<script src="{{ asset('/vendor/jquery/jquery.min.js') }}"></script>
 	<script src="{{ asset('/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
-	<script src="{{ asset('/vendor/angular/angular.min.js') }}"></script>
+	<script src="{{ asset('/vendor/angular/angular.js') }}"></script>
 	<script src="{{ asset('/js/vendor.js') }}"></script>
 	<script src="{{ asset('/js/scripts.js') }}"></script>
 
 	@yield('body.post')
+
+	@if( Session::has( 'message' ) )
+	<script type="text/javascript">
+	angular.element( 'body' ).ready(function(){ Notification.success({ title: 'Hi!', message: '{{ Session::get( 'message' ) }}' }); });
+	</script>
+	@endif
 </body>
 </html>

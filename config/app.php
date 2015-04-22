@@ -4,9 +4,20 @@ return [
 
 	'title' => 'Okie Online Store',
 
+	'description' => 'Okie store is open for all people who wants to search Clothes, apparels, shoes and accessories with affordable prices.',
+
 	'logo' => [
-		'img' => '',
+		'img' => env('APP_URL') . '/images/logo.png',
 		'name' => 'OKIE STORE'
+	],
+
+	'address' => 'Pasig, 1600 Manila, Philippines',
+
+	'footer' => 'Copyright &copy; 2015 Okie Online Store',
+
+	'contact' => [
+		'phone' => '(02) 798-2262',
+		'mobile' => '+63926-600-1275'
 	],
 
 	/*

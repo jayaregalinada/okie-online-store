@@ -1,0 +1,26 @@
+[text-angular] {
+    font-size: @font-size-base;
+    &.no-buttons {
+        .ta-toolbar {
+            display: none;
+        }
+    }
+    &.buttons-sm {
+        .btn {
+            .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+        }
+    }
+    &.buttons-xs {
+        .btn {
+            .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @border-radius-small);
+        }
+    }
+    &.buttons-lg {
+        .btn {
+            .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
+        }
+    }
+    &.with-background {
+        background-color: @btn-default-bg;
+    }
+}

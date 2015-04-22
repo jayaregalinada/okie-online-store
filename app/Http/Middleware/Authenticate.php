@@ -37,7 +37,7 @@ class Authenticate {
 		if ( $this->auth->guest() )
 		{
 			$code = 401;
-			if ( $request->ajax() )
+			if ( $request->ajax() || $request->wantsJson() )
 			{
 				$response = [ 'error' => [
 					'message'       => 'Unathorized. Please login first',

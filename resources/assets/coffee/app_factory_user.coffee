@@ -82,7 +82,7 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
                 return
             return
 
-    _u.getNotify = ->
+    _u.getNotify = ( callback )->
         $http(
             url: '/me'
             ignoreLoadingBar: true
@@ -93,6 +93,8 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
 #            _u.checkIfUnreadMessages data.messages.all
             _u.checkRedirectItem()
 #            _u.notifyToBadges data.messages
+            if callback and typeof callback == 'function'
+                callback()
 
             return
 
@@ -103,7 +105,8 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
         )
 
     _u.checkState = ->
-        $log.info 'UserFactory::checkState()', $window.location.pathname
+        $log.info 'UserFactory::checkState()', $stateParams
+        $log.info 'UserFactory::checkState()', $state.current
         switch $window.location.pathname
             when _u.route.messages
                 if $state.current.name is 'index'
@@ -114,7 +117,5 @@ _okie.factory 'UserFactory', ( $http, $state, $stateParams, $rootScope, localSto
                     $state.go 'products.all'
                 break
 
-            
-        
 
     _u

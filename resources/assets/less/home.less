@@ -29,58 +29,64 @@
         }
     }
     #category_nav {
-        li.active {
-            a {
-                border-bottom-color: @brand-primary;
-                background-color: transparent;
+        &.in {
+            overflow-y: visible;
+        }
+        li {
+            &.dropdown {
+                .dropdown-menu {
+                    width: 100%;
+                    padding-top: 0;
+                    padding-bottom: 0;
+                    li {
+                        text-align: center;
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        &:hover {
+                            background-color: @brand-primary;
+                            a {
+                                color: #FFF;
+                            }
+                        }
+                        &.active {
+                            background-color: @brand-primary;
+                            &:hover {
+                                opacity: .7;
+                            }
+                        }
+                    }
+                }
+            }
+            &.parent {
+                &.active {
+                    a {
+                        border-bottom-color: @brand-primary;
+                        background-color: transparent;
+                    }
+                }
+                > a {
+                    color: @text-color;
+                    border-bottom: 4px solid transparent;
+                    &:hover {
+                        border-bottom-color: @gray-dark;
+                        background-color: transparent;
+                    }
+                }
             }
         }
-        a {
-            color: @text-color;
-            border-bottom: 4px solid transparent;
-            &:hover {
-                border-bottom-color: @gray-dark;
-                background-color: transparent;
-            }
-        }
+        
     }
 
-/////////////////
-//// ALL ITEMS
-////////////////
+    /////////////////
+    //// ALL ITEMS
+    ////////////////
     .item-container {
         margin-top: @padding-base-horizontal;
         display: block;
         .product-item {
             margin-bottom: @padding-base-vertical;
             position: relative;
-            .transition( all 1s );
-            &.ng-enter-stagger, &.ng-leave-stagger, &.ng-move-stagger {
-                .transition-delay( .5s );
-            }
-            &.ng-enter, &.ng-leave, &.ng-move {
-                .transition( all 1s );
-            }
-            &.ng-enter-stagger {
-                .transition-duration( 0s );
-            }
-            &.ng-enter {
-                opacity: 0;
-                .translate3d(0, 10%, 0);
-                &.ng-enter-active {
-                    opacity: 1;
-                    transform: none;
-                    -webkit-transform: none;
-                }
-            }
-            &.ng-leave {
-                opacity: 1;
-                .animation( fadeOut 1s );
-                &.ng-leave-active {
-                    .transition( all 1s );
-                    opacity: 0;
-                }
-            }
+            opacity: 0;
         }
         .product-item-container {
             background-color: @product-item-background;

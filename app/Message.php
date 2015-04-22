@@ -137,11 +137,12 @@ class Message extends Model {
 					 ->latest();
 	}
 
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
 	public function thread()
 	{
 		return $this->hasMany( 'Okie\Thread', 'thread_id' );
 	}
-
-	
 
 }

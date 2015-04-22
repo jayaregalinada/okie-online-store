@@ -14,8 +14,8 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item clearfix" ng-repeat="category in categories">
-            <a ng-click="editCategory( {# category.id #} )" data-target="#modal_category_edit" data-toggle="modal" href="#" class="badge badge-edit btn">EDIT</a>
-            <a ng-click="deleteCategory( {# category.id #}, $event )" href="#" class="badge badge-delete btn">DELETE</a>
+            <a ng-click="editCategory( category.id )" data-target="#modal_category_edit" data-toggle="modal" href="#" class="badge badge-edit btn">EDIT</a>
+            <a ng-click="deleteCategory( category.id, $event )" href="#" class="badge badge-delete btn">DELETE</a>
             <span class="name">{# category.name #}</span>
         </li>
     </ul>

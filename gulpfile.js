@@ -22,7 +22,7 @@ var paths = {
 
 elixir(function(mix)
 {
-    mix.coffee('*.coffee', paths.storage.js );
+  mix.coffee('*.coffee', paths.storage.js );
 });
 
 elixir(function(mix)
@@ -44,44 +44,52 @@ elixir(function(mix)
       paths.vendorDir + 'textAngular/dist/textAngular-rangy.min.js',
       paths.vendorDir + 'textAngular/dist/textAngular-sanitize.min.js',
       paths.vendorDir + 'textAngular/dist/textAngular.min.js',
+      paths.vendorDir + 'angular-ui-notification/src/angular-ui-notification.js',
+      paths.vendorDir + 'angular-ui-select/dist/select.js',
+      paths.vendorDir + 'ng-tags-input/ng-tags-input.js',
+      paths.vendorDir + 'angular-tags/dist/angular-tags-0.2.10.js',
+      paths.vendorDir + 'angular-tags/dist/angular-tags-0.2.10-tpls.js'
     ], 'public/js/vendor.js', paths.vendorDir )
 
-    .scripts([
-      paths.storage.js + 'namespace.js',
-      paths.storage.js + 'app_routes.js',
-      paths.storage.js + 'app_*.js',
-    ], 'public/js/scripts.js', paths.storage.js )
-    .scripts([
-      paths.storage.js + 'admin_*.js'
-    ], 'public/js/admin.js', paths.storage.js )
-    .scripts([
-      paths.storage.js + 'user_*.js'
-    ], 'public/js/user.js', paths.storage.js );
+  .scripts([
+    paths.storage.js + 'namespace.js',
+    paths.storage.js + 'app_routes.js',
+    paths.storage.js + 'app_*.js',
+  ], 'public/js/scripts.js', paths.storage.js )
+  .scripts([
+    paths.storage.js + 'admin_*.js'
+  ], 'public/js/admin.js', paths.storage.js )
+  .scripts([
+    paths.storage.js + 'user_*.js'
+  ], 'public/js/user.js', paths.storage.js );
 
 });
 
 elixir(function(mix)
 {
-    // ALL STYLES 
-    // This includes less, sass and native css
-    mix.less( 'app.less', 'public/css/' )
-       .styles([
-          //paths.vendorDir + 'nprogress/nprogress.css',
-          paths.vendorDir + 'animate.css/animate.css',
-          paths.vendorDir + 'dropzone/dist/dropzone.css',
-          paths.vendorDir + 'angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css',
-          paths.vendorDir + 'angular-loading-bar/src/loading-bar.css'
-       ], 'public/css/vendor.css', paths.vendorDir );
+  // ALL STYLES 
+  // This includes less, sass and native css
+  mix.less( 'app.less', 'public/css/' )
+    .styles([
+      paths.vendorDir + 'animate.css/animate.css',
+      paths.vendorDir + 'dropzone/dist/dropzone.css',
+      paths.vendorDir + 'angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.css',
+      paths.vendorDir + 'angular-loading-bar/src/loading-bar.css',
+      paths.vendorDir + 'angular-ui-select/dist/select.css',
+      paths.vendorDir + 'select2/select2.css',
+      paths.vendorDir + 'ng-tags-input/ng-tags-input.css',
+      paths.vendorDir + 'ng-tags-input/ng-tags-input.bootstrap.css'
+    ], 'public/css/vendor.css', paths.vendorDir );
 });
-
 
 
 elixir(function(mix)
 {
-    // ALL COPY
-    mix.copy( paths.vendorDir + 'jquery/dist/', 'public/vendor/jquery/' )
-       .copy( paths.vendorDir + 'angular/', 'public/vendor/angular/' )
-       .copy( paths.vendorDir + 'bootstrap/dist/', 'public/vendor/bootstrap/' )
-       .copy( paths.vendorDir + 'font-awesome/', 'public/vendor/font-awesome/' );
-       // .copy( 'storage/framework/resources/css/', 'public/css/' );
+  // All public vendors
+  // ALL COPY
+  mix.copy( paths.vendorDir + 'jquery/dist/', 'public/vendor/jquery/' )
+     .copy( paths.vendorDir + 'angular/', 'public/vendor/angular/' )
+     .copy( paths.vendorDir + 'bootstrap/dist/', 'public/vendor/bootstrap/' )
+     .copy( paths.vendorDir + 'font-awesome/', 'public/vendor/font-awesome/' );
+     // .copy( 'storage/framework/resources/css/', 'public/css/' );
 });

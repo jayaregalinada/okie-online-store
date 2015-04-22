@@ -17,7 +17,7 @@ return [
                 'suffix' => 'sqr'
             ],
             'thumbnail' => [
-                'size' => 280,
+                'size' => 500,
                 'suffix' => 'thn'
             ],
             'small' => [

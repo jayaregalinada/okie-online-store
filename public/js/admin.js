@@ -1,4 +1,80 @@
 (function() {
+  _okie.controller('AdminSettingsController', function($scope, $log, $window, $rootScope, Notification, SettingsFactory, $state, $stateParams, $timeout) {
+    $scope.users = [];
+    $scope.settings = {
+      permission: {
+        error: false
+      }
+    };
+    $scope.updatingState = [];
+
+    /**
+     * Change the heading
+     *
+     * @param  {string} heading
+     *
+     * @return {void}
+     */
+    $scope.changeHeading = function(heading, prepend) {
+      $scope.heading = heading;
+      $('.profile-container .profile-full-name').text(heading);
+      $('.profile-container .profile-full-name').prepend(prepend);
+    };
+    $scope.checkState = function() {
+      $log.info('AdminSettingsController.checkState()', $state.current);
+    };
+    $scope.getPermissions = function(pageNumber) {
+      $scope.changeHeading('Permissions');
+      $log.log('Getting permissions');
+      $scope.settings.permission.error = false;
+      SettingsFactory.getAllUsers(pageNumber).success(function(response, xhr) {
+        $log.info('AdminSettingsController.getPermissions::response', response);
+        $scope.settings.permission.error = false;
+        if (Boolean(response.next_page_url)) {
+          $scope.getPermissions(response.current_page + 1);
+        }
+      }).error(function(error) {
+        $scope.settings.permission.error = true;
+        $scope.settings.permission.errorMessage = error.error.message;
+        Notification.error(error.error);
+      }).then(function(thenResponse, xhr) {
+        angular.forEach(thenResponse.data.data, function(value, key) {
+          $scope.users.push(value);
+        });
+      });
+    };
+    $scope.changePermission = function(user, permission) {
+      $log.log(user);
+      $log.log(permission);
+      user.permissionState = true;
+      SettingsFactory.changePermission({
+        user: user,
+        user_id: user.id,
+        permission: permission
+      }).success(function(response, xhr) {
+        $log.info('AdminSettingsController.changePermission', response);
+        user.permissionState = false;
+        Notification.success(response.success);
+      });
+    };
+    $scope.getGeneral = function() {
+      $scope.changeHeading('General Settings');
+    };
+    $scope.changeValue = function(value) {
+      SettingsFactory.changeGeneral(value).success(function(success) {
+        $log.info('AdminSettingsController.changeValue::success', success);
+        Notification.success(success.success);
+      }).error(function(error) {
+        $log.info('AdminSettingsController.changeValue::error', error);
+        Notification.error(error.error);
+      });
+    };
+    $scope.checkState();
+  });
+
+}).call(this);
+
+(function() {
   _okie.controller('DeliverController', function(DeliverFactory, textAngularManager, $timeout, $log, $window, $scope, $state, $stateParams, $rootScope) {
     $scope.heading = 'Delivered';
     $scope.factory = DeliverFactory;
@@ -37,6 +113,7 @@
     $scope.getAllDeliver = function(pageNumber) {
       var page;
       $scope.deliveries = [];
+      $scope.deliverConversations = [];
       page = pageNumber ? pageNumber : 1;
       $scope.changeHeading('Delivered');
       $scope.deliverState = true;
@@ -68,7 +145,6 @@
       }, 3000);
     };
     $scope.getToConversation = function(deliverId, pageNumber) {
-      $scope.deliverConversations = [];
       $scope.changeHeading('Loading conversations');
       $scope.deliverState = true;
       DeliverFactory.getConversations(deliverId, pageNumber).success(function(data, xhr) {
@@ -82,7 +158,7 @@
         $scope.deliverErrorState = true;
         $log.error('DeliverController.getToConversation::data', data);
         $scope.changeHeading('ERROR');
-        $scope.deliverErrorMessage = data.error.deliverErrorMessage;
+        $scope.deliverErrorMessage = data.error.message.replace('[DELIVER] ', '');
       }).then(function(data, xhr) {
         angular.forEach(data.data.conversations.data, function(value, key) {
           $scope.deliverConversations.push(value);
@@ -140,7 +216,7 @@
 }).call(this);
 
 (function() {
-  _okie.controller('ImageController', function($scope, $window, Lightbox, $rootScope, $http, localStorageService) {
+  _okie.controller('ImageController', function($scope, $window, Lightbox, $rootScope, $http, localStorageService, Notification) {
     $scope.productKey = 'product_info';
     $scope.product = {};
     $scope.images = [];
@@ -162,6 +238,7 @@
         }
       }).success(function(data, xhr) {
         Lightbox.closeModal();
+        Notification.success(data.success);
         $('.product-images .image-' + index).remove();
       }).then(function(data) {
         $scope.getImages();
@@ -181,7 +258,8 @@
         data: {
           id: $rootScope.images[index].id
         }
-      }).success(function(data, xhr) {
+      }).success(function(response, xhr) {
+        Notification.success(response.success);
         Lightbox.closeModal();
       });
     };
@@ -217,7 +295,7 @@
 }).call(this);
 
 (function() {
-  _okie.controller('ProductController', function($rootScope, $log, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory) {
+  _okie.controller('ProductController', function(ProductFactory, $rootScope, $log, $scope, $http, $location, $window, $timeout, Lightbox, localStorageService, $state, $stateParams, Slug, SettingsFactory, Notification, ClassFactory) {
     $scope.info = 'Product Information';
     $scope.header = null;
     $scope.title = null;
@@ -228,12 +306,14 @@
     $scope.lastImageId = null;
     $scope.editState = false;
     $scope.editStateCategory = false;
+    $scope.editStateBadge = false;
     $scope.product = {};
     $scope.url = {
       base: '/me/products'
     };
     $scope.categories = [];
     $scope.category = {};
+    $scope.cat = {};
     $scope.hotSeatCategory = {
       name: 'LOADING'
     };
@@ -246,6 +326,46 @@
     };
     $rootScope.images = $scope.images;
     $rootScope.product = $scope.product;
+    $scope.create = {
+      basic: true,
+      name: false,
+      code: false,
+      description: false,
+      price: false,
+      unit: false
+    };
+    $scope.condition = {
+      products: {
+        loading: false,
+        error: false
+      },
+      categories: {
+        loading: false,
+        error: false
+      }
+    };
+    $scope.loadingState = {
+      products: false
+    };
+    $scope.classFactory = ClassFactory;
+    $scope.class_array = [];
+    $scope.$watchCollection('product.badge.class_array', function(val) {
+      $log.log('product.badge.class_array:val', val);
+      $log.log('typeof(val)', Boolean(typeof val));
+      $log.log('val', Boolean(val));
+      if (typeof val === 'object' || val) {
+        $scope.class_array = [];
+        angular.forEach(val, function(value, key) {
+          $scope.class_array.push(value.text);
+        });
+        $scope.product.badge["class"] = $scope.class_array.join(' ');
+      }
+      $log.log('product.badge.class', $scope.product.badge);
+    });
+    $scope.loadClass = function(query) {
+      $log.log('ClassFactory.load()', ClassFactory.load());
+      return ClassFactory.load();
+    };
     $scope.setItem = function(key, val, stringify) {
       if (stringify) {
         return localStorageService.set(key, JSON.stringify(val));
@@ -258,6 +378,71 @@
     $scope.changeHeading = function(heading) {
       $scope.header = heading;
       $('.profile-container .profile-full-name').text(heading);
+    };
+    $scope.changeDescription = function(name) {
+      $scope.create = {
+        basic: false,
+        name: false,
+        code: false,
+        description: false,
+        price: false,
+        unit: false
+      };
+      switch (name) {
+        case 'name':
+          $scope.create.name = true;
+          break;
+        case 'code':
+          $scope.create.code = true;
+          break;
+        case 'description':
+          $scope.create.description = true;
+          break;
+        case 'price':
+          $scope.create.price = true;
+          break;
+        case 'unit':
+          $scope.create.unit = true;
+          break;
+        default:
+          $scope.create.basic = true;
+      }
+      $log.info($scope.create);
+    };
+    $scope.autoChangeProductCode = function() {
+      if (!$scope.product.code) {
+        $scope.product.code = Slug.slugify($scope.product.name);
+      }
+    };
+    $scope.initializeDropzone = function(url, token) {
+      $log.info('ProductController.initializeDropzone', url);
+      $scope.dropzoneInit = new Dropzone(document.body, {
+        url: url,
+        previewsContainer: '#productPreview',
+        clickable: false,
+        acceptedFiles: 'image/*',
+        params: {
+          '_token': token
+        }
+      });
+      $scope.dropzoneInit.on('queuecomplete', function(file, xhr) {
+        $scope.getImages($scope.images.length);
+        Notification.success({
+          title: 'Hooray!',
+          message: 'Uploading complete'
+        });
+        this.removeAllFiles();
+        $('#product_add_image_form header.drag').fadeIn();
+        $('#product_add_image_form header.dropping').hide();
+      });
+      $scope.dropzoneInit.on('dragenter', function(file, xhr) {
+        $log.info('DROPZONE DRAG ENTER');
+        $('#product_add_image_form header.drag').hide();
+        $('#product_add_image_form header.dropping').fadeIn();
+      });
+      $scope.dropzoneInit.on('drop', function(file, xhr) {
+        $('#product_add_image_form header').hide();
+      });
     };
     $scope.getTitle = function() {
       if ($window.location.pathname === $scope.path + '/create') {
@@ -299,12 +484,18 @@
       });
     };
     $scope.productUpdate = function() {
-      $http({
+      var obj;
+      obj = {
         url: '/product/' + $scope.id,
         method: "PUT",
         data: $scope.product
-      }).success(function(data, status) {
+      };
+      $http(obj).success(function(success) {
+        Notification.success(success.success);
         $scope.getInformation();
+        $scope.editState = !$scope.editState;
+      }).error(function(error) {
+        Notification.error(error.error);
       });
     };
 
@@ -324,8 +515,7 @@
         }
       }).success(function(data, status, headers, config) {
         return angular.forEach(data.data, function(value, key) {
-          $scope.images.push(value);
-          $window.productImages.push(value);
+          $scope.images.unshift(value);
         });
       }).then(function(data) {
         if ($scope.images.length < data.data.total) {
@@ -339,11 +529,11 @@
     };
     $scope.updateInfo = function() {
       var newProduct, oldProduct;
-      $scope.editState = !$scope.editState;
       newProduct = JSON.stringify($scope.product);
       oldProduct = JSON.stringify($scope.getItem('product_info'));
       if (newProduct === oldProduct) {
-        console.log('Just the same eh?');
+        $log.log('Just the same eh?');
+        $scope.editState = !$scope.editState;
         return;
       } else {
         $scope.productUpdate();
@@ -351,24 +541,28 @@
       }
     };
     $scope.getProducts = function(pageNumber) {
-      $http({
-        url: $scope.url.base,
-        method: "GET",
-        params: {
-          json: true,
-          page: (pageNumber ? pageNumber : 1)
+      $scope.changeHeading('Products');
+      $scope.condition.products.loading = true;
+      $scope.condition.products.error = false;
+      $scope.products = [];
+      ProductFactory.getAllProducts(pageNumber).success(function(response, xhr) {
+        $scope.condition.products.error = false;
+        if (Boolean(response.next_page_url)) {
+          $scope.getProducts(response.current_page + 1);
         }
-      }).success(function(data, xhr) {
-        $scope.nextPageUrl = data.next_page_url;
-        $scope.changeHeading('Products');
-        if ($scope.products.length < data.total) {
-          $scope.getProducts(data.current_page + 1);
-          angular.forEach(data.data, function(value, key) {
-            $scope.products.push(value);
-          });
-          return;
-        }
-      }).then(function(data) {});
+      }).error(function(error, xhr) {
+        $scope.condition.products.error = true;
+        $scope.condition.products.loading = false;
+        $scope.condition.products.errorMessage = error.error;
+      }).then(function(data) {
+        $scope.pushToProducts(data.data.data);
+        $scope.condition.products.loading = false;
+      });
+    };
+    $scope.pushToProducts = function(data) {
+      angular.forEach(data, function(value, key) {
+        $scope.products.push(value);
+      });
     };
     $scope.goToItem = function(id) {
       $window.location.href = '/product/' + id;
@@ -387,8 +581,38 @@
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }).success(function(data, xhr) {
+        Notification.success({
+          message: 'Successfully update product'
+        });
         $scope.getInformation();
       });
+    };
+    $scope.editProductBadge = function() {
+      $scope.editStateBadge = true;
+    };
+    $scope.updateProductBadge = function(event, form) {
+      $log.log('ProductController.updateProductBadge::event', event);
+      $log.log('ProductController.updateProductBadge::form', form);
+      $log.log('$scope.product.badge', $scope.product.badge);
+      ProductFactory.updateBadge($scope.product.badge, form_product_badge.getAttribute('action')).success(function(success) {
+        Notification.success(success.success);
+        $scope.editStateBadge = false;
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+    };
+    $scope.removeProductBadge = function(event, form) {
+      $http({
+        url: form_product_badge_remove.getAttribute('action'),
+        method: 'PATCH'
+      }).success(function(success) {
+        $scope.editStateBadge = false;
+        Notification.success(success.success);
+        $scope.getInformation();
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+      event.preventDefault();
     };
 
     /**
@@ -400,20 +624,31 @@
       event.preventDefault();
       SettingsFactory.addCategory($scope.category).success(function(data, xhr) {
         $scope.getCategories();
+        $log.info('ProductController.addCategory::data', data);
+        Notification.success(data.success);
       }).then(function(data) {
         $scope.category = {};
       });
     };
-    $scope.getCategories = function() {
-      $scope.changeHeading('Categories');
-      $scope.categories.splice(0, $scope.categories.length);
+    $scope.getCategories = function(page) {
       $scope.categories = [];
-      SettingsFactory.getAllCategories().success(function(data, xhr) {
-        $scope.categories.splice(0, $scope.categories.length);
-        $scope.categories = [];
-      }).then(function(data) {
-        angular.forEach(data.data, function(value, key) {
-          return $scope.categories.push(value);
+      $scope.changeHeading('Categories');
+      $scope.condition.categories.loading = true;
+      $scope.condition.categories.error = false;
+      SettingsFactory.getAllCategories(page).success(function(data, xhr) {
+        $scope.condition.categories.error = false;
+        if (Boolean(data.next_page_url)) {
+          $scope.getCategories(data.current_page + 1);
+        }
+      }).error(function(error, xhr) {
+        $scope.condition.categories.loading = false;
+        $scope.condition.categories.error = true;
+        $scope.condition.categories.errorMessage = error.error;
+      }).then(function(data, xhr) {
+        $scope.condition.categories.loading = false;
+        $scope.condition.categories.error = false;
+        angular.forEach(data.data.data, function(value, key) {
+          $scope.categories.push(value);
         });
       });
     };
@@ -433,14 +668,21 @@
     };
     $scope.updateCategory = function(event) {
       event.preventDefault();
+      $scope.hotSeatCategory.parent_selected = $scope.hotSeatCategory.parent_info.id;
       SettingsFactory.updateCategory($scope.hotSeatCategory).success(function(data, xhr) {
+        $log.info('ProductController.updateCategory::data', data);
         $($scope.modalId).modal('hide');
         $scope.getCategories();
+        Notification.success(data.success);
+      }).error(function(error) {
+        Notification.error(error.error);
       });
     };
     $scope.deleteCategory = function(id, event) {
       SettingsFactory.deleteCategory(id).success(function(data, xhr) {
+        $log.info('ProductController.deleteCategory::data', data);
         $scope.getCategories();
+        Notification.success(data.success);
       });
     };
   });
@@ -448,89 +690,150 @@
 }).call(this);
 
 (function() {
-  _okie.controller('SettingsController', function($scope, $log, $window, $http, localStorageService, $stateParams, $state, $location, $modal, SettingsFactory) {
-    $scope.categories = [];
-    $scope.category = {};
-    $scope.hotSeatCategory = {
-      name: 'LOADING'
+  _okie.controller('ReviewController', function($scope, $state, $stateParams, $http, $log, Notification, $window, $timeout) {
+    $scope.reviews = [];
+    $scope.hoverApproved = false;
+
+    /**
+     * Change the heading
+     *
+     * @param  {string} heading
+     *
+     * @return {void}
+     */
+    $scope.changeHeading = function(heading, prepend) {
+      $scope.heading = heading;
+      $('.profile-container .profile-full-name').text(heading);
+      $('.profile-container .profile-full-name').prepend(prepend);
     };
-    $scope.stateCategory = false;
-    $scope.modalId = '#modal_category_edit';
-    $scope.heading = 'Settings';
-    $scope.checkState = function() {
-      $log('Welcome to Settings Controller. Now checking state', $state.current);
-      switch ($state.current.name) {
-        case 'products.category':
-          $scope.getCategories();
+    $scope.__get = function(url, params) {
+      return $http({
+        url: url,
+        method: "GET",
+        params: params
+      });
+    };
+    $scope.__post = function(url, data, method, params) {
+      return $http({
+        url: url,
+        data: data,
+        method: method ? method : "POST",
+        params: params
+      });
+    };
+    $scope.pushToReviews = function(data) {
+      angular.forEach(data, function(value, key) {
+        $scope.reviews.push(value);
+      });
+      $scope.loadingState = false;
+      $timeout(function() {
+        $scope.errorState = false;
+      }, 3000);
+    };
+    $scope.getAllReviews = function(page) {
+      $scope.loadingState = true;
+      $scope.errorState = false;
+      $scope.changeHeading('Loading...');
+      $scope.__get($window._url.reviews.all, {
+        page: page
+      }).success(function(success) {
+        $scope.changeHeading('Reviews');
+        $log.log('ReviewController.getAllReviews:success', success);
+        $scope.errorState = false;
+        if (Boolean(success.next_page_url)) {
+          $scope.getAllReviews(success.current_page + 1);
+        }
+      }).error(function(error) {
+        $log.log('ReviewController.getAllReviews:error', error);
+        $scope.errorState = true;
+        $scope.loadingState = false;
+        $scope.errorMessage = error.error.message;
+      }).then(function(data) {
+        $scope.pushToReviews(data.data.data);
+      });
+    };
+    $scope.approveReview = function(id, index) {
+      $scope.__post($window._url.reviews.approved.replace('_REVIEW_ID_', id)).success(function(success) {
+        Notification.success(success.success);
+        $scope.reviews[index] = success.success.data;
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+    };
+    $scope.hoverApprovedChange = function(index, boolean) {
+      $scope.reviews[index].hoverApproved = boolean;
+    };
+    $scope.unapproveReview = function(id, index) {
+      $scope.__post($window._url.reviews.unapproved.replace('_REVIEW_ID_', id)).success(function(success) {
+        Notification.success(success.success);
+        $scope.reviews[index] = success.success.data;
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+    };
+  });
+
+}).call(this);
+
+(function() {
+  _okie.directive('BadgeClasshelper', function($http, $log) {
+    return {
+      restrict: 'AE',
+      scope: {
+        selectedTags: '=model'
+      },
+      templateUrl: 'badge-class-helper.html',
+      link: function(scope, elem, attrs) {
+        scope.suggestions = [];
+        scope.selectedTags = [];
+        scope.selectedIndex = -1;
+        scope.removeTag = function(index) {
+          scope.selectedTags.splice(index, 1);
+        };
+        scope.search = function() {
+          var data;
+          $log.log('SearchingText: ', scope.searchText);
+          $log.log('SearchingSuggestions: ', scope.suggestions);
+          $log.log('SearchingIndex: ', scope.selectedIndex);
+          data = attrs.scope;
+          if (data.indexOf(scope.searchText) === -1) {
+            data.unshift(scope.searchText);
+            scope.suggestions = data;
+            scope.selectedIndex = -1;
+          }
+        };
+        scope.addToSelectedTags = function(index) {
+          if (scope.selectedTags.indexOf(scope.suggestions[index]) === -1) {
+            scope.selectedTags.push(scope.suggestions[index]);
+            scope.searchText = '';
+            scope.suggestions = [];
+          }
+        };
+        scope.checkKeyDown = function(event) {
+          if (event.keyCode === 40) {
+            event.preventDefault();
+            if (scope.selectedIndex + 1 !== scope.suggestions.length) {
+              scope.selectedIndex++;
+            }
+          } else if (event.keyCode === 38) {
+            event.preventDefault();
+            if (scope.selectedIndex - 1 !== -1) {
+              scope.selectedIndex--;
+            }
+          } else if (event.keyCode === 13) {
+            scope.addToSelectedTags(scope.selectedIndex);
+          }
+        };
+        scope.$watch('selectedIndex', function(val) {
+          if (val !== -1) {
+            scope.searchText = scope.suggestions[scope.selectedIndex];
+          }
+        });
+        scope.$watch('searchText', function(val) {
+          $log.info('SearchText', val);
+        });
       }
     };
-    $scope.addCategory = function(event) {
-      event.preventDefault();
-      SettingsFactory.addCategory($scope.category).success(function(data, xhr) {
-        console.info('addCategory::data', data);
-        $scope.getCategories();
-      }).then(function(data) {
-        $scope.category = {};
-      });
-    };
-    $scope.getCategories = function() {
-      $scope.categories = [];
-      SettingsFactory.getAllCategories().success(function(data, xhr) {
-        console.log('getCategories::data', data);
-        $scope.categories.push(data);
-      });
-    };
-    $scope.getCategoryById = function(id) {
-      $http({
-        url: '/me/settings/categories',
-        params: {
-          find: id
-        }
-      }).success(function(data, xhr) {
-        $scope.stateCategory = false;
-        $scope.hotSeatCategory = data;
-      });
-    };
-    $scope.editCategory = function(id) {
-      $scope.hotSeatCategory = {};
-      $scope.stateCategory = true;
-      $scope.getCategoryById(id);
-    };
-    $scope.updateCategory = function(event) {
-      $http({
-        url: '/me/settings/categories',
-        params: {
-          update: true
-        },
-        method: 'POST',
-        data: $.param($scope.hotSeatCategory),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).success(function(data, xhr) {
-        $($scope.modalId).modal('hide');
-        $scope.getCategories();
-      });
-      event.preventDefault();
-    };
-    $scope.deleteCategory = function(id, event) {
-      $http({
-        url: '/me/settings/categories',
-        params: {
-          "delete": true
-        },
-        method: 'POST',
-        data: $.param({
-          'id': id
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).success(function(data, xhr) {
-        $scope.getCategories();
-      });
-    };
-    $scope.checkState();
   });
 
 }).call(this);
@@ -583,7 +886,7 @@
      */
     _d.getConversations = function(id, pageNumber, method) {
       return $http({
-        url: $window._url.deliver.conversations.replace('_DELIVER_ID', id),
+        url: $window._url.deliver.conversations.replace('_DELIVER_ID_', id),
         method: method ? method : "GET",
         params: {
           page: pageNumber
@@ -613,23 +916,35 @@
 }).call(this);
 
 (function() {
-  _okie.factory('ProductFactory', function($http, $q, $rootScope, $window) {
-    var prod, products;
-    prod = {};
-    products = {};
-    prod.getProducts = function() {
-      return products;
+  _okie.factory('ProductFactory', function($http, $rootScope, $window) {
+    var _p;
+    _p = {};
+    _p.getAllProducts = function(pageNumber, url, method, params) {
+      var defaultParams;
+      defaultParams = {
+        page: pageNumber
+      };
+      return $http({
+        url: url ? url : $window._url.products.all,
+        params: params ? params : defaultParams,
+        method: method ? method : "GET"
+      });
     };
-    prod.setProducts = function(p) {
-      return products = p;
+    _p.updateBadge = function(data, url, method, params) {
+      return $http({
+        url: url,
+        params: params,
+        method: method ? method : "PUT",
+        data: data
+      });
     };
-    return prod;
+    return _p;
   });
 
 }).call(this);
 
 (function() {
-  _okie.factory('SettingsFactory', function($http, $rootScope, $state, $stateParams) {
+  _okie.factory('SettingsFactory', function($http, $rootScope, $state, $stateParams, $window) {
     var _s;
     _s = {};
     _s.url = {
@@ -637,58 +952,100 @@
       categories: '/me/products/categories',
       product: '/product/'
     };
+    _s.availableMethod = ["GET", "POST"];
+    _s.getAllUsers = function(pageNumber, url, method, params) {
+      var defaultParams;
+      defaultParams = {
+        page: pageNumber
+      };
+      return $http({
+        url: url ? url : $window._url.settings.users,
+        method: method ? method : "GET",
+        params: params ? params : defaultParams
+      });
+    };
 
     /**
     	 * CATEGORIES
      */
-    _s.addCategory = function(data) {
+    _s.addCategory = function(data, url, method, params) {
+      var defaultParams;
+      defaultParams = {
+        create: data.category
+      };
       return $http({
-        url: _s.url.categories,
-        method: "POST",
-        params: {
-          create: data.category
-        },
+        url: url ? url : _s.url.categories,
+        method: method ? method : "POST",
+        params: params ? params : defaultParams,
         data: data
       });
     };
-    _s.getAllCategories = function() {
+    _s.getAllCategories = function(pageNumber, url, method, defaultParams) {
+      defaultParams = {
+        page: pageNumber ? pageNumber : 1
+      };
       return $http({
-        url: _s.url.categories,
-        method: "GET",
-        params: {
-          all: true
-        }
+        url: url ? url : _s.url.categories,
+        method: method ? method : "GET",
+        params: defaultParams
       });
     };
-    _s.getCategoryById = function(id) {
+    _s.getCategoryById = function(id, url, method, params) {
+      var defaultParams;
+      defaultParams = {
+        find: id
+      };
       return $http({
-        url: _s.url.categories,
-        method: "GET",
-        params: {
-          find: id
-        }
+        url: url ? url : _s.url.categories,
+        method: method ? method : "GET",
+        params: params ? params : defaultParams
       });
     };
-    _s.updateCategory = function(data) {
+    _s.updateCategory = function(data, url, method, params) {
+      var defaultParams;
+      defaultParams = {
+        update: true
+      };
       return $http({
-        url: _s.url.categories,
-        method: "POST",
-        params: {
-          update: true
-        },
+        url: url ? url : _s.url.categories,
+        method: method ? method : "POST",
+        params: params ? params : defaultParams,
         data: data
       });
     };
-    _s.deleteCategory = function(id) {
+    _s.deleteCategory = function(id, url, data, method, params) {
+      var defaultData, defaultParams;
+      defaultParams = {
+        "delete": true
+      };
+      defaultData = {
+        id: id
+      };
       return $http({
-        url: _s.url.categories,
-        params: {
-          "delete": true
-        },
-        method: "POST",
-        data: {
-          id: id
-        }
+        url: url ? url : _s.url.categories,
+        params: params ? params : defaultParams,
+        method: method ? method : "POST",
+        data: data ? data : defaultData
+      });
+    };
+
+    /**
+    	 * PERMISSIONS
+     */
+    _s.changePermission = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.settings.permissions,
+        method: method ? method : "PATCH",
+        data: data,
+        params: params
+      });
+    };
+    _s.changeGeneral = function(data, url, method, params) {
+      return $http({
+        url: url ? url : $window._url.settings.general,
+        method: method ? method : "POST",
+        data: data,
+        params: params
       });
     };
     return _s;

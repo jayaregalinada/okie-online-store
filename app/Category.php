@@ -31,20 +31,26 @@ class Category extends Model {
 	/**
 	 * @var array
 	 */
-	protected $fillable = [ 'name', 'description', 'navigation' ];
+	protected $fillable = [ 'name', 'description', 'navigation', 'slug', 'parent_id' ];
 
 	/**
 	 * @var array
 	 */
-	protected $hidden = [ 'pivot', 'created_at', 'updated_at' ];
+	protected $hidden = [ 'pivot', 'created_at', 'updated_at', 'parent_id' ];
 
 	/**
 	 * @type array
 	 */
 	protected $casts = [
 		'id' => 'integer',
-		'navigation' => 'boolean'
+		'navigation' => 'boolean',
+		'parent_id' => 'integer'
 	];
+
+	/**
+	 * @type array
+	 */
+	protected $appends = [ 'parent', 'children', 'parent_info' ];
 
 	/**
 	 * Products relation
@@ -54,6 +60,66 @@ class Category extends Model {
 	public function products()
 	{
 		return $this->belongsToMany( 'Okie\Product', 'product_category' );
+	}
+
+	/**
+	 * Parent relation
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function parent()
+	{
+		return $this->belongsTo( 'Okie\Category', 'parent_id' );
+	}
+
+	/**
+	 * @return bool|array
+	 */
+	public function getParentAttribute()
+	{
+		if( $this->attributes[ 'parent_id' ] == $this->id )
+			return true;
+
+		if( !( $this->parent()->getResults()[ 'id' ] ) )
+		{
+			return false;
+		}
+		else
+		{
+			return [
+				'id' => $this->parent()->getResults()[ 'id' ],
+				'name' => $this->parent()->getResults()[ 'name' ],
+				'description' => $this->parent()->getResults()[ 'description' ],
+				'slug' => $this->parent()->getResults()[ 'slug' ],
+			];
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getChildrenAttribute()
+	{
+		if( $this->parent_id != $this->id )
+			return null;
+
+		return $this->where( 'parent_id', '=', $this->parent_id )->where( 'id', '!=', $this->parent_id )->getQuery()->get();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getParentInfoAttribute()
+	{
+		if( is_null( $this->parent()->getResults()[ 'id' ] ) )
+			return null;
+
+		return [
+			'id' => $this->parent()->getResults()[ 'id' ],
+			'name' => $this->parent()->getResults()[ 'name' ],
+			'description' => $this->parent()->getResults()[ 'description' ],
+			'slug' => $this->parent()->getResults()[ 'slug' ],
+		];
 	}
 
 }

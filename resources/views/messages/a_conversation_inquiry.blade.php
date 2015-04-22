@@ -6,12 +6,32 @@
 
     @if ( Auth::user()->isPermitted() )
     <div class="marker">
-        <a href="#" ng-click="moveToDelivered()" class="btn btn-info btn-sm">MARK AS DELIVERED</a>
-        <a href="{{ route('product.index') }}/{# inquiryInfo.product_id #}" target="_blank" class="btn btn-info btn-sm">VIEW PRODUCT INQUIRED</a>
+        <a ng-class="{ inactive: inquiryStateReserve }" href="#" ng-click="moveToDelivered()" class="btn btn-info btn-sm">MARK AS DELIVERED</a>
+        <a ng-class="{ inactive: inquiryStateReserve }" href="{{ route('product.index') }}/{# inquiryInfo.product_id #}" target="_blank" class="btn btn-info btn-sm">VIEW PRODUCT INQUIRED</a>
+        <a ng-class="{ active: inquiryStateReserve }" href="#" ng-click="inquiryReserve( $event )" class="btn btn-info btn-sm">RESERVED ITEM</a>
+    </div>
+    <div class="inquiry-reserve-container" ng-show="inquiryStateReserve">
+        <div class="col-md-4 text-center">
+            <h4 style="color:#FFF;">CURRENTLY ITEM RESERVE: {# inquiryInfo.reserve + reserve #}</h4>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" ng-click="reserveButton('add')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+                </span>
+                <input name="reserve" ng-readonly="true" type="text" class="text-center form-control" ng-model="reserve" />
+                <span class="input-group-btn">
+                    <button type="button" ng-click="reserveButton('minus')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
+                </span>
+                <span class="input-group-btn">
+                    <button ng-click="reserveItem( reserve )" type="button" class="btn btn-primary">UPDATE</button>
+                </span>
+            </div>
+        </div>
     </div>
     @endif
 
-    <div ng-class="{ 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('inquiry-', '') #} message media animate" ng-repeat="message in inquiryConversations"
+    <div ng-class="{ 'message-same-user': (inquiryConversations[ $index - 1 ].user_id == message.user_id), 'message-mine': (message.user.id == me.user.id) }" class="message-type-{# message.type.replace('inquiry-', '') #} message media animate" ng-repeat="message in inquiryConversations"
         data-type="{# message.type #}"
         data-id="{# message.id #}"
         data-user="{# message.user_id #}"

@@ -3,10 +3,16 @@
     border-top: 5px solid @gray-light;
     padding-top: @padding-base-horizontal;
     margin-top: @padding-large-horizontal;
-    .recent-items {
-        // .panel-variant(transparent; transparent; @navbar-default-bg; transparent);
+    .copyright {
+        padding: @padding-base-vertical;
+        color: @gray-light;
+        font-size: @font-size-small;
+        background-color: darken( @navbar-default-bg, 5% );
+    }
+    .panel {
         background-color: transparent;
         border-color: transparent;
+        box-shadow: none;
         .panel-heading {
             background-color: transparent;
             color: @navbar-default-color;
@@ -14,6 +20,9 @@
         .panel-body {
             background-color: transparent;
         }
+    }
+    .recent-items {
+        // .panel-variant(transparent; transparent; @navbar-default-bg; transparent);
         ul {
             .clearfix();
             text-align: center;
@@ -22,6 +31,10 @@
         }
         li {
             display: inline-block;
+            img {
+                width: 50px;
+                height: 50px;
+            }
             a {
                 display: block;
                 padding: 4px;
@@ -30,6 +43,28 @@
                 &:hover {
                     border-color: @link-hover-color;
                 }
+            }
+        }
+    }
+    .company-footer {
+        .external-links {
+            li {
+                color: @gray-light;
+                padding: @padding-xs-horizontal @padding-xs-vertical;
+                font-size: @font-size-small;
+            }
+        }
+    }
+    .contact-us {
+        li {
+            color: @gray-light;
+            font-size: @font-size-small;
+            a {
+                color: @gray-light;
+            }
+            .icon {
+                color: transparent;
+                font-size: @font-size-base;
             }
         }
     }

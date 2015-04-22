@@ -11,10 +11,16 @@
     </li>
 </ul>
 
-
-
-<div class="alert alert-warning" ng-if="!products.length">
-    <i class="fa fa-exclamation-triangle"></i> 
-    <a ng-hide="categories.length" href="#category" ui-sref="products.category" class="alert-link"> Please add category first.</a>
-    <a ng-show="categories.length" href="{{ route('product.add') }}" class="alert-link">NO PRODUCTS YET. Please add new products.</a>
+<div class="alert alert-default text-center" ng-show="condition.products.loading">
+    <p><i class="fa fa-3x fa-spinner fa-pulse"></i></p>
+    <p>LOADING</p>
 </div>
+<div class="alert alert-danger text-center" ng-show="condition.products.error">
+    <p><i class="fa fa-3x fa-exclamation-circle"></i></p>
+    <p>{# condition.products.errorMessage.message | uppercase #}</p>
+    <p>
+        <a ng-hide="condition.products.errorMessage.data.categories.length" href="#category" ui-sref="products.category" class="btn btn-primary"><i class="fa fa-plus"></i> Please add category first.</a>
+        <a ng-show="condition.products.errorMessage.data.categories.length" href="{{ route('product.add') }}" class="btn btn-primary"><i class="fa fa-plus"></i> Please add new products.</a>
+    </p>
+</div>
+

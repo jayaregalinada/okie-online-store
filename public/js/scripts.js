@@ -1,7 +1,19 @@
-(function() {
-  window._okie = angular.module('Okie', ['ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular']);
 
-  window._okie.config(function($interpolateProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider) {
+/**
+ * OKIE Angularjs application module
+ *
+ * @type {object}
+ */
+
+(function() {
+  window._okie = angular.module('Okie', ['ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'decipher.tags']);
+
+
+  /**
+   * OKIE Configuration
+   */
+
+  window._okie.config(function($interpolateProvider, $locationProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider) {
     $interpolateProvider.startSymbol('{#');
     $interpolateProvider.endSymbol('#}');
     LightboxProvider.getImageUrl = function(image) {
@@ -27,17 +39,35 @@
     $animateProvider.classNameFilter(/carousel|animate/);
   });
 
-  window._okie.run(function($rootScope, $state, $stateParams, UserFactory) {
+  window._okie.run(function($rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location) {
     'use strict';
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
     $rootScope.$messagesCount = UserFactory.messages;
+    $rootScope.notification = Notification;
+    $window.Notification = Notification;
+    $rootScope.location = $window.location;
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       UserFactory.getNotify();
     });
+    $templateCache.put('angular-ui-notification.html', '<div class="ui-notification"><h3 ng-show="title" ng-bind-html="title"></h3><div class="message" ng-bind-html="message"></div></div>');
   });
 
+
+  /**
+   * For Dropzone autodiscovery
+   * 
+   * @type {boolean}
+   */
+
   Dropzone.autoDiscover = false;
+
+
+  /**
+   * Initialize if document is ready
+   *
+   * @return {void}
+   */
 
   angular.element(document).ready(function() {
     angular.bootstrap(document, ['Okie']);
@@ -45,7 +75,7 @@
       container: 'body'
     });
     $('[data-toggle="popover"]').popover();
-    return $('.content-container').css({
+    $('.content-container').css({
       minHeight: ($(window).height() - ($('#navigation').outerHeight() + $('#footer').outerHeight())) - 28
     });
   });
@@ -67,8 +97,8 @@
       url: '/item/:itemId',
       views: {
         'items': {
-          controller: 'ItemController',
-          templateUrl: '/views/items/item.html'
+          templateUrl: '/views/items/item.html',
+          controller: 'ItemController'
         }
       }
     }).state('category', {
@@ -190,15 +220,132 @@
         $scope.getEmailSubscribe();
       }
     });
+    $stateProvider.state('asettings', {
+      abstract: true,
+      controller: 'AdminSettingsController',
+      template: '<ui-view/>',
+      url: '/settings'
+    }).state('asettings.permissions', {
+      parent: 'asettings',
+      url: '^/permissions',
+      templateUrl: '/views/settings/permissions.html',
+      controller: function($scope) {
+        $scope.getPermissions();
+      }
+    }).state('asettings.general', {
+      parent: 'asettings',
+      url: '^/general',
+      templateUrl: '/views/settings/general.html',
+      controller: function($scope) {
+        $scope.getGeneral();
+      }
+    });
+    $stateProvider.state('reviews', {
+      abstract: true,
+      controller: 'ReviewController',
+      template: '<ui-view/>',
+      url: '/review'
+    }).state('reviews.all', {
+      parent: 'reviews',
+      url: '/all',
+      templateUrl: '/views/reviews/all.html',
+      controller: function($scope) {
+        $scope.getAllReviews();
+      }
+    });
     $urlRouterProvider.otherwise('/');
   });
 
 }).call(this);
 
 (function() {
-  _okie.controller('ItemController', function($scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout) {
+  _okie.animation('.items-animation', function($timeout) {
+    var queue, queueAnimation;
+    queue = {
+      enter: [],
+      leave: []
+    };
+    queueAnimation = function(event, delay, fn) {
+      var index, timeouts;
+      timeouts = [];
+      index = queue[event].length;
+      queue[event].push(fn);
+      queue[event].timer && $timeout.cancel(queue[event].timer);
+      queue[event].timer = $timeout(function() {
+        angular.forEach(queue[event], function(fn, index) {
+          timeouts[index] = $timeout(fn, index * delay * 1000, false);
+        });
+        queue[event] = [];
+      }, 10, false);
+      return function() {
+        if (timeouts[index]) {
+          $timeout.cancel(timeouts[index]);
+        } else {
+          queue[index] = angular.noop;
+        }
+      };
+    };
+    return {
+      enter: function(element, done) {
+        var cancel, onClose;
+        element = $(element[0]);
+        cancel = queueAnimation('enter', 0.1, function() {
+          var cancelFn;
+          element.css({
+            top: -20,
+            opacity: 0
+          });
+          element.animate({
+            top: 0,
+            opacity: 1
+          }, done);
+          cancelFn = cancel;
+          cancel = function() {
+            cancelFn();
+            element.stop();
+            element.css({
+              top: 0,
+              opacity: 1
+            });
+          };
+        });
+        return onClose = function(cancelled) {
+          cancelled && cancel();
+        };
+      },
+      leave: function(element, done) {
+        var cancel, onClose;
+        element = $(element[0]);
+        cancel = queueAnimation('leave', 0.1, function() {
+          var cancelFn;
+          element.css({
+            top: 0,
+            opacity: 1
+          });
+          element.animate({
+            top: -20,
+            opacity: 0
+          }, done);
+          cancelFn = cancel;
+          return cancel = function() {
+            cancelFn();
+            element.stop();
+          };
+        });
+        return onClose = function(cancelled) {
+          cancelled && cancel();
+        };
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  _okie.controller('ItemController', function($rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification) {
     $scope.items = [];
     $scope.item = {};
+    $scope.categoryInfo = {};
     $scope.carouselInterval = 3000;
     $scope.categoryFilterName = $stateParams.categoryId;
     $scope.inquireState = false;
@@ -209,10 +356,19 @@
       success: false
     };
     $scope.inquireResponseTime = 5000;
+    $rootScope.searching = false;
+    $scope.rating = {
+      maximum: 5
+    };
+    $scope.inquire = {
+      reserve: 0
+    };
+    $scope.rateSubmittingState = false;
+    $scope.ratingState = false;
     $scope.backToHeader = function(delayTime, animateTime) {
       $timeout(function() {
         return $('body,html').animate({
-          scrollTop: $('#header').offset().top - $('#navigation').outerHeight(true)
+          scrollTop: $('#item_container .item-wrapper').offset().top - $('#navigation').outerHeight(true)
         }, animateTime ? animateTime : 1000);
       }, delayTime ? delayTime : 500);
     };
@@ -230,6 +386,7 @@
       }
     };
     $scope.inquireItem = function() {
+      $scope.backToHeader(50, 500);
       $scope.inquireState = !$scope.inquireState;
       $log.log('Inquiring item', $stateParams.itemId);
     };
@@ -240,21 +397,29 @@
       $scope.inquireMessages = [];
       ItemFactory.sendInquiryMessage({
         item: $stateParams.itemId,
-        message: $scope.inquire
+        message: $scope.inquire.message,
+        reserve: $scope.inquire.reserve
       }).success(function(data, xhr) {
         $scope.backToHeader();
         $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state;
-        $scope.inquire = '';
+        $scope.getItem($stateParams.itemId);
+        $scope.inquire = {
+          reserve: 0,
+          message: ''
+        };
+        $scope.inquireItem();
         $scope.inquireMessages.push({
           type: 'success',
           message: data.success.message
         });
+        Notification.success(data.success);
       }).error(function(data, xhr) {
         $scope.inquireSubmitButton.state = !$scope.inquireSubmitButton.state;
         $scope.inquireMessages.push({
           type: 'danger',
           message: data.error.message
         });
+        Notification.error(data.error);
       }).then(function(data) {
         $timeout(function() {
           return $scope.inquireMessages.splice(0, $scope.inquireMessages.length);
@@ -265,37 +430,256 @@
       $scope.inquireMessages.splice(index, 1);
     };
     $scope.getItemsByCategory = function(pageNumber) {
-      ItemFactory.getAllByCategory($stateParams.categoryId, pageNumber).success(function(data, xhr) {
-        if (data.to > 0) {
-          if ($scope.items.length < data.total) {
-            $scope.getItemsByCategory(data.current_page + 1);
-            angular.forEach(data.data, function(value, key) {
-              $scope.items.push(value);
-            });
-          }
+      ItemFactory.getAllByCategory($stateParams.categoryId, pageNumber).success(function(success, xhr) {
+        $scope.errorMessage = null;
+        $scope.categoryInfo = success.category;
+        $rootScope.categoryInfo = $scope.categoryInfo;
+        if (Boolean(success.products.next_page_url)) {
+          $scope.getItemsByCategory(data.current_page + 1);
         }
+      }).error(function(error) {
+        $scope.errorMessage = error.error.message;
+      }).then(function(data) {
+        angular.forEach(data.data.products.data, function(value, key) {
+          $scope.items.push(value);
+        });
       });
     };
     $scope.getAllItem = function(pageNumber) {
-      return ItemFactory.getAll(pageNumber).success(function(data, xhr) {
-        if ($scope.items.length < data.total) {
+      $log.info('Getting all items');
+      ItemFactory.getAll(pageNumber).success(function(data, xhr) {
+        $scope.errorMessage = null;
+        if (Boolean(data.next_page_url)) {
           $scope.getAllItem(data.current_page + 1);
-          angular.forEach(data.data, function(value, key) {
-            $scope.items.push(value);
-          });
         }
+      }).error(function(error) {
+        $log.error('ItemController.getAllItem::error', error);
+        $scope.errorMessage = error.error.message;
+      }).then(function(data) {
+        angular.forEach(data.data.data, function(value, key) {
+          $scope.items.push(value);
+        });
       });
+    };
+    $scope.affixItem = function() {
+      if ($('#item_container .item-right').outerHeight(true) >= $('#item_content_left .item-carousel').outerHeight(true)) {
+        $('#item_content_left .item-carousel').affix({
+          offset: {
+            top: function() {
+              return this.top = $('#navigation').outerHeight(true);
+            },
+            bottom: function() {
+              return this.bottom = $('#item_container .item-related').outerHeight(true) + $('#footer').outerHeight(true) - 50;
+            }
+          }
+        });
+      }
     };
     $scope.getItem = function(id) {
       ItemFactory.getItem(id).success(function(data, xhr) {
+        $scope.backToHeader();
+        $scope.errorMessage = null;
         $scope.item = data;
         $log.log('item: ', $scope.item);
+        $rootScope.bigTitle = ' :: ' + data.name;
+      }).error(function(error, xhr) {
+        $scope.errorMessage = error.error.message;
+      }).then(function(data) {
+        $timeout(function() {
+          $scope.affixItem();
+        }, 500);
       });
     };
     $scope.redirectInItem = function() {
       localStorageService.set('redirect_to_item', $stateParams.itemId);
     };
+    $scope.ratingItem = function() {
+      $scope.ratingState = !$scope.ratingState;
+    };
+    $scope.rateTheItem = function($event, id, elementId) {
+      var element, rating;
+      $event.preventDefault();
+      element = elementId ? elementId : '#ratingCollapse';
+      $scope.rateSubmittingState = true;
+      $log.info('ItemController.rateTheItem', $event);
+      rating = $scope.item.review ? $scope.item.review : $scope.item.rating;
+      RatingFactory.rateItem(id, rating).success(function(success) {
+        $log.log(success);
+        $scope.rateSubmittingState = false;
+        $scope.item.rating.message = '';
+        Notification.success(success.success);
+        $(element).collapse('hide');
+        $scope.item.rating = success.success.data.product.rating;
+        $scope.ratingState = !$scope.ratingState;
+      }).error(function(error) {
+        $log.error(error);
+        $scope.rateSubmittingState = false;
+        Notification.error(error.error);
+      });
+    };
     $scope.checkState();
+  });
+
+}).call(this);
+
+(function() {
+  _okie.directive('okieSearch', function($window, $log, SearchFactory) {
+    return {
+      templateUrl: '/views/searchbox.html',
+      restrict: 'AEC',
+      link: function(scope, element, attrs, ngModel) {},
+      controller: function($scope, $element, $attrs, $window, $timeout, $log, SearchFactory) {
+        $scope.results = [];
+        $scope.resultErrorState = false;
+        $scope.selected = -1;
+        $scope.onFocus = function(event) {
+          $element.find('input').animate({
+            width: '100%'
+          }, 500);
+          angular.element($window).on('keydown', function(e) {
+            var code;
+            $log.log('keydownEvent', e);
+            code = e.which ? e.which : e.keyCode;
+            switch (code) {
+              case 27:
+                $scope.onBlur(e);
+                break;
+            }
+          });
+        };
+        $scope.inputClone = function() {
+          return $element.find('input').clone().css({
+            width: 'auto',
+            position: 'fixed',
+            left: -9999999,
+            top: -9999999
+          }).appendTo('body');
+        };
+        $scope.onBlur = function(event) {
+          $element.find('.search-results').slideUp();
+          if ($scope.inputClone.length) {
+            $element.find('input').animate({
+              width: $scope.inputClone.css('width')
+            }, 500);
+          }
+        };
+        $scope.goTo = function(url) {
+          $scope.search = '';
+          $window.location.replace(url);
+        };
+        $scope.onChange = function(event) {
+          $scope.inputClone();
+          $element.find('input').animate({
+            width: '100%'
+          }, 500);
+          $log.info('You are searching for', $scope.search);
+          if (Boolean($scope.search)) {
+            $scope.onSearch(event);
+          }
+        };
+        $scope.onSearch = function(event) {
+          var leftPosition, topPosition;
+          leftPosition = $element.find('input').position().left;
+          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true);
+          $element.find('.search-results').css({
+            left: leftPosition,
+            top: topPosition,
+            width: $element.find('form').width()
+          });
+          SearchFactory.getProduct($scope.search).success(function(response) {
+            $scope.results = [];
+            $scope.resultErrorState = false;
+            $element.find('.search-results').slideDown();
+          }).error(function(error) {
+            $element.find('.search-results').slideDown();
+            $scope.resultErrorState = true;
+            $scope.resultErrorMessage = error.error.message;
+            $timeout(function() {
+              return $scope.onBlur();
+            }, 5000);
+          }).then(function(data) {
+            return angular.forEach(data.data.success.data, function(value, key) {
+              $scope.results.push(value);
+            });
+          });
+        };
+        $scope.on_focus = function(event) {
+          $scope.inputClone = $element.find('input').clone().css({
+            width: 'auto',
+            position: 'fixed',
+            left: -9999999,
+            top: -9999999
+          }).appendTo('body');
+          $element.find('input').animate({
+            width: '100%'
+          }, 500);
+          angular.element($window).on('keydown', function(e) {
+            if (e.keyCode === 27) {
+              $scope.onBlur(e);
+            }
+          });
+          $scope.$watch('search', function() {
+            var formPosition, topPosition;
+            $log.info($scope.search);
+            formPosition = $element.find('form').offset().left;
+            topPosition = $element.find('input').offset().top + $element.find('input').outerHeight(true);
+            $element.find('.search-results').css({
+              left: formPosition + 15,
+              top: topPosition,
+              width: $element.find('form').width()
+            });
+            SearchFactory.getProduct($scope.search).success(function(response) {
+              $scope.results = [];
+              $scope.resultErrorState = false;
+              $element.find('.search-results').slideDown();
+            }).error(function(error) {
+              $element.find('.search-results').slideDown();
+              $scope.resultErrorState = true;
+              $scope.resultErrorMessage = error.error.message;
+              $timeout(function() {
+                return $scope.onBlur();
+              }, 5000);
+            }).then(function(data) {
+              return angular.forEach(data.data.success.data, function(value, key) {
+                $scope.results.push(value);
+              });
+            });
+          });
+        };
+
+        /**
+         * Watch the scope of search 
+         *
+         * @return {void}
+         */
+        return $scope.$watch('search', function() {
+          var leftPosition, topPosition;
+          leftPosition = $element.find('input').position().left;
+          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true);
+          $element.find('.search-results').css({
+            left: leftPosition,
+            top: topPosition,
+            width: $element.find('form').width()
+          });
+        });
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('ClassFactory', function($http, $q) {
+    var _c;
+    _c = {};
+    _c.badgeClass = ['ribbon-info', 'ribbon-success', 'ribbon-info', 'ribbon-warning', 'ribbon-danger', 'content-description', 'content-serif', 'font-light', 'font-bold', 'font-normal', 'letter-spacing-1', 'letter-spacing-2', 'letter-spacing-3', 'letter-spacing-4', 'letter-spacing-5'];
+    _c.load = function() {
+      var deferred;
+      deferred = $q.defer();
+      deferred.resolve(_c.badgeClass);
+      return deferred.promise;
+    };
+    return _c;
   });
 
 }).call(this);
@@ -307,7 +691,8 @@
     urls = {
       base: '/items/',
       category: '/items/category/',
-      inquiry: '/item/inquire'
+      inquiry: '/item/inquire',
+      rate: '/item/_ITEM_ID_/rate'
     };
 
     /**
@@ -321,7 +706,7 @@
       return $http({
         url: urls.base,
         params: {
-          page: (pageNumber ? pageNumber : 1)
+          page: pageNumber ? pageNumber : 1
         }
       });
     };
@@ -351,7 +736,7 @@
       return $http({
         url: urls.category + category,
         params: {
-          page: (pageNumber ? pageNumber : 1)
+          page: pageNumber ? pageNumber : 1
         }
       });
     };
@@ -392,7 +777,60 @@
         method: "POST"
       });
     };
+
+    /**
+     * Rate the item
+     *
+     * @param  {int} id
+     * @param  {object} data
+     * @param  {string} method
+     *
+     * @return $http
+     */
+    _i.rateItem = function(id, data, method) {
+      return $http({
+        url: urls.rate.replace('_ITEM_ID_', id),
+        data: data,
+        method: method ? method : "POST"
+      });
+    };
     return _i;
+  });
+
+}).call(this);
+
+(function() {
+  _okie.factory('RatingFactory', function($http, $window) {
+    var _r;
+    _r = {};
+    _r.sendRating = function(data, url, method, params) {
+      return $http({
+        url: url,
+        method: method ? method : "POST",
+        params: params,
+        data: data
+      });
+    };
+
+    /**
+     * Rate the item
+     *
+     * @param  {int} id
+     * @param  {object} data
+     * @param  {string} method
+     *
+     * @return $http
+     */
+    _r.rateItem = function(id, data, url, method) {
+      var rateUrl;
+      rateUrl = '/item/_ITEM_ID_/rate';
+      return $http({
+        url: url ? url : rateUrl.replace('_ITEM_ID_', id),
+        data: data,
+        method: method ? method : "POST"
+      });
+    };
+    return _r;
   });
 
 }).call(this);
@@ -403,11 +841,19 @@
     _s = {};
     _s.url = {
       base: '/search/',
-      users: '/search/user/'
+      users: '/search/user/',
+      products: '/search/product/'
     };
     _s.getUser = function(user, params) {
       return $http({
         url: _s.url.users + user,
+        method: "GET",
+        params: params
+      });
+    };
+    _s.getProduct = function(product, params) {
+      return $http({
+        url: _s.url.products + product,
         method: "GET",
         params: params
       });
@@ -485,7 +931,7 @@
         });
       }
     };
-    _u.getNotify = function() {
+    _u.getNotify = function(callback) {
       return $http({
         url: '/me',
         ignoreLoadingBar: true
@@ -494,6 +940,9 @@
         $rootScope.me = data;
         _u.checkState();
         _u.checkRedirectItem();
+        if (callback && typeof callback === 'function') {
+          callback();
+        }
       });
     };
     _u.getUser = function() {
@@ -503,7 +952,8 @@
       });
     };
     _u.checkState = function() {
-      $log.info('UserFactory::checkState()', $window.location.pathname);
+      $log.info('UserFactory::checkState()', $stateParams);
+      $log.info('UserFactory::checkState()', $state.current);
       switch ($window.location.pathname) {
         case _u.route.messages:
           if ($state.current.name === 'index') {
@@ -519,5 +969,62 @@
     };
     return _u;
   });
+
+}).call(this);
+
+
+/*
+* Inspired by: 
+* http://designedbythomas.co.uk/blog/how-detect-width-web-browser-using-jquery
+* 
+* This script is ideal for getting specific class depending on device width 
+* for enhanced theming. Media queries are fine in most cases but sometimes
+* you want to target a specific JQuery call based on width. This will work 
+* for that. Be sure to put it first in your script file. Note that you could
+* also target the body class instead of 'html' as well. 
+* Modify as needed
+ */
+
+(function() {
+  (function($) {
+    $(document).ready(function() {
+      var current_width;
+      current_width = $(window).width();
+      if (current_width < 481) {
+        $('html').addClass('m320').removeClass('m768').removeClass('desktop').removeClass('m480');
+      } else if (current_width < 739) {
+        $('html').addClass('m768').removeClass('desktop').removeClass('m320').removeClass('tablet');
+      } else if (current_width < 970) {
+        $('html').addClass('tablet').removeClass('desktop').removeClass('m320').removeClass('m768');
+      } else if (current_width > 971) {
+        $('html').addClass('desktop').removeClass('m320').removeClass('m768').removeClass('tablet');
+      }
+      if (current_width < 650) {
+        $('html').addClass('mobile-menu').removeClass('desktop-menu');
+      }
+      if (current_width > 651) {
+        $('html').addClass('desktop-menu').removeClass('mobile-menu');
+      }
+    });
+    $(window).resize(function() {
+      var current_width;
+      current_width = $(window).width();
+      if (current_width < 481) {
+        $('html').addClass('m320').removeClass('m768').removeClass('desktop').removeClass('tablet');
+      } else if (current_width < 669) {
+        $('html').addClass('m768').removeClass('desktop').removeClass('m320').removeClass('tablet');
+      } else if (current_width < 970) {
+        $('html').addClass('tablet').removeClass('desktop').removeClass('m320').removeClass('m768');
+      } else if (current_width > 971) {
+        $('html').addClass('desktop').removeClass('m320').removeClass('m768').removeClass('tablet');
+      }
+      if (current_width < 650) {
+        $('html').addClass('mobile-menu').removeClass('desktop-menu');
+      }
+      if (current_width > 651) {
+        $('html').addClass('desktop-menu').removeClass('mobile-menu');
+      }
+    });
+  })(jQuery);
 
 }).call(this);

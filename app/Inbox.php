@@ -34,8 +34,14 @@ class Inbox extends Model {
 	 */
 	protected $fillable = [ 'title', 'sender_id', 'recipient_id' ];
 
+	/**
+	 * @type array
+	 */
 	protected $with = [ 'sender' ];
 
+	/**
+	 * @type array
+	 */
 	protected $appends = [ 'latest' ];
 
 	/**

@@ -27,7 +27,7 @@ _okie.factory 'DeliverFactory', ( $http, $window )->
     ###
     _d.getConversations = ( id, pageNumber, method )->
         $http
-            url: $window._url.deliver.conversations.replace '_DELIVER_ID', id
+            url: $window._url.deliver.conversations.replace '_DELIVER_ID_', id
             method: if method then method else "GET"
             params:
                 page: pageNumber

@@ -24,7 +24,7 @@
             <div class="form-group">
                 <label for="product_description" class="col-sm-2 control-label">Description</label>
                 <div class="col-sm-10">
-                    <input ng-model="product.description" type="text" class="form-control" id="product_description" required />
+                    <div id="product_description" name="product_description" class="content-description" ng-minlength="5" required="required" ng-required="true" placeholder="Write a description" text-angular ng-model="product.description"></div>
                 </div>
             </div>
             <div class="form-group">

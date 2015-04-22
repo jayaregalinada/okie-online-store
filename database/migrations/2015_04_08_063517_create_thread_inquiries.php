@@ -18,6 +18,7 @@ class CreateThreadInquiries extends Migration {
 			$table->string('title')->nullable();
 			$table->unsignedInteger('inquisition_id');
 			$table->unsignedInteger('product_id');
+			$table->integer('reserve')->default( 0 );
 			$table->timestamps();
 			$table->foreign('inquisition_id')->references('id')->on('users')->onDelete('cascade');
 			$table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

@@ -14,7 +14,7 @@ class AddUserInProducts extends Migration {
 	{
 		Schema::table('products', function(Blueprint $table)
 		{
-			$table->integer('user_id')->unsigned();
+			$table->unsignedInteger( 'user_id' )->after( 'id' );
 		});
 	}
 
@@ -27,7 +27,7 @@ class AddUserInProducts extends Migration {
 	{
 		Schema::table('products', function(Blueprint $table)
 		{
-			$table->dropColumn('user_id');
+			$table->dropColumn( 'user_id' );
 		});
 	}
 

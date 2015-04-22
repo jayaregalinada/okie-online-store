@@ -11,46 +11,41 @@ class CategoriesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
+		\DB::table('categories')->delete();
+        
 		\DB::table('categories')->insert(array (
 			0 => 
 			array (
 				'id' => 1,
-				'name' => 'Superbreak',
+				'name' => 'Right Pack',
 				'description' => '',
-				'created_at' => '2015-03-26 00:22:33',
-				'updated_at' => '2015-03-27 03:45:04',
+				'slug' => 'right-pack',
 				'navigation' => 1,
-				'slug' => 'superbreak',
+				'parent_id' => 1,
+				'created_at' => '2015-04-17 06:47:48',
+				'updated_at' => '2015-04-17 06:47:48',
 			),
 			1 => 
 			array (
-				'id' => 3,
-				'name' => 'Right Pack',
+				'id' => 2,
+				'name' => 'Superbreak',
 				'description' => '',
-				'created_at' => '2015-03-26 00:22:40',
-				'updated_at' => '2015-03-27 03:37:11',
+				'slug' => 'superbreak',
 				'navigation' => 1,
-				'slug' => 'right-pack',
+				'parent_id' => 2,
+				'created_at' => '2015-04-17 07:16:12',
+				'updated_at' => '2015-04-17 07:16:12',
 			),
 			2 => 
 			array (
-				'id' => 4,
+				'id' => 3,
 				'name' => 'Overexposed',
 				'description' => '',
-				'created_at' => '2015-03-26 19:15:17',
-				'updated_at' => '2015-03-27 03:37:15',
-				'navigation' => 1,
 				'slug' => 'overexposed',
-			),
-			3 => 
-			array (
-				'id' => 5,
-				'name' => 'Best Seller',
-				'description' => '',
-				'created_at' => '2015-03-26 19:16:35',
-				'updated_at' => '2015-03-27 03:37:17',
 				'navigation' => 1,
-				'slug' => 'best-seller',
+				'parent_id' => 3,
+				'created_at' => '2015-04-17 07:45:03',
+				'updated_at' => '2015-04-17 07:45:03',
 			),
 		));
 	}

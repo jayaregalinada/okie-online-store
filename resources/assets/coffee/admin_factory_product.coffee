@@ -1,14 +1,22 @@
-_okie.factory 'ProductFactory', ( $http, $q, $rootScope, $window )->
+_okie.factory 'ProductFactory', ( $http, $rootScope, $window )->
 
-    prod = {}
-    products = {}
+    _p = {}
 
-    prod.getProducts = ->
-        products
+    _p.getAllProducts = ( pageNumber, url, method, params )->
+        defaultParams = 
+            page: pageNumber
+        $http
+            url: if url then url else $window._url.products.all
+            params: if params then params else defaultParams
+            method: if method then method else "GET"
 
-    prod.setProducts = ( p )->
-        products = p
+    _p.updateBadge = ( data, url, method, params )->
+        $http
+            url: url
+            params: params
+            method: if method then method else "PUT"
+            data: data
 
 
-    prod
+    _p
 

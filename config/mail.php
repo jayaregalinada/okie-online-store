@@ -121,4 +121,8 @@ return [
 
 	'pretend' => env('MAIL_PRETEND', false),
 
+	// EMAIL ADDRESS
+	'support' => env( 'MAIL_SUPPORT', 'support@okie.snp.ph' ),
+	'main'    => env( 'MAIL_MAIN', 'us@okie.snp.ph' )
+
 ];

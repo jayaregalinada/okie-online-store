@@ -1,5 +1,7 @@
 @extends('templates.profile')
 
+@section('title', ' - Messages')
+
 @section('settings.heading', '{# header #}')
 
 @section('navigate.messages', 'in')

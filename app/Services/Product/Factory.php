@@ -101,8 +101,8 @@ class Factory {
 	 */
 	public function createDirectory( $folderName )
 	{
-		if( ! File::exists( Config::get( 'product.upload.fullpath' ) . $folderName ) )
-			return File::makeDirectory( Config::get('product.upload.fullpath') . $folderName, 0777, true );
+		if( ! File::exists( config( 'product.upload.fullpath' ) . $folderName ) )
+			return File::makeDirectory( config('product.upload.fullpath') . $folderName, 0777, true );
 
 		return true;
 	}
@@ -120,55 +120,55 @@ class Factory {
 	{
 		$image = [];
 		$quality = [
-			'jpg' => Config::get('product.images.quality.jpg'),
-			'image' => Config::get('product.images.quality.image'),
+			'jpg'   => config( 'product.images.quality.jpg' ),
+			'image' => config( 'product.images.quality.image' ),
 		];
-		$saveDir = Config::get('product.upload.fullpath') . $directory;
+		$saveDir = config( 'product.upload.fullpath' ) . $directory;
 
 		$images = [
 			// ORIGINAL SIZE
 			$processor->encodeImage(
 				$file,
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.original.suffix' ), $file )
+				$saveDir . $this->createFileName( config( 'product.images.sizes.original.suffix' ), $file )
 			),
 			// SQUARE SIZE
 			$processor->createSquare( 
-				Config::get( 'product.images.sizes.square.size' ),
+				config( 'product.images.sizes.square.size' ),
 				$file, 
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.square.suffix' ), $file )
+				$saveDir . $this->createFileName( config( 'product.images.sizes.square.suffix' ), $file )
 			),
 			// THUMBNAIL SIZE
 			$processor->createSquare( 
-				Config::get( 'product.images.sizes.thumbnail.size' ),
+				config( 'product.images.sizes.thumbnail.size' ),
 				$file, 
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.thumbnail.suffix' ), $file ) 
+				$saveDir . $this->createFileName( config( 'product.images.sizes.thumbnail.suffix' ), $file ) 
 			),
 			// SMALL SIZE
 			$processor->resizeImage(
 				[
-				'width' => Config::get( 'product.images.sizes.small.width' ), 
-				'height' => Config::get( 'product.images.sizes.small.height' )
+				'width' => config( 'product.images.sizes.small.width' ), 
+				'height' => config( 'product.images.sizes.small.height' )
 				], 
 				$file,
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.small.suffix' ), $file )
+				$saveDir . $this->createFileName( config( 'product.images.sizes.small.suffix' ), $file )
 			),
 			// MEDIUM SIZE
 			$processor->resizeImage(
 				[
-				'width' => Config::get( 'product.images.sizes.medium.width' ), 
-				'height' => Config::get( 'product.images.sizes.medium.height' )
+				'width' => config( 'product.images.sizes.medium.width' ), 
+				'height' => config( 'product.images.sizes.medium.height' )
 				], 
 				$file,
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.medium.suffix' ), $file )
+				$saveDir . $this->createFileName( config( 'product.images.sizes.medium.suffix' ), $file )
 			),
 			// LARGE SIZE
 			$processor->resizeImage(
 				[
-				'width' => Config::get( 'product.images.sizes.large.width' ), 
-				'height' => Config::get( 'product.images.sizes.large.height' )
+				'width' => config( 'product.images.sizes.large.width' ), 
+				'height' => config( 'product.images.sizes.large.height' )
 				], 
 				$file,
-				$saveDir . $this->createFileName( Config::get( 'product.images.sizes.large.suffix' ), $file )
+				$saveDir . $this->createFileName( config( 'product.images.sizes.large.suffix' ), $file )
 			)
 		];
 
@@ -177,7 +177,7 @@ class Factory {
 			$image[] = [
 				'width'     => $images[ $key ]->width(),
 				'height'    => $images[ $key ]->height(),
-				'url'       => Config::get( 'product.upload.basename') . "$directory$value->basename",
+				'url'       => config( 'product.upload.basename') . "$directory$value->basename",
 				'base_dir'  => "$directory$value->basename"
 			];
 		}

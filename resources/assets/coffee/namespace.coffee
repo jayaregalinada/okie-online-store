@@ -1,12 +1,29 @@
-window._okie = angular.module( 'Okie', [ 'ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular' ])
+# ui-notification
+# angular.module('ui-notification').run [
+#   '$templateCache'
+#   ($templateCache) ->
+#     $templateCache.put 'angular-ui-notification.html', '<div class="ui-notification"><h3 ng-show="title" ng-bind-html="title"></h3><div class="message" ng-bind-html="message"></div></div>'
+#     return
+# ]
+
+###*
+ * OKIE Angularjs application module
+ *
+ * @type {object}
+###
+window._okie = angular.module( 'Okie', [ 'ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'decipher.tags' ])
+
+###*
+ * OKIE Configuration
+###
+window._okie.config ( $interpolateProvider, $locationProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider )->
     
-###########
-## CONFIG 
-###########
-window._okie.config ( $interpolateProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider )->
-    
-    $interpolateProvider.startSymbol('{#')
-    $interpolateProvider.endSymbol('#}')
+    $interpolateProvider.startSymbol( '{#' )
+    $interpolateProvider.endSymbol( '#}' )
+    # $locationProvider.html5Mode( 
+    #     enabled: true
+    #     requireBase: false
+    # ).hashPrefix( '!' )
 
     LightboxProvider.getImageUrl = ( image )->
         image.sizes[0].url
@@ -34,30 +51,41 @@ window._okie.config ( $interpolateProvider, LightboxProvider, localStorageServic
 
     $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
 
-    $animateProvider.classNameFilter(/carousel|animate/)
-
-    
+    $animateProvider.classNameFilter( /carousel|animate/ )
 
     return
 
-window._okie.run ( $rootScope, $state, $stateParams, UserFactory )->
+window._okie.run ( $rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location )->
     'use strict'
 
     $rootScope.$state = $state
     $rootScope.$stateParams = $stateParams
     $rootScope.$messagesCount = UserFactory.messages
+    $rootScope.notification = Notification
+    $window.Notification = Notification
+    $rootScope.location = $window.location
     $rootScope.$on '$stateChangeStart', ( event, toState, toParams, fromState, fromParams )->
         UserFactory.getNotify()
 
         return
+
+    $templateCache.put 'angular-ui-notification.html', '<div class="ui-notification"><h3 ng-show="title" ng-bind-html="title"></h3><div class="message" ng-bind-html="message"></div></div>'
         
     return
     
 
-
+###*
+ * For Dropzone autodiscovery
+ * 
+ * @type {boolean}
+###
 Dropzone.autoDiscover = false
 
-
+###*
+ * Initialize if document is ready
+ *
+ * @return {void}
+###
 angular.element( document ).ready( ->
     angular.bootstrap( document, [ 'Okie' ] )
 
@@ -70,4 +98,6 @@ angular.element( document ).ready( ->
     $( '.content-container' ).css
         minHeight: ( $( window ).height() - ( $('#navigation').outerHeight() + $('#footer').outerHeight() ) ) - 28
     
+    return
+
 )

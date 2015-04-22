@@ -12,14 +12,17 @@
             <div class="input-group">
                 <input ng-require="true" required="required" type="text" ng-change="getUser( $event )" ng-model-options="{ debounce: 500 }" ng-model="message.send" class="form-control" id="user" placeholder="Search for user" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="getUser( $event )">SEARCH</button>
+                    <button class="btn btn-primary" type="button" ng-click="getUser( $event )">SEARCH</button>
                 </span>
             </div>
             
             <input class="hidden" type="text" ng-require="true" required="required" ng-model="message.recipient" />
             <div class="search">
                 <ul class="list-group" ng-show="search.length">
-                    <li class="list-group-item" ng-click="sendWithUser( s )" ng-repeat="s in search">{# s.first_name #} {# s.last_name #}</li>
+                    <li class="list-group-item" ng-click="sendWithUser( s )" ng-repeat="s in search">
+                        <img ng-src="{# s.avatar #}" alt="avatar" />
+                        {# s.first_name #} {# s.last_name #}
+                    </li>
                 </ul>
                 <ul class="list-group" ng-show="searchError">
                     <li class="list-group-item list-group-item-danger">{# searchErrorMessage #}</li>

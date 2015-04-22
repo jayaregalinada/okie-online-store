@@ -1,4 +1,4 @@
-_okie.factory 'UserSettingsFactory', ( $http )->
+_okie.factory 'UserSettingsFactory', ( $http, $window )->
 
     _u = {}
 
@@ -23,6 +23,13 @@ _okie.factory 'UserSettingsFactory', ( $http )->
         $http
             url: url
             method: if method then method else "GET"
+            params: params
+
+    _u.unsubscribeToNewsletter = ( data, url, method, params )->
+        $http
+            url: if url then url else $window._url.settings.unsubscribeNewsletter
+            method: if method then method else "POST"
+            data: data
             params: params
 
 
