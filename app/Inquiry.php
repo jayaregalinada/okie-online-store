@@ -42,7 +42,7 @@ class Inquiry extends Model {
 	/**
 	 * @type array
 	 */
-	protected $fillable = [ 'title', 'inquisition_id', 'product_id' ];
+	protected $fillable = [ 'title', 'inquisition_id', 'product_id', 'reserve' ];
 
 	/**
 	 * @type array
@@ -50,7 +50,8 @@ class Inquiry extends Model {
 	protected $casts = [
 		'id'             => 'integer',
 		'inquisition_id' => 'integer',
-		'product_id'     => 'integer'
+		'product_id'     => 'integer',
+		'reserve'        => 'integer'
 	];
 
 	/**
@@ -112,6 +113,31 @@ class Inquiry extends Model {
 	public function scopeGetInquiriesByProduct( $query, $product_id )
 	{
 		return $query->whereProductId( $product_id )->get();
+	}
+
+	/**
+	 * @param $query
+	 * @param $amount
+	 *
+	 * @return mixed
+	 */
+	public function scopeReserveProduct( $query, $amount )
+	{
+		return $query->update( [
+			'reserve' => $this->reserve + $amount ]
+		);
+	}
+
+	/**
+	 * @param $query
+	 * @param $product_id
+	 * @param $user_id
+	 *
+	 * @return mixed
+	 */
+	public function scopeGetUserInquiry( $query, $product_id, $user_id )
+	{
+		return $query->whereProductId( $product_id )->whereInquisitionId( $user_id );
 	}
 
 
