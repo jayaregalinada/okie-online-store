@@ -37,30 +37,73 @@ class Handler extends ExceptionHandler {
 	 */
 	public function render( $request, Exception $e )
 	{
-		if( $e instanceof ThreadException )
+		switch ( true )
 		{
-			return response( $e->showInResponse() , $e->getCode() );
+			case $e instanceof ThreadException:
+			case $e instanceof NewsletterException:
+			case $e instanceof ProductException:
+			case $e instanceof UserException:
+			case $e instanceof OptionException:
+			case $e instanceof ReviewException:
+				if( $request->wantsJson() || $request->ajax() )
+					return response()->json( $e->showInResponse(), $e->getCode() )->setCallback( $request->input( 'callback' ) );
+				if( $e->getCode() == 404 )
+					return abort( 404, $e->getMessage() );
+				
+				return response( $e->showInResponse(), $e->getCode() );
+			break;
+			
+			default:
+				if( ! app()->environment( 'local' ) )
+				{
+					$response = [
+						'error' => [
+							'message' => $e->getMessage(),
+							'exception' => class_basename( $e ),
+							'code' => $e->getCode(),
+							'line' => $e->getLine(),
+							'trace_string' => $e->getTraceAsString(),
+							'trace' => $e->getTrace(),
+							'previous' => $e->getPrevious(),
+							'file' => class_basename( $e->getFile() )
+						]
+					];
+					if( $request->wantsJson() || $request->ajax() )
+						return response()->json( $response, $e->getStatusCode() )->setCallback( $request->input( 'callback' ) );
+
+					return response( $response, 500 );
+				}
+				else
+				{
+					if( config( 'app.debug' ) )
+						return $this->renderExceptionWithWhoops( $request, $e );
+					
+					return parent::render( $request, $e );
+				}
+			break;
 		}
-		if( $e instanceof NewsletterException )
+	}
+
+	/**
+	 * Render an exception using Whoops.
+	 * [https://mattstauffer.co/blog/bringing-whoops-back-to-laravel-5]
+	 * 
+	 * @param  \Exception $e
+	 * @return \Illuminate\Http\Response
+	 */
+	protected function renderExceptionWithWhoops( $request, Exception $e )
+	{
+		$whoops = new \Whoops\Run;
+		if( $request->ajax() || $request->wantsJson() )
 		{
-			return response( $e->showInResponse(), $e->getCode() );
+			$whoops->pushHandler( new \Whoops\Handler\JsonResponseHandler() );
+			return response( $whoops->handleException($e), $e->getStatusCode(), $e->getHeaders() );
 		}
-		if( $e instanceof InboxException )
+		else
 		{
-			return response( [ 'error' => [
-				'message' => $e->getMessage(),
-				'code' => $e->getCode(),
-				'type' => $e->getType() ]
-			], $e->getCode() );
+			$whoops->pushHandler( new \Whoops\Handler\PrettyPageHandler() );
+			return response( $whoops->handleException($e), $e->getStatusCode(), $e->getHeaders() );
 		}
-		// if( $e instanceof \Illuminate\Session\TokenMismatchException )
-		// {
-		// 	return response( ['error' => [
-		// 		'message' => $e->getMessage(),
-		// 		'strings' => $e->__toString() ]
-		// 	], 500 );
-		// }
-		return parent::render( $request, $e );
 	}
 
 }
