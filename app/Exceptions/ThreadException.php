@@ -15,14 +15,22 @@ class ThreadException extends Exception {
 	protected $data;
 
 	/**
+	 * @var string
+	 */
+	protected $title;
+
+	/**
 	 * @param string $type
-	 * @param null   $message
+	 * @param string $message
 	 * @param int    $code
+	 * @param string $title
 	 * @param array  $data
 	 */
-	public function __construct( $type = 'GLOBAL', $message = null, $code = 404, $data = [] )
+	public function __construct( $type = 'GLOBAL', $message = '', $code = 404, $title = 'Opps!', $data = [] )
 	{
-		$this->type = $type;
+		$this->type  = $type;
+		$this->title = $title;
+		$this->data  = $data;
 		parent::__construct( '['. $type . '] ' . $message, $code );
 	}
 
@@ -43,17 +51,26 @@ class ThreadException extends Exception {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getTitle()
+	{
+		return $this->title;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function showInResponse()
 	{
 		return [
 			'error' => [
-				'message'   => $this->message,
-				'type'      => $this->type,
-				'code'      => $this->code,
-				'exception' => get_class( $this ),
-				'data'      => $this->data
+				'title'     => $this->getTitle(),
+				'message'   => $this->getMessage(),
+				'type'      => $this->getType(),
+				'code'      => $this->getCode(),
+				'exception' => class_basename( get_class( $this ) ),
+				'data'      => $this->getData()
 			]
 		];
 	}
