@@ -54,7 +54,7 @@ class ConfigServiceProvider extends ServiceProvider {
 	{
 		foreach( $config as $key => $value )
 		{
-			$config[ $key ] = ( empty( unserialize( $value ) ) ? config( $key ) : $this->replaceHelpers( unserialize( $value ) ) );
+			$config[ $key ] = ( empty( trim( unserialize( $value ) ) ) ? config( $key ) : $this->replaceHelpers( unserialize( $value ) ) );
 		}
 
 		return $config;
