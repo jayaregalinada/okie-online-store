@@ -10,13 +10,19 @@ class NewsletterException extends Exception {
 	protected $email;
 
 	/**
+	 * @var string
+	 */
+	protected $title;
+
+	/**
 	 * @param string $email
 	 * @param string $message
 	 * @param int    $code
 	 */
-	public function __construct( $email = '', $message = '', $code = 400 )
+	public function __construct( $email = '', $message = '', $code = 400, $title = 'Opps :(' )
 	{
 		$this->email = $email;
+		$this->title = $title;
 		parent::__construct( $message, $code );
 	}
 
@@ -29,17 +35,26 @@ class NewsletterException extends Exception {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getTitle()
+	{
+		return $this->title;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function showInResponse()
 	{
 		return [
 			'error' => [
-				'email'     => $this->email,
-				'message'   => $this->message,
-				'code'      => $this->code,
+				'title'     => $this->getTitle(),
+				'email'     => $this->getEmail(),
+				'message'   => $this->getMessage(),
+				'code'      => $this->getCode(),
 				'type'      => 'warning',
-				'exception' => get_class( $this ),
+				'exception' => class_basename( get_class( $this ) ),
 			]
 		];
 	}
