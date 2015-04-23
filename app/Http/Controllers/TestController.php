@@ -145,6 +145,11 @@ class TestController extends Controller {
         ob_end_flush();
 	}
 
+	public function getApp()
+	{
+		dd( app('db') );
+	}
+
 
 
 }
