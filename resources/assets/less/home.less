@@ -1,17 +1,11 @@
 .home-container {
     .navbar-category {
         .navbar-toggle {
-            border-color: @gray;
-            .icon-bar {
-                background-color: @navbar-default-bg;
-            }
             width: 100%;
-            border-bottom: 2px dashed @gray-darker;
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            margin-right: 0;
+            border: 0;
             float: none;
+            letter-spacing: 5px;
+            font-size: @font-size-h3;
             &.collapsed {
                 .nav-down {
                     display: inline-block;
@@ -19,6 +13,9 @@
                 .nav-up {
                     display: none;
                 }
+            }
+            .icon-bar {
+                background-color: @navbar-default-bg;
             }
             .nav-down {
                 display: none;
