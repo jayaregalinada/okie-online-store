@@ -73,7 +73,7 @@ class ConfigServiceProvider extends ServiceProvider {
 		config([
 
 		]);
-		config( $this->config );
+		// config( $this->config );
 	}
 
 	/**
