@@ -6751,23 +6751,20 @@ a.list-group-item-danger.active:focus {
   background-color: #ff0039;
 }
 .home-container .navbar-category .navbar-toggle {
-  border-color: #555555;
   width: 100%;
-  border-bottom: 2px dashed #222222;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  margin-right: 0;
+  border: 0;
   float: none;
-}
-.home-container .navbar-category .navbar-toggle .icon-bar {
-  background-color: #222222;
+  letter-spacing: 5px;
+  font-size: 26px;
 }
 .home-container .navbar-category .navbar-toggle.collapsed .nav-down {
   display: inline-block;
 }
 .home-container .navbar-category .navbar-toggle.collapsed .nav-up {
   display: none;
+}
+.home-container .navbar-category .navbar-toggle .icon-bar {
+  background-color: #222222;
 }
 .home-container .navbar-category .navbar-toggle .nav-down {
   display: none;
@@ -7765,6 +7762,9 @@ a.list-group-item-danger.active:focus {
   margin-left: auto;
   margin-right: auto;
 }
+#item_container .item-carousel.affix {
+  position: relative;
+}
 @media (min-width: 1200px) {
   #item_container .item-carousel {
     width: 400px;
@@ -8315,6 +8315,11 @@ a.list-group-item-danger.active:focus {
   position: absolute;
   right: 0;
   top: 0;
+}
+.carousel-indicators {
+  width: 100%;
+  left: 0;
+  margin-left: 0;
 }
 /* fontelico */
 [class*="fontelico-"]:before {
