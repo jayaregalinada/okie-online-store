@@ -7,10 +7,10 @@
                     <h2 class="panel-title">{{ strtoupper( config('app.title') ) }}</h2>
                 </div>
                 <div class="panel-body clearfix row">
-                    <div class="col-md-4">
+                    <div class="col-xs-5 col-md-4">
                         <img src="{{ config('app.logo.img') }}" alt="logo" class="img-responsive" />
                     </div>
-                    <div class="col-md-8 external-links">
+                    <div class="col-xs-7 col-md-8 external-links">
                         <ul class="list-unstyled content-description">
                             <li>{{ config('app.description') }}</li>
                             <li>{{ config('app.url') }}/</li>
