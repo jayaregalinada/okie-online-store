@@ -1,6 +1,6 @@
 <?php namespace Okie\Providers;
 
-use Illuminate\Support\Facades\DB;
+use DB;
 use Illuminate\Support\ServiceProvider;
 
 class ConfigServiceProvider extends ServiceProvider {
