@@ -1,5 +1,5 @@
 <ul class="container-fluid list-unstyled item-container" ng-if="!errorMessage">
-    <li ng-repeat="product in items" class="items-animation animate product-{# product.id #} col-md-3 product-item"
+    <li ng-repeat="product in items" class="items-animation animate product-{# product.id #} col-md-4 col-lg-3 col-sm-6 col-xs-12 product-item"
         data-product-id="{# product.id #}"
         data-product-name="{# product.name #}"
         data-product-code="{# product.code #}">
