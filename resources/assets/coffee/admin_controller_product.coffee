@@ -210,7 +210,8 @@ _okie.controller 'ProductController', ( ProductFactory, $rootScope, $log, $scope
         .success ( success )->
             Notification.success success.success
             $scope.getInformation()
-            $scope.editState = !$scope.editState
+            $scope.editState = false
+            $log.log $scope.product.featured
 
             return
         .error ( error )->
@@ -254,13 +255,11 @@ _okie.controller 'ProductController', ( ProductFactory, $rootScope, $log, $scope
         return
 
     $scope.updateInfo = ->
-        # $scope.editState = !$scope.editState
-        newProduct = JSON.stringify $scope.product
-        oldProduct = JSON.stringify $scope.getItem 'product_info'
-
-        if ( newProduct is oldProduct )
-            $log.log 'Just the same eh?'
+        if ( angular.equals $scope.product, $scope.getItem 'product_info' )
             $scope.editState = !$scope.editState
+            Notification.warning 
+                title: 'Updating failed'
+                message: '<img src="/images/stickers/lol.png" alt="lol" />'
 
             return
         else
@@ -468,6 +467,26 @@ _okie.controller 'ProductController', ( ProductFactory, $rootScope, $log, $scope
                 Notification.success data.success
 
                 return
+
+        return
+
+    $scope.productFeature = ( bool )->
+        obj = 
+            url: '/product/' + $scope.id
+            method: "PUT"
+            data: 
+                featured: bool
+        $http obj
+        .success ( success )->
+            Notification.success success.success
+            $scope.getInformation()
+            $log.log $scope.product.featured
+
+            return
+        .error ( error )->
+            Notification.error error.error
+
+            return
 
         return
 
