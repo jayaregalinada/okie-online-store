@@ -2,7 +2,7 @@
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2015-04-20.
+    * Generated on 2015-04-24.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -42,6 +42,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,
@@ -163,6 +164,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,
@@ -284,6 +286,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,
@@ -405,6 +408,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,
@@ -526,6 +530,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,
@@ -647,6 +652,7 @@
             'view' instanceof \Illuminate\View\Factory,
             'Illuminate\Contracts\Auth\Registrar' instanceof \Okie\Services\Registrar,
             'Okie\Services\HTMLSanitizerInterface' instanceof \Okie\Services\HTMLSanitizer,
+            'okie.response' instanceof \Okie\Services\Response,
             'image' instanceof \Intervention\Image\ImageManager,
             'iseed' instanceof \Orangehill\Iseed\Iseed,
             'command.iseed' instanceof \Orangehill\Iseed\IseedCommand,

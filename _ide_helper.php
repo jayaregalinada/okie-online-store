@@ -1,7 +1,7 @@
 <?php
 /**
  * An helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.0.27 on 2015-04-20.
+ * Generated for Laravel 5.0.27 on 2015-04-24.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -12104,6 +12104,41 @@ namespace {
          */
         public static function hasMacro($name){
             return \Illuminate\Html\FormBuilder::hasMacro($name);
+        }
+        
+    }
+
+
+    class OkieResponse extends \Okie\Facades\ResponseFacade{
+        
+        /**
+         * 
+         *
+         * @param string $message
+         * @param array $data
+         * @param int $status
+         * @param string $callback
+         * @param array $headers
+         * @return $this 
+         * @static 
+         */
+        public static function success($message = '', $data = array(), $status = 200, $callback = 'callback', $headers = array()){
+            return \Okie\Services\Response::success($message, $data, $status, $callback, $headers);
+        }
+        
+        /**
+         * 
+         *
+         * @param string $message
+         * @param array $data
+         * @param int $status
+         * @param string $callback
+         * @param array $headers
+         * @return $this 
+         * @static 
+         */
+        public static function error($message = '', $data = array(), $status = 404, $callback = 'callback', $headers = array()){
+            return \Okie\Services\Response::error($message, $data, $status, $callback, $headers);
         }
         
     }
