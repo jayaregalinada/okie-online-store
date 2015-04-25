@@ -37,6 +37,7 @@
     $scope.searchError = false;
     $scope.url = $window._url;
     $scope.storage = localStorageService;
+    $scope.autoSubmitConversation = false;
 
     /**
      * Change the heading
@@ -61,6 +62,18 @@
      */
     $scope.store = function(key, data) {
       $scope.storage.set(key, JSON.stringify(data));
+    };
+    $scope.autoSubmit = function() {
+      $scope.autoSubmitConversation = !$scope.autoSubmitConversation;
+      localStorageService.set('auto_submit', $scope.autoSubmitConversation);
+      $log.log('MessageController@autoSubmit', $scope.autoSubmitConversation);
+    };
+    $scope.checkIfAutoSubmit = function() {
+      $log.log('MessageController@checkIfAutoSubmit', localStorageService.get('auto_submit'));
+      if (!localStorageService.get('auto_submit')) {
+        localStorageService.set('auto_submit', true);
+      }
+      return localStorageService.get('auto_submit');
     };
 
     /**
@@ -274,6 +287,7 @@
         if (Boolean(data.conversations.next_page_url)) {
           $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId, data.conversations.current_page + 1);
         }
+        $scope.autoSubmitConversation = localStorageService.get('auto_submit');
       }).error(function(data, xhr) {
         $scope.inquiryErrorState = true;
         $log.error('getToInquiryMessages::data', data);
@@ -592,6 +606,25 @@
           $scope.reserve = $scope.reserve < $scope.inquiryInfo.product.unit ? $scope.reserve + 1 : $scope.reserve + 0;
           break;
       }
+    };
+    $scope.conversationShortcuts = function(event, form) {
+      var tA;
+      tA = textAngularManager.retrieveEditor('reply');
+      if (event.keyCode === 13 && event.altKey) {
+        $log.log('MessageController@conversationShortcuts.form.$valid', form.$valid);
+        $log.log('MessageController@conversationShortcuts.tA', tA);
+        $log.log('MessageController@conversationShortcuts.form', form);
+        if (form.$valid) {
+          event.preventDefault();
+          $log.log(tA.scope.html = '');
+        }
+        event.preventDefault();
+      }
+    };
+    $scope.emptyTextArea = function() {
+      var tA;
+      tA = textAngularManager.retrieveEditor('reply');
+      tA.scope.$parent.reply = '';
     };
   });
 

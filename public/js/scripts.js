@@ -39,7 +39,7 @@
     $animateProvider.classNameFilter(/carousel|animate/);
   });
 
-  window._okie.run(function($rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location) {
+  window._okie.run(function($rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location, $log) {
     'use strict';
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
@@ -47,8 +47,20 @@
     $rootScope.notification = Notification;
     $window.Notification = Notification;
     $rootScope.location = $window.location;
+    $rootScope.collapseToggle = function() {
+      $('#navbar_navigation .dropdown .collapse').collapse('hide');
+    };
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       UserFactory.getNotify();
+    });
+    $rootScope.$on('cfpLoadingBar:loading', function(loading) {
+      $log.log('cfpLoadingBar:loading', loading);
+    });
+    $rootScope.$on('cfpLoadingBar:started', function(started) {
+      $log.log('cfpLoadingBar:started', started);
+    });
+    $rootScope.$on('cfpLoadingBar:completed', function(completed) {
+      $log.log('cfpLoadingBar:completed', completed);
     });
     $templateCache.put('angular-ui-notification.html', '<div class="ui-notification"><h3 ng-show="title" ng-bind-html="title"></h3><div class="message" ng-bind-html="message"></div></div>');
   });
@@ -76,7 +88,7 @@
     });
     $('[data-toggle="popover"]').popover();
     $('.content-container').css({
-      minHeight: ($(window).height() - ($('#navigation').outerHeight() + $('#footer').outerHeight())) - 28
+      minHeight: ($(window).height() - ($('#navigation').outerHeight() + ($('#navigation').outerHeight() / 2) + $('#footer').outerHeight())) - 28
     });
   });
 
@@ -139,6 +151,15 @@
     }).state('messages.inquiries', {
       parent: 'messages',
       url: '^/inquiries',
+      templateUrl: '/views/messages/inquiries.html',
+      controller: function($scope) {
+        $scope.header = 'Inquiries';
+        $scope.getAllInquiries();
+        $scope.keyBinder();
+      }
+    }).state('messages.inquiriesProduct', {
+      parent: 'messages',
+      url: '^/inquiries/product/:productId',
       templateUrl: '/views/messages/inquiries.html',
       controller: function($scope) {
         $scope.header = 'Inquiries';
@@ -292,19 +313,20 @@
         cancel = queueAnimation('enter', 0.1, function() {
           var cancelFn;
           element.css({
-            top: -20,
+            bottom: -20,
             opacity: 0
           });
           element.animate({
-            top: 0,
+            bottom: 0,
             opacity: 1
           }, done);
+          element.addClass('enter');
           cancelFn = cancel;
           cancel = function() {
             cancelFn();
             element.stop();
             element.css({
-              top: 0,
+              bottom: 0,
               opacity: 1
             });
           };
@@ -319,13 +341,14 @@
         cancel = queueAnimation('leave', 0.1, function() {
           var cancelFn;
           element.css({
-            top: 0,
+            bottom: 0,
             opacity: 1
           });
           element.animate({
-            top: -20,
+            bottom: -20,
             opacity: 0
           }, done);
+          element.addClass('leave');
           cancelFn = cancel;
           return cancel = function() {
             cancelFn();
@@ -365,10 +388,14 @@
     };
     $scope.rateSubmittingState = false;
     $scope.ratingState = false;
+    $scope.featured = {};
+    $scope.clickImage = function(url) {
+      $log.info('clickImage', url);
+    };
     $scope.backToHeader = function(delayTime, animateTime) {
       $timeout(function() {
         return $('body,html').animate({
-          scrollTop: $('#item_container .item-wrapper').offset().top - $('#navigation').outerHeight(true)
+          scrollTop: $('#item_container .item-wrapper').offset().top - ($('#navigation').outerHeight(true) + ($('#navigation').outerHeight(true) / 2))
         }, animateTime ? animateTime : 1000);
       }, delayTime ? delayTime : 500);
     };
@@ -443,6 +470,7 @@
         angular.forEach(data.data.products.data, function(value, key) {
           $scope.items.push(value);
         });
+        $scope.featured = data.data.featured;
       });
     };
     $scope.getAllItem = function(pageNumber) {
@@ -533,9 +561,16 @@
         $scope.resultErrorState = false;
         $scope.selected = -1;
         $scope.onFocus = function(event) {
+          var formOffset;
+          formOffset = $element.find('form').offset().left;
+          $element.find('form').css({
+            left: formOffset,
+            width: '40%'
+          }).addClass('active');
           $element.find('input').animate({
             width: '100%'
           }, 500);
+          $('#navigation').addClass('okie-search-searching');
           angular.element($window).on('keydown', function(e) {
             var code;
             $log.log('keydownEvent', e);
@@ -557,9 +592,14 @@
         };
         $scope.onBlur = function(event) {
           $element.find('.search-results').slideUp();
-          if ($scope.inputClone.length) {
+          $('#navigation').removeClass('okie-search-searching');
+          $element.find('form').css({
+            width: 'auto',
+            left: 0
+          }).removeClass('active');
+          if ($scope.inputClone().length) {
             $element.find('input').animate({
-              width: $scope.inputClone.css('width')
+              width: $scope.inputClone().css('width')
             }, 500);
           }
         };
@@ -580,9 +620,9 @@
         $scope.onSearch = function(event) {
           var leftPosition, topPosition;
           leftPosition = $element.find('input').position().left;
-          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true);
+          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true) + 2;
           $element.find('.search-results').css({
-            left: leftPosition,
+            left: $element.find('form').offset().left,
             top: topPosition,
             width: $element.find('form').width()
           });
@@ -590,6 +630,11 @@
             $scope.results = [];
             $scope.resultErrorState = false;
             $element.find('.search-results').slideDown();
+            $element.find('.search-results').css({
+              left: $element.find('form').offset().left,
+              top: topPosition,
+              width: $element.find('form').width()
+            });
           }).error(function(error) {
             $element.find('.search-results').slideDown();
             $scope.resultErrorState = true;
@@ -655,9 +700,9 @@
         return $scope.$watch('search', function() {
           var leftPosition, topPosition;
           leftPosition = $element.find('input').position().left;
-          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true);
+          topPosition = $element.find('input').position().top + $element.find('input').outerHeight(true) + 2;
           $element.find('.search-results').css({
-            left: leftPosition,
+            left: $element.find('form').offset().left,
             top: topPosition,
             width: $element.find('form').width()
           });

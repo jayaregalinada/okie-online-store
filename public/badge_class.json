@@ -8,5 +8,10 @@
     "content-serif",
     "font-light",
     "font-bold",
-    "font-normal"
+    "font-normal",
+    "letter-spacing-1",
+    "letter-spacing-2",
+    "letter-spacing-3",
+    "letter-spacing-4",
+    "letter-spacing-5"
 ]

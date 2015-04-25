@@ -493,7 +493,8 @@
       $http(obj).success(function(success) {
         Notification.success(success.success);
         $scope.getInformation();
-        $scope.editState = !$scope.editState;
+        $scope.editState = false;
+        $log.log($scope.product.featured);
       }).error(function(error) {
         Notification.error(error.error);
       });
@@ -528,12 +529,12 @@
       $scope.editState = !$scope.editState;
     };
     $scope.updateInfo = function() {
-      var newProduct, oldProduct;
-      newProduct = JSON.stringify($scope.product);
-      oldProduct = JSON.stringify($scope.getItem('product_info'));
-      if (newProduct === oldProduct) {
-        $log.log('Just the same eh?');
+      if (angular.equals($scope.product, $scope.getItem('product_info'))) {
         $scope.editState = !$scope.editState;
+        Notification.warning({
+          title: 'Updating failed',
+          message: '<img src="/images/stickers/lol.png" alt="lol" />'
+        });
         return;
       } else {
         $scope.productUpdate();
@@ -683,6 +684,23 @@
         $log.info('ProductController.deleteCategory::data', data);
         $scope.getCategories();
         Notification.success(data.success);
+      });
+    };
+    $scope.productFeature = function(bool) {
+      var obj;
+      obj = {
+        url: '/product/' + $scope.id,
+        method: "PUT",
+        data: {
+          featured: bool
+        }
+      };
+      $http(obj).success(function(success) {
+        Notification.success(success.success);
+        $scope.getInformation();
+        $log.log($scope.product.featured);
+      }).error(function(error) {
+        Notification.error(error.error);
       });
     };
   });
