@@ -73,7 +73,7 @@ class ConfigServiceProvider extends ServiceProvider {
 		config([
 
 		]);
-		// config( $this->config );
+		config( $this->config );
 	}
 
 	/**
@@ -81,7 +81,7 @@ class ConfigServiceProvider extends ServiceProvider {
 	 *
 	 * @return mixed
 	 */
-	private function getConfig( $key )
+	public function getConfig( $key )
 	{
 		if( ! $this->checkIfExists( $key ) )
 			return config( $key );
@@ -99,12 +99,6 @@ class ConfigServiceProvider extends ServiceProvider {
 	private function checkIfExists( $key )
 	{
 		return isset( $this->config[ $key ] );
-	}
-
-	public function changeValue( $value )
-	{
-
-
 	}
 
 }
