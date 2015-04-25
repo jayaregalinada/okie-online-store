@@ -70,7 +70,8 @@ class ThreadException extends Exception {
 				'type'      => $this->getType(),
 				'code'      => $this->getCode(),
 				'exception' => class_basename( get_class( $this ) ),
-				'data'      => $this->getData()
+				'data'      => $this->getData(),
+				'__toString' => $this->__toString()
 			]
 		];
 	}
