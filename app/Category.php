@@ -44,13 +44,14 @@ class Category extends Model {
 	protected $casts = [
 		'id' => 'integer',
 		'navigation' => 'boolean',
-		'parent_id' => 'integer'
+		'parent_id' => 'integer',
+		'is_mother' => 'boolean'
 	];
 
 	/**
 	 * @type array
 	 */
-	protected $appends = [ 'parent', 'children', 'parent_info' ];
+	protected $appends = [ 'parent', 'children', 'parent_info', 'is_mother' ];
 
 	/**
 	 * Products relation
@@ -106,6 +107,11 @@ class Category extends Model {
 		return $this->where( 'parent_id', '=', $this->parent_id )->where( 'id', '!=', $this->parent_id )->getQuery()->get();
 	}
 
+	public function getChildren()
+	{
+		return $this->where( 'parent_id', '=', $this->parent_id )->where( 'id', '!=', $this->parent_id );
+	}
+
 	/**
 	 * @return array
 	 */
@@ -120,6 +126,16 @@ class Category extends Model {
 			'description' => $this->parent()->getResults()[ 'description' ],
 			'slug' => $this->parent()->getResults()[ 'slug' ],
 		];
+	}
+
+	public function isMother()
+	{
+		return (bool) ( $this->id === $this->parent_id );
+	}
+
+	public function getIsMotherAttribute()
+	{
+		return $this->isMother();
 	}
 
 }
