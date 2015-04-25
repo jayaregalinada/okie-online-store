@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Okie\Services\Product\FeaturedCollection;
 
 /**
  * Okie\Product
@@ -45,7 +46,7 @@ class Product extends Model {
 	/**
 	 * @var array
 	 */
-	protected $fillable = [ 'name', 'code', 'description', 'price', 'unit', 'user_id', 'thumbnail_id', 'badge', 'sale_price' ];
+	protected $fillable = [ 'name', 'code', 'description', 'price', 'unit', 'user_id', 'thumbnail_id', 'badge', 'sale_price', 'featured' ];
 
 	/**
 	 * @var array
@@ -80,6 +81,7 @@ class Product extends Model {
 		'unit' => 'integer',
 		'user_id' => 'integer',
 		'thumbnail_id' => 'integer',
+		'featured' => 'boolean'
 	];
 
 	/**
@@ -294,6 +296,11 @@ class Product extends Model {
 	public function scopeGetRelated( $query, $id, $limit = 5 )
 	{
 		return $query->where( 'id', '!=', $id )->orderByRaw( "RAND()" )->limit( $limit )->get();
+	}
+
+	public function scopeGetFeatured( $query, $limit = 3, $rating = 2, $operator = '>')
+	{
+		return ( new FeaturedCollection( $this->all() ) )->getFeatured( $rating, $operator, $limit );
 	}
 
 }
