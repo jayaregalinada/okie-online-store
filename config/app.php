@@ -163,6 +163,7 @@ return [
 		'Okie\Providers\EventServiceProvider',
 		'Okie\Providers\RouteServiceProvider',
 		'Okie\Providers\ObserverServiceProvider',
+		'Okie\Providers\ResponseServiceProvider',
 
 		/*
 		 * Third party Service Providers...
@@ -225,8 +226,9 @@ return [
 		'Socialize' => 'Laravel\Socialite\Facades\Socialite',
 		'Image'     => 'Intervention\Image\Facades\Image',
 		'Html'      => 'Illuminate\Html\HtmFacade',
-		'Form'      => 'Illuminate\Html\FormFacade'
+		'Form'      => 'Illuminate\Html\FormFacade',
 
+		'OkieResponse' => 'Okie\Facades\ResponseFacade'
 	],
 
 ];
