@@ -250,7 +250,7 @@ class ProductController extends Controller {
 			{
 				return $this->responseInJSON( $response );
 			}
-			return redirect( route('product.index') . '#/all')->with( $response );
+			return redirect( route( 'products.index' ) . '#/all')->with( $response );
 		}
 
 		return $this->responseInJSON( ['error' => [
@@ -374,6 +374,7 @@ class ProductController extends Controller {
 		] );
 	}
 
+	/** TODO: PhpDocs */
 	public function removeBadge( $id )
 	{
 		Product::find( $id )->destroyBadge();
@@ -382,6 +383,20 @@ class ProductController extends Controller {
 			'message' => 'Successfully remove product badge',
 			'data' => Product::find( $id ) ]
 		] );
+	}
+
+	/** TODO: PhpDocs */
+	public function featuredItem( Request $request, $id )
+	{
+		$product = Product::find( $id );
+		if( is_null( $product->exists() ) )
+			throw new ProductException( 'Product is not found' );
+			
+		$product->update( [
+			'featured' => $request->input( 'featured' )
+		] );
+
+		return $this->responseSuccess( 'Updated to featured item', $product );
 	}
 
 }

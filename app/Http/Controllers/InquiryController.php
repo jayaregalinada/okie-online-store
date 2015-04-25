@@ -51,10 +51,12 @@ class InquiryController extends Controller {
 	 */
 	public function get( $id )
 	{
-		if( is_null( Inquiry::find( $id ) ) )
+		$inquiry = Inquiry::find( $id );
+		if( is_null( $inquiry ) )
 			throw new ThreadException( 'INQUIRY', 'No inquiry found with id '. $id );
+		$this->checkIfAllowed( $inquiry );
 
-		return $this->responseInJSON( Inquiry::find( $id ) );
+		return $this->responseInJSON( $inquiry );
 	}
 
 	/**
@@ -64,16 +66,19 @@ class InquiryController extends Controller {
 	 */
 	public function getConversations( $id )
 	{
-		if( is_null( Inquiry::find( $id ) ) )
+		$inquiry = Inquiry::find( $id );
+		if( is_null( $inquiry ) )
 			throw new ThreadException( 'INQUIRY', 'No inquiry found with id '. $id );
+		$this->checkIfAllowed( $inquiry );
 
 		return $this->responseInJSON( [
-			'inquiry'       => Inquiry::find( $id ),
-			'conversations' => Inquiry::find( $id )->conversations()->paginate()->toArray()
+			'inquiry'       => $inquiry,
+			'conversations' => $inquiry->conversations()->paginate()->toArray()
 		]);
 	}
 
 	/**
+	 * TODO: [DEPRECATED]
 	 * @return \Illuminate\View\View
 	 */
 	public function getMessagesView()
@@ -82,6 +87,7 @@ class InquiryController extends Controller {
 	}
 
 	/**
+	 * TODO: [DEPRECATED]
 	 * @return \Illuminate\View\View
 	 */
 	public function getConversationView()
@@ -104,6 +110,7 @@ class InquiryController extends Controller {
 		] )->first();
 		if( is_null( $inquiry ) )
 			throw new ThreadException( 'INQUIRY', 'Inquiry not found' );
+		$this->checkIfAllowed( $inquiry );
 		$conversation           = new Conversation;
 		$conversation->user_id  = Auth::user()->id;
 		$conversation->body     = $this->filterBody( $request->input( 'message' ) );
@@ -117,34 +124,6 @@ class InquiryController extends Controller {
 	}
 
 	/**
-	 * TODO: Remove because its deprecated, instead use method @reply()
-	 * Reply to inquiry [DEPRECATED]
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 *
-	 * @return mixed
-	 */
-	//public function postReply( Request $request )
-	//{
-	//	$inquiry = Inquiry::where( [
-	//		'inquisition_id' => (int) $request->input( 'inquisition' ),
-	//		'product_id'     => (int) $request->input( 'item' )
-	//	] )->first();
-	//	if( is_null( $inquiry ) )
-	//		throw new ThreadException( 'INQUIRY', 'Inquiry not found' );
-	//	$conversation           = new Conversation;
-	//	$conversation->user_id  = Auth::user()->id;
-	//	$conversation->body     = $this->filterBody( $request->input( 'message' ) );
-	//	$conversation->type     = ( Auth::user()->isPermitted() ) ? $conversation->responses[ 'inquiry' ] : 'inquiry';
-	//	$inquiry->conversations()->save( $conversation );
-	//
-	//	return $this->responseInJSON( [ 'success' => [
-	//		'message' => 'Successfully replied',
-	//		'data' => Conversation::find( $conversation->id ) ]
-	//	] );
-	//}
-
-	/**
 	 * @param \Illuminate\Http\Request $request
 	 *
 	 * @return mixed
@@ -153,15 +132,14 @@ class InquiryController extends Controller {
 	public function postReserve( Request $request )
 	{
 		$inquiry = Inquiry::find( $request->input( 'inquiry' ) );
-
 		if( is_null( $inquiry ) )
 			throw new ThreadException( 'INQUIRY', 'Inquiry not found' );
+		$this->checkIfAllowed( $inquiry );
 		$reserveItem = $inquiry->reserve;
 		$inquiry->reserveProduct( $request->input( 'reserve' ) );
 		$product = Product::find( $inquiry->product_id );
 		if( $request->input( 'reserve' ) > $product->unit )
 			throw new ThreadException( 'INQUIRY', 'Cannot reserve item because unit is not enough', 400 );
-		
 		$product->update( [
 			'unit' => $product->unit - $request->input( 'reserve' )
 		] );
@@ -174,6 +152,24 @@ class InquiryController extends Controller {
 			],
 			'amount' => $request->input( 'reserve' ) ]
 		] );
+	}
+
+	/** TODO: PhpDocs */
+	public function getInquiryByProduct( Request $request, $id )
+	{
+		$inquiry = Inquiry::whereProductId( $id );
+		if( ! ( $inquiry->count() ) )
+			throw new ThreadException( 'INQUIRY', 'No inquiry for that product' );
+		$this->checkIfAllowed( $inquiry );
+		
+		return $this->responseSuccess( 'Successfully get all inquiries', $inquiry->paginate()->toArray() );
+	}
+
+	/** TODO: PhpDocs */
+	protected function checkIfAllowed( $inquiry )
+	{
+		if( Auth::user()->isUser() && $inquiry->inquisition_id != Auth::id() )
+			throw new ThreadException( 'INQUIRY', 'You are not allowed here', 401 );
 	}
 
 }

@@ -25,6 +25,9 @@ use Config;
 use Okie\Option;
 use Illuminate\Config\Repository;
 use File;
+use Okie\Services\Response as OkieResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class TestController extends Controller {
 
@@ -46,16 +49,38 @@ class TestController extends Controller {
 		return json_encode( unserialize( $b ) );
 	}
 
-	public function getProduct( $id )
+	public function getProduct( $id = 1)
 	{
-		$product = Inquiry::getUserInquiry( $id, Auth::id() );
-		if( $product->exists() )
-			return $product->first();
+		return Product::getFeatured();
 	}
 
-	public function getCategory()
+	public function getCategory( $slug )
 	{
-		return Category::all();
+		$category = Category::find( $slug );
+		$childrenProducts = $category->getChildren()->latest( 'updated_at' )->with( 'products' )->get()->lists( 'products' );
+		$i = $this->categorySkip( $childrenProducts );
+		$paginate = new LengthAwarePaginator( $i, count( $i ), 2, null, [
+			'path' => Paginator::resolveCurrentPath(),
+		] );
+		$total = $category->getChildren()->latest( 'updated_at' )->with( 'products' );
+		// return $paginate;
+		return ( $this->categorySkip( $category->getChildren()->latest( 'updated_at' )->with( 'products' )->get()->toArray() ) );
+		// return Product::find( $slug );
+		// return Category::whereSlug( $slug )->first();
+	}
+
+	public function categorySkip( $data = array(), $skip = 0 )
+	{
+		$i = [];
+		foreach ( array_slice( $data, $skip  ) as $value )
+		{
+			foreach ( $value as $product )
+			{
+				$i[] = $product;
+			}
+		}
+
+		return $i;
 	}
 
 	public function getCreateConfig()
@@ -144,12 +169,5 @@ class TestController extends Controller {
         echo '<pre style="color:yellow;">====================[ DONE ]====================</pre>';
         ob_end_flush();
 	}
-
-	public function getApp()
-	{
-		dd( app('db') );
-	}
-
-
 
 }

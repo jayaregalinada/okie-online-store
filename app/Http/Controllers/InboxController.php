@@ -7,6 +7,7 @@ use Okie\Exceptions\ThreadException;
 use Okie\Http\Requests;
 use Okie\Inbox;
 use Okie\User;
+use Okie\Repositories\ThreadInterface;
 
 class InboxController extends Controller {
 
@@ -45,10 +46,12 @@ class InboxController extends Controller {
 	 */
 	public function get( $id )
 	{
-		if ( is_null( Inbox::find( $id ) ) )
+		$inbox = Inbox::find( $id );
+		if ( is_null( $inbox ) )
 			throw new ThreadException( 'INBOX', 'Inbox not found with id ' . $id, 404 );
+		$this->checkIfAllowed( $inbox );
 
-		return $this->responseInJSON( Inbox::find( $id ) );
+		return $this->responseInJSON( $inbox );
 	}
 
 	/**
@@ -74,12 +77,15 @@ class InboxController extends Controller {
 	 */
 	public function getConversations( $id )
 	{
-		if ( is_null( Inbox::find( $id ) ) )
+		$inbox = Inbox::find( $id );
+		if ( is_null( $inbox ) )
 			throw new ThreadException( 'INBOX', 'Inbox not found with id ' . $id, 404 );
+		$this->checkIfAllowed( $inbox );
+
 
 		return $this->responseInJSON( [
-			'inbox'         => Inbox::find( $id ),
-			'conversations' => Inbox::find( $id )->conversations()->paginate()->toArray()
+			'inbox'         => $inbox,
+			'conversations' => $inbox->conversations()->paginate()->toArray()
 		] );
 	}
 
@@ -142,6 +148,7 @@ class InboxController extends Controller {
 	public function reply( Request $request )
 	{
 		$inbox = Inbox::find( $request->input( 'inbox' ) );
+		$this->checkIfAllowed( $inbox );
 		$conversation          = new Conversation;
 		$conversation->user_id = Auth::user()->id;
 		$conversation->body    = $this->filterBody( $request->input( 'message' ) );
@@ -164,6 +171,13 @@ class InboxController extends Controller {
 		return $this->responseInJSON( [ 'success' => [
 			'message' => 'Successfully remove message' ]
 		] );
+	}
+
+	/** TODO: PhpDocs */
+	protected function checkIfAllowed( $inbox )
+	{
+		if( Auth::user()->isUser() && ( $inbox->sender_id != Auth::id() || $inbox->recipient_id != Auth::id() ) )
+			throw new ThreadException( 'INBOX', 'You are not allowed here', 401 );
 	}
 
 }

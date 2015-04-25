@@ -83,6 +83,7 @@ class ItemController extends Controller {
 	 */
 	public function showByCategory( Request $request, $id )
 	{
+		$i = [];
 		if( is_numeric( $id ) )
 		{
 			$category = Category::find( $id );
@@ -92,13 +93,14 @@ class ItemController extends Controller {
 			$category = Category::whereSlug( $id )->first();
 		}
 		if( ! $category )
-			throw new ProductException( 'We do not have any category yet', 404 );
+			throw new ProductException( 'We do not have that kind of category', 404 );
 		if( ! $category->products()->exists() )
 			throw new ProductException( 'We do not have any products on this category', 404 );
 
 		return $this->responseInJSON( [
 			'category' => $category, 
-			'products' => $category->products()->latest( 'created_at' )->paginate()->toArray()
+			'products' => $category->products()->latest( 'created_at' )->paginate()->toArray(),
+			'featured' => Product::getFeatured()
 		] );
 	}
 

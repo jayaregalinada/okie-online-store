@@ -169,7 +169,44 @@ abstract class Controller extends BaseController {
 	 */
 	public function responseInJSON( $data, $code = 200, $callback = 'callback' )
 	{
-		return response()->json( $data, $code )->setCallback( Request::input( $callback ) );
+		if( Request::ajax() || Request::wantsJson() )
+			return response()->jsonp( Request::input( $callback ), $data, $code );
+
+		return response( $data, $code );
+	}
+
+	/**
+	 * @param string $message
+	 * @param array  $data
+	 * @param int    $status
+	 * @param string $callback
+	 *
+	 * @return mixed
+	 */
+	public function responseSuccess( $message = '', $data = [], $status = 200, $callback = 'callback' )
+	{
+		return $this->responseInJSON( [ 'success' => [
+			'title' => 'Nice!',
+			'message' => $message,
+			'data'    => $data
+		] ], $status, $callback );
+	}
+
+	/**
+	 * @param string $message
+	 * @param array  $data
+	 * @param int    $status
+	 * @param string $callback
+	 *
+	 * @return mixed
+	 */
+	public function responseError( $message = '', $data = [], $status = 404, $callback = 'callback' )
+	{
+		return $this->responseInJSON( [ 'error' => [
+			'title', 'Whoops!',
+			'message' => $message,
+			'data'    => $data
+		] ], $status, $callback );
 	}
 
 	/**
@@ -228,7 +265,5 @@ abstract class Controller extends BaseController {
 
 		return implode( '', $tags );
 	}
-
-	
 
 }
