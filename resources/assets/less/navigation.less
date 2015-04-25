@@ -1,0 +1,82 @@
+#navigation {
+    &.okie-search-searching {
+        .affected-with-okie-search {
+            @media (min-width: @screen-md-min) {
+                opacity: 0;
+            }
+        }
+    }
+    #navbar_navigation {
+        margin-left: 5px;
+        li {
+            &.parent {
+                &.active {
+                    > a {
+                        background-color: darken( @nav-link-hover-bg, 5% )!important;
+                        color: @gray!important;
+                    }
+                    &.dropdown {
+                        > a {
+                            color: @gray;
+                        }
+                    }
+                    .collapse-navigation {
+                        background-color: darken( @nav-link-hover-bg, 5% )!important;
+                        li {
+                            &.active {
+
+                            }
+                            &:hover {
+                            }
+                            > a {
+                                background-color: darken( @nav-link-hover-bg, 5% )!important;
+                            }
+                        }
+                    }
+                }
+                &.dropdown {
+                    > a {
+                        &.collapsed {
+                            background-color: transparent;
+                            color: #FFF;
+                        }
+                        background-color: @nav-link-hover-bg;
+                        color: @gray;
+                    }
+                }
+                a {
+                    background-color: transparent;
+                    color: #FFF;
+                }
+            }
+            .collapsing {
+                .transition( none );
+                display: none;
+            }
+            .collapse-navigation {
+                position: fixed;
+                width: 100%;
+                left: 0;
+                background-color: @nav-link-hover-bg;
+                z-index: 9;
+                li {
+                    height: @navbar-height;
+                    line-height: ( ( @navbar-height / 2 ) + 4 );
+                    &:hover {
+                        > a {
+                            color: @gray;
+                        }
+                    }
+                    &.active {
+                        > a {
+                            color: @gray;
+                        }
+                    }
+                    > a {
+                        color: @gray-light;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,83 @@
+.home-container {
+    /////////////////
+    //// ALL ITEMS
+    ////////////////
+    .item-container {
+        margin-top: @padding-base-horizontal;
+        display: block;
+        .product-item {
+            margin-bottom: @padding-base-vertical;
+            position: relative;
+            opacity: 0;
+            &.enter {
+                opacity: 1;
+            }
+        }
+        .product-item-container {
+            background-color: @product-item-background;
+            display: block;
+            .box-shadow( 0 0 1px lighten(@gray-base, 60%) );
+            cursor: pointer;
+            &:hover {
+                .box-shadow( 0 0 3px lighten(@gray-base, 60%) );
+                .description {
+                    border-bottom-color: @gray;
+                }
+            }
+            .description {
+                color: @product-item-color;
+                border-bottom: 2px solid @gray-light;
+                padding: (@padding-base-vertical * 2.5) @padding-base-horizontal;
+                > .small {
+                    color: @gray;
+                }
+            }
+            img {
+                width: 100%;
+            }
+        }
+        .product-featured-item {
+            @media (min-width: @screen-md-min) {
+                margin-bottom: @padding-large-horizontal;
+            }
+            margin-bottom: @padding-base-vertical;
+            position: relative;
+            opacity: 0;
+            &.enter {
+                opacity: 1;
+            }
+        }
+        .product-featured-item-container {
+            position: relative;
+            display: block;
+            .box-shadow( 0 0 1px lighten(@gray-base, 60%) );
+            cursor: pointer;
+            overflow: hidden;
+            &:hover {
+                .box-shadow( 0 0 3px lighten(@gray-base, 60%) );
+                .description {
+                    border-bottom-color: @gray;
+                    .translate( 0, 0 );
+                }
+            }
+            .description {
+                color: @product-item-color;
+                padding: (@padding-base-vertical * 2.5) @padding-base-horizontal;
+                background-color: @gray-dark;
+                .translate( 0, -100% );
+                width: 100%;
+                position: absolute;
+                font-size: @font-size-h4;
+                color: #FFF;
+                .transition( transform .2s );
+                .small {
+                    color: @gray-light;
+                    font-size: 70%;
+                }
+            }
+            img {
+                width: 100%;
+            }
+        }
+    }
+}
