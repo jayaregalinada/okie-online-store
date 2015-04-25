@@ -30,18 +30,19 @@ _okie.animation '.items-animation', ( $timeout )->
         element = $( element[ 0 ] )
         cancel = queueAnimation 'enter', 0.1, ->
             element.css
-                top: -20
+                bottom: -20
                 opacity: 0
             element.animate
-                top: 0
+                bottom: 0
                 opacity: 1
             , done
+            element.addClass 'enter'
             cancelFn = cancel
             cancel = ->
                 cancelFn()
                 element.stop()
                 element.css
-                    top: 0
+                    bottom: 0
                     opacity: 1
 
                 return
@@ -56,12 +57,13 @@ _okie.animation '.items-animation', ( $timeout )->
         element = $( element[0] )
         cancel = queueAnimation 'leave', 0.1, ->
             element.css
-                top: 0
+                bottom: 0
                 opacity: 1
             element.animate
-                top: -20
+                bottom: -20
                 opacity: 0
             , done
+            element.addClass 'leave'
             cancelFn = cancel
             cancel = ->
                 cancelFn()

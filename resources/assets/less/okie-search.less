@@ -1,10 +1,27 @@
 .okie-search {
-    .navbar-form .form-group {
-        display: inline;
+    // position: relative;
+    // @media (min-width: @screen-md-min) {
+    //     position: absolute;
+    //     width: 100%;
+    //     z-index: 9999;
+    //     display: block;
+    // }
+    .navbar-form {
+        padding-left: 0;
+        padding-right: 0;
+
+        .form-group {
+            display: inline;
+        }
     }
     form {
         @media (min-width: @screen-md-min) {
-            width: 40%;
+            width: auto;
+            &.active {
+                position: absolute;
+                z-index: 9999;
+                width: 40%;
+            }
         }
     }
     form.searching {

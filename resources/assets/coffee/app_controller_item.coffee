@@ -19,11 +19,17 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
         reserve: 0
     $scope.rateSubmittingState = false
     $scope.ratingState = false
+    $scope.featured = {}
+
+    $scope.clickImage = ( url )->
+        $log.info 'clickImage', url
+
+        return
 
     $scope.backToHeader = ( delayTime, animateTime )->
         $timeout ->
             $( 'body,html' ).animate
-                scrollTop: $( '#item_container .item-wrapper' ).offset().top - $( '#navigation' ).outerHeight( true )
+                scrollTop: $( '#item_container .item-wrapper' ).offset().top - ( $( '#navigation' ).outerHeight( true ) + ( $( '#navigation' ).outerHeight( true ) / 2 ) )
             , if animateTime then animateTime else 1000
         , if delayTime then delayTime else 500
 
@@ -115,6 +121,8 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
                 angular.forEach data.data.products.data, ( value, key )->
                     $scope.items.push value
                     return
+
+                $scope.featured = data.data.featured
 
                 return
 

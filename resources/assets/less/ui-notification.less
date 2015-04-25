@@ -12,7 +12,8 @@
     .transition(all ease 0.5s);
     &.killed {
         opacity: 0;
-        .transition(opacity ease 1s);
+        .translate( 0, -200% );
+        .transition( all ease 1s);
     }
     & > h3 {
         display: block;

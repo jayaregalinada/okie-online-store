@@ -34,6 +34,7 @@
     .product-item-container {
         // POLAROID EFFECTS
         background-color: @product-item-background;
+        position: relative;
         .box-shadow( 0 2px 5px @gray-light );
         .transition( all .5s );
         &:hover {
@@ -272,6 +273,25 @@
             }
             img {
                 width: 100%;
+            }
+        }
+    }
+    &.product-add-image {
+        .page-header {
+            margin-top: @line-height-computed;
+            .item-rating {
+                font-size: @font-size-h4;
+                i {
+                    cursor: pointer;
+                    text-shadow: 0 1px 0 @gray-light;
+                    letter-spacing: 4px;
+                }
+                .glyphicon-star {
+                    color: #ffd700; // GOLD
+                }
+                .glyphicon-star-empty {
+                    color: @gray-light;
+                }
             }
         }
     }

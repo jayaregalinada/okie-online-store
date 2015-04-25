@@ -38,6 +38,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.searchError = false
     $scope.url = $window._url
     $scope.storage = localStorageService
+    $scope.autoSubmitConversation = false
 
     ###*
      * Change the heading
@@ -65,6 +66,20 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
         $scope.storage.set key, JSON.stringify data
 
         return
+
+    $scope.autoSubmit = ->
+        $scope.autoSubmitConversation = !$scope.autoSubmitConversation
+        localStorageService.set 'auto_submit', $scope.autoSubmitConversation
+        $log.log 'MessageController@autoSubmit', $scope.autoSubmitConversation
+
+        return
+
+    $scope.checkIfAutoSubmit = ->
+        $log.log 'MessageController@checkIfAutoSubmit', localStorageService.get 'auto_submit'
+        if ! localStorageService.get 'auto_submit'
+            localStorageService.set 'auto_submit', true
+
+        localStorageService.get 'auto_submit'
 
     ###*
      * Back to Text Area
@@ -293,6 +308,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                 if Boolean( data.conversations.next_page_url )
                     $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId, data.conversations.current_page + 1 )
 
+                $scope.autoSubmitConversation = localStorageService.get 'auto_submit'
                 return
 
             .error ( data, xhr )->
@@ -683,6 +699,35 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
             when 'add'
                 $scope.reserve = if ( $scope.reserve < $scope.inquiryInfo.product.unit ) then $scope.reserve + 1 else $scope.reserve + 0
             else
+
+        return
+
+    $scope.conversationShortcuts = ( event, form )->
+        # $log.log 'MessageController@conversationShortcuts.event', event
+        tA = textAngularManager.retrieveEditor( 'reply' )
+        
+        if ( event.keyCode is 13 && event.altKey )
+            $log.log 'MessageController@conversationShortcuts.form.$valid', form.$valid
+            $log.log 'MessageController@conversationShortcuts.tA', tA
+            $log.log 'MessageController@conversationShortcuts.form', form
+            # tA.scope.$parent.reply = ''
+            
+            # $log.log tA.editorFunctions.sendKeyCommand( event )
+            if( form.$valid )
+                event.preventDefault()
+                $log.log tA.scope.html = ''
+                # $scope.emptyTextArea()
+                # $scope.inquiryReplySubmit( event, form )
+                # $( '#conversation_submit' ).submit()
+
+
+            event.preventDefault()
+
+        return
+
+    $scope.emptyTextArea = ->
+        tA = textAngularManager.retrieveEditor( 'reply' )
+        tA.scope.$parent.reply = ''
 
         return
 

@@ -1,11 +1,13 @@
 .home-container {
     .navbar-category {
+        margin-top: -@navbar-height;
         .navbar-toggle {
             width: 100%;
             border: 0;
             float: none;
             letter-spacing: 5px;
             font-size: @font-size-h3;
+            margin-right: 0;
             &.collapsed {
                 .nav-down {
                     display: inline-block;
@@ -25,6 +27,7 @@
             }
         }
     }
+    
     #category_nav {
         &.in {
             overflow-y: visible;
@@ -72,39 +75,5 @@
             }
         }
         
-    }
-
-    /////////////////
-    //// ALL ITEMS
-    ////////////////
-    .item-container {
-        margin-top: @padding-base-horizontal;
-        display: block;
-        .product-item {
-            margin-bottom: @padding-base-vertical;
-            position: relative;
-            opacity: 0;
-        }
-        .product-item-container {
-            background-color: @product-item-background;
-            // #gradient > .vertical( darken(@product-item-background, 16%), @product-item-background );
-            display: block;
-            .box-shadow( 0 0 1px lighten(@gray-base, 60%) );
-            cursor: pointer;
-            &:hover {
-                .box-shadow( 0 0 3px lighten(@gray-base, 60%) );
-                .description {
-                    border-bottom-color: @gray;
-                }
-            }
-            .description {
-                color: @product-item-color;
-                border-bottom: 2px solid @gray-light;
-                padding: (@padding-base-vertical * 2.5) @padding-base-horizontal;
-            }
-            img {
-                width: 100%;
-            }
-        }
     }
 }

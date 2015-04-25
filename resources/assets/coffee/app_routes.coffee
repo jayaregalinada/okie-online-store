@@ -82,6 +82,17 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
 
                 return
 
+        .state 'messages.inquiriesProduct',
+            parent: 'messages'
+            url: '^/inquiries/product/:productId'
+            templateUrl: '/views/messages/inquiries.html'
+            controller: ( $scope )->
+                $scope.header = 'Inquiries'
+                $scope.getAllInquiries()
+                $scope.keyBinder()
+
+                return
+
         .state 'messages.create',
             parent: 'messages'
             url: '^/create'

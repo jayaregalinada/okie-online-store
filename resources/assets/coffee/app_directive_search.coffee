@@ -6,6 +6,10 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
         # $log.info 'element', element
         # $log.info 'attrs', attrs
         # $log.info 'ngModel', ngModel
+        # if $( 'html' ).hasClass 'mobile-menu'
+        #     element.find( 'input' ).css
+        #         width: '100%'
+
     controller: ( $scope, $element, $attrs, $window, $timeout, $log, SearchFactory )->
 
         $scope.results = []
@@ -13,9 +17,17 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
         $scope.selected = -1
 
         $scope.onFocus = ( event )->
+            formOffset = $element.find( 'form' ).offset().left
+            $element.find( 'form' ).css
+                left: formOffset
+                width: '40%'
+            .addClass( 'active' )
             $element.find( 'input' ).animate
                 width: '100%'
             , 500
+            $( '#navigation' ).addClass 'okie-search-searching'
+
+            
             # $scope.selected = 0
 
             angular.element( $window).on 'keydown', ( e )->
@@ -62,10 +74,14 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
         $scope.onBlur = ( event )->
             $element.find( '.search-results' ).slideUp()
             # $scope.selected = 0
-            # $element.find( 'form' ).removeClass( 'searching' )
-            if $scope.inputClone.length
+            $( '#navigation' ).removeClass 'okie-search-searching'
+            $element.find( 'form' ).css
+                width: 'auto'
+                left: 0
+            .removeClass( 'active' )
+            if $scope.inputClone().length
                 $element.find( 'input' ).animate
-                    width: $scope.inputClone.css 'width'
+                    width: $scope.inputClone().css 'width'
                 , 500
             
             return
@@ -92,9 +108,9 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
 
         $scope.onSearch = ( event )->
             leftPosition = $element.find( 'input' ).position().left
-            topPosition = $element.find( 'input' ).position().top + $element.find( 'input' ).outerHeight( true )
+            topPosition = $element.find( 'input' ).position().top + $element.find( 'input' ).outerHeight( true ) + 2
             $element.find( '.search-results' ).css
-                left: leftPosition
+                left: $element.find( 'form' ).offset().left
                 top: topPosition
                 width: $element.find( 'form' ).width()
 
@@ -103,6 +119,10 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
                     $scope.results = []
                     $scope.resultErrorState = false
                     $element.find( '.search-results' ).slideDown()
+                    $element.find( '.search-results' ).css
+                        left: $element.find( 'form' ).offset().left
+                        top: topPosition
+                        width: $element.find( 'form' ).width()
 
                     return
                 .error ( error )->
@@ -121,6 +141,7 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
                         return
             return
 
+        ## TODO: [DEPRECATED]
         $scope.on_focus = ( event )->
             # $element.find( 'form' ).addClass( 'searching' )
             $scope.inputClone = $element.find( 'input' ).clone().css(
@@ -182,9 +203,9 @@ _okie.directive 'okieSearch', ( $window, $log, SearchFactory )->
         $scope.$watch 'search',  ->
 
             leftPosition = $element.find( 'input' ).position().left
-            topPosition = $element.find( 'input' ).position().top + $element.find( 'input' ).outerHeight( true )
+            topPosition = $element.find( 'input' ).position().top + $element.find( 'input' ).outerHeight( true ) + 2
             $element.find( '.search-results' ).css
-                left: leftPosition
+                left: $element.find( 'form' ).offset().left
                 top: topPosition
                 width: $element.find( 'form' ).width()
 

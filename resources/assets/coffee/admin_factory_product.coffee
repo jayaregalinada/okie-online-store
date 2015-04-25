@@ -17,6 +17,5 @@ _okie.factory 'ProductFactory', ( $http, $rootScope, $window )->
             method: if method then method else "PUT"
             data: data
 
-
     _p
 

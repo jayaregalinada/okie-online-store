@@ -2,6 +2,7 @@
 @import "../../../vendor/bower_components/font-awesome/less/variables";
 @import url( "vendor.css" );
 @import url( "//fonts.googleapis.com/css?family=Lato:300,400" );
+@import url( "//fonts.googleapis.com/css?family=Francois+One" );
 @import url( "//fonts.googleapis.com/css?family=Lobster" );
 @import url( "http://weloveiconfonts.com/api/?family=fontelico" );
 @import "variables";
@@ -12,6 +13,7 @@
 @import "profile";
 @import "product";
 @import "category";
+@import "items";
 @import "item";
 @import "footer";
 @import "settings";
@@ -21,6 +23,7 @@
 @import "text-angular";
 @import "review";
 @import "carousel";
+@import "navigation";
 
 
 /* fontelico */
@@ -58,7 +61,7 @@
 
 // PRODUCTS
 @product-item-background: #FFF;
-@product-item-color: @link-color;
+@product-item-color: @gray-darker;
 
 // REVIEW
 @review-image-size:        100px;
@@ -80,7 +83,7 @@ body, label, .checkbox label {
     font-weight: normal!important;
 }
 body {
-    padding-top: @navbar-height;
+    padding-top: @navbar-height + ( @navbar-height / 2 );
 }
 
 .content-description {

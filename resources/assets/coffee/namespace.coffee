@@ -55,7 +55,7 @@ window._okie.config ( $interpolateProvider, $locationProvider, LightboxProvider,
 
     return
 
-window._okie.run ( $rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location )->
+window._okie.run ( $rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location, $log )->
     'use strict'
 
     $rootScope.$state = $state
@@ -64,8 +64,28 @@ window._okie.run ( $rootScope, $state, $stateParams, UserFactory, $templateCache
     $rootScope.notification = Notification
     $window.Notification = Notification
     $rootScope.location = $window.location
+    $rootScope.collapseToggle = ->
+        $( '#navbar_navigation .dropdown .collapse' ).collapse 'hide'
+
+        return
+
     $rootScope.$on '$stateChangeStart', ( event, toState, toParams, fromState, fromParams )->
         UserFactory.getNotify()
+
+        return
+
+    $rootScope.$on 'cfpLoadingBar:loading', ( loading )->
+        $log.log 'cfpLoadingBar:loading', loading
+
+        return
+
+    $rootScope.$on 'cfpLoadingBar:started', ( started )->
+        $log.log 'cfpLoadingBar:started', started
+
+        return
+
+    $rootScope.$on 'cfpLoadingBar:completed', ( completed )->
+        $log.log 'cfpLoadingBar:completed', completed
 
         return
 
@@ -96,7 +116,7 @@ angular.element( document ).ready( ->
     $( '[data-toggle="popover"]' ).popover()
 
     $( '.content-container' ).css
-        minHeight: ( $( window ).height() - ( $('#navigation').outerHeight() + $('#footer').outerHeight() ) ) - 28
+        minHeight: ( $( window ).height() - ( $('#navigation').outerHeight() + ( $('#navigation').outerHeight() / 2 ) + $('#footer').outerHeight() ) ) - 28
     
     return
 
