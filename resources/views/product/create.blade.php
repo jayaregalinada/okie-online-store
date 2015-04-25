@@ -64,7 +64,7 @@
             <div class="form-group">
                 <label for="product_description" class="col-sm-2 control-label">Description</label>
                 <div class="col-sm-10">
-                    <div ng-focus="changeDescription('description')" id="product_description" ta-toolbar="[['bold','italics', 'underline', 'ul', 'ol', 'undo', 'redo', 'clear', 'insertLink', 'charcount']]" name="description" class="content-description" ng-minlength="5" required="required" ng-required="true" placeholder="Write a description" text-angular ng-model="product.description"></div>
+                    <div ng-focus="changeDescription('description')" id="product_description" ta-toolbar="[['bold','italics', 'underline', 'ul', 'ol', 'undo', 'redo', 'clear', 'insertLink', 'html', 'charcount']]" name="description" class="content-description" ng-minlength="5" required="required" ng-required="true" placeholder="Write a description" text-angular ng-model="product.description"></div>
                 </div>
             </div>
             <div class="form-group">

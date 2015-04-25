@@ -7,6 +7,9 @@ window._url = {
         'reply': '{{ route( 'inquiry.reply' ) }}',
         'delivered': '{{ route( 'inquiry.delivered' ) }}',
         'reserve': '{{ route( 'inquiry.reserve' ) }}'
+        @if ( Auth::user()->isPermitted() )
+        ,'byProduct': '{{ route( 'inquiry.product', '_INQUIRY_ID_' ) }}'
+        @endif
    },
    'inbox': {
         'all': '{{ route( 'messages.inbox' ) }}',

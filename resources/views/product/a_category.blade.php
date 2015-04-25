@@ -14,10 +14,20 @@
         ALL CATEGORIES
     </div>
     <ul class="list-group">
-        <li class="animate list-group-item clearfix category-item" ng-repeat="category in categories">
+        <li ng-init="category.collapse == false" ng-class="{ 'with-children': category.children.length }" class="animate list-group-item clearfix category-item" ng-repeat="category in categories | filter: { is_mother: true }">
             <a ng-click="editCategory( category.id )" data-target="#modal_category_edit" data-toggle="modal" href="javascript:void(0);" class="badge badge-edit btn">EDIT</a>
             <a ng-click="deleteCategory( category.id, $event )" href="javascript:void(0);" class="badge badge-delete btn">DELETE</a>
-            <span class="name">{# category.name #}</span>
+
+            <span class="name" ng-click="category.collapse = !category.collapse">{# category.name #}&nbsp;&nbsp;<i ng-if="category.children.length" class="fa fa-caret-up" ng-class="{ 'fa-caret-down': category.collapse, 'fa-caret-up': !category.collapse }"></i></span>
+            <div collapse="category.collapse" class="children" ng-if="category.children.length">
+                <ul class="list-group">
+                    <li class="animate list-group-item clearfix category-item children-item" ng-repeat="child in category.children">
+                        <a ng-click="editCategory( child.id )" data-target="#modal_category_edit" data-toggle="modal" href="javascript:void(0);" class="badge badge-edit btn">EDIT</a>
+                        <a ng-click="deleteCategory( child.id, $event )" href="javascript:void(0);" class="badge badge-delete btn">DELETE</a>
+                        <span class="name">{# child.name #}</span>
+                    </li>
+                </ul>
+            </div>
         </li>
     </ul>
 </div>
@@ -56,7 +66,7 @@
                                 <ui-select-choices repeat="cat in categories | filter: { name: $select.search, slug: $select.search }">
                                     <div class="name">
                                         <span ng-bind-html="cat.name | highlight: $select.search"></span>
-                                        <small class="text-info label font-light small" ng-if="cat.parent">PARENT</small>
+                                        <small class="text-info label font-light small" ng-if="cat.is_mother">PARENT</small>
                                     </div>
                                     <small class="content-description">
                                         slug: <span ng-bind-html="''+ cat.slug | highlight: $select.search"></span>

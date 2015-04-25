@@ -4,6 +4,10 @@
 
 @section('body.attr', 'ng-controller="ProductController"')
 
+@section( 'head.post' )
+    @include( 'templates.js-routes' )
+@stop
+
 @section('body.pre')
 <div class="dropzone-indicator">
     <div class="top"></div>
@@ -28,6 +32,9 @@
 
     <header class="page-header">
         <h1> {# product.name #} <small class="font-light">{# product.code #}</small></h1>
+        <div class="item-rating">
+            <rating readonly="true" ng-model="product.rating.average"></rating>
+        </div>
     </header>
     <div class="product-left" ng-class="{ 'col-md-6': editState, 'col-md-3': !editState }">
         <div class="panel panel-info">
@@ -72,6 +79,20 @@
             </ul>
         </div>
 
+        <div class="panel panel-success product-featured">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Featured Item
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group">
+                    <label ng-click="productFeature( true )" ng-class="{ 'btn-success': product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="true" uncheckable>YES</label>
+                    <label ng-click="productFeature( false )" ng-class="{ 'btn-success': !product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="false" uncheckable>NO</label>
+                </div>
+            </div>
+        </div>
+
         <div class="panel panel-info product-categories">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -91,7 +112,7 @@
                     <select name="categories" class="form-control" multiple ng-model="product.categories">
                         @foreach ( $category as $key => $value )
                             @if( in_array( $value, $product->categories->lists('id', 'name') ) )
-                                <option selected="selected" checked value="{{ $value }}">{{ $key }}</option>
+                                <option selected checked value="{{ $value }}">{{ $key }}</option>
                             @else
                                 <option value="{{ $value }}">{{ $key }}</option>
                             @endif
@@ -112,7 +133,7 @@
                 </h3>
             </div>
             <div class="panel-body" ng-hide="editStateBadge">
-                <div ng-if="!product.badge.title" class="label label-danger font-light">Do not have badge yet</div>
+                <div ng-if="!product.badge.title" class="label label-warning font-light"><i class="fa fa-exclamation-circle"></i> DO NOT HAVE BADGE YET</div>
                 <div ng-if="product.badge.title" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
                     <span>{# product.badge.title #}</span>
                 </div>
@@ -137,8 +158,8 @@
                 <li class="list-group-item">
                     <div class="has-feedback" ng-class="{ 'has-success': form_product_badge.class.$valid, 'has-error': form_product_badge.class.$invalid && form_product_badge.class.$touched }" >
                         <label for="badge_class" class="control-label sr-only">Class</label>
-                        <tags-input min-length="1" placeholder="Add a custom class" class="bootstrap product-classes" ng-model="product.badge.class_array">
-                            <auto-complete min-length="1" source="loadClass( $query )"></auto-complete>
+                        <tags-input min-length="3" placeholder="Add a custom class" class="bootstrap product-classes" ng-model="product.badge.class_array">
+                            <auto-complete debounce-delay="500" min-length="3" source="loadClass( $query )"></auto-complete>
                         </tags-input>
                         {{-- <input badge-class-helper scope="classFactory.badgeClass" type="text" model="product.badge.class" ng-model="product.badge.class" name="class" placeholder="Badge class helper" class="form-control" id="badge_class" /> --}}
                         <span ng-class="{ 'glyphicon-ok': form_product_badge.class.$valid, 'glyphicon-remove': form_product_badge.class.$invalid && form_product_badge.class.$touched }" class="glyphicon form-control-feedback" aria-hidden="true"></span>

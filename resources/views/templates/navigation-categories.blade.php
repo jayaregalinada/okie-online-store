@@ -1,4 +1,4 @@
-<nav class="navbar-category">
+<nav class="navbar-category hidden-md hidden-lg" id="category_nav_nav">
     <div class="container-fluid">
         <div class="navbar-header text-center">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#category_nav">

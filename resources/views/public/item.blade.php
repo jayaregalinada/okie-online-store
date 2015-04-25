@@ -5,7 +5,7 @@
             <div class="item-carousel animated fadeInLeft">
                 <carousel interval="carouselInterval">
                     <slide ng-repeat="image in item.images" active="image.active">
-                        <img ng-src="{# image.sizes[2].url #}" alt="{# image.caption #}" />
+                        <img ng-click="clickImage( image.sizes[0].url )" ng-src="{# image.sizes[2].url #}" alt="{# image.caption #}" />
                     </slide>
                 </carousel>
             </div>
@@ -134,7 +134,7 @@
                         <img ng-src="{# product.thumbnail[2].url #}" alt="" class="img-responsive" />
                     </div>
                     <div class="description">
-                        <em class="small">{# product.categories[0].name #}</em>
+                        <em class="small content-description">{# product.categories[0].name #}</em>
                         <br />{# product.name #}
                     </div>
                 </a>

@@ -22,20 +22,20 @@
         <div class="col-md-4">
             <div data-widget="recent-items" class="_widget_recent-items _widget _footer_widget panel panel-default recent-items">
                 <div class="panel-heading">
-                    <h3 class="panel-title">RECENT ITEMS</h3>
+                    <h3 class="panel-title">FEATURED ITEMS</h3>
                 </div>
                 <div class="panel-body">
                     @if ( $products )
                     <ul class="list-unstyled">
-                            @foreach ( $products->get() as $key => $product )
-                                @if( $product->images()->exists() )
-                                <li class="product-item">
-                                    <a href="/#/item/{{ $product->id }}">
-                                        <img src="{{ $product->thumbnail[1]['url'] }}" alt="{{ $product->name }}" />
-                                    </a>
-                                </li>
-                                @endif
-                            @endforeach
+                    @foreach ( $products as $key => $product )
+                        @if( $product->images()->exists() )
+                        <li class="product-item">
+                            <a href="/#/item/{{ $product->id }}">
+                                <img src="{{ $product->thumbnail[1]['url'] }}" alt="{{ $product->name }}" />
+                            </a>
+                        </li>
+                        @endif
+                    @endforeach
                     </ul>
                     @else
                     <div class="alert alert-warning">

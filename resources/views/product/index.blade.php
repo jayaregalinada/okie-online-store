@@ -23,4 +23,10 @@
     <script type="text/javascript" src="{{ asset('js/admin.js') }}"></script>
 @endif
 
+@if( Session::has( 'success' ) )
+<script type="text/javascript">
+angular.element( 'body' ).ready(function(){ Notification.success({ title: 'Nice!', message: '{{ Session::get( 'success.message' ) }}' }); });
+</script>
+@endif
+
 @stop

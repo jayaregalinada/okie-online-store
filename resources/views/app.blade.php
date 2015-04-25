@@ -10,9 +10,6 @@
 	<link href="{{ asset('/vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet" type="text/css" />
 
-	<!-- Fonts -->
-	<link href="//fonts.googleapis.com/css?family=Oswald:400,700,300" rel="stylesheet" type="text/css" />
-
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -32,13 +29,15 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="{{ route('index') }}/#/">
+				<a ng-click="collapseToggle()" class="navbar-brand" href="{{ route('index') }}/#/">
 					<img src="{{ asset('images/logo.png') }}" alt="logo" /> {{ config('app.logo.name') }}
 				</a>
 			</div>
 
 			<div class="collapse navbar-collapse" id="navbar-collapse-1">
 				<div class="okie-search">LOADING...</div>
+				
+				@include( 'templates.navigation', [ 'categories' => \Okie\Category::all() ] )
 
 				<ul class="nav navbar-nav navbar-right text-center">
 					@if ( Auth::guest() )
@@ -86,10 +85,10 @@
 	</nav>
 
 	@include('templates.heading')
-
+	
 	@yield('content')
 
-@include('templates.footer', [ 'products' => \Okie\Product::latest() ])
+@include('templates.footer', [ 'products' => \Okie\Product::getFeatured( 20 ) ])
 
 	<!-- Scripts -->
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> -->
