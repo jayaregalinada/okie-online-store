@@ -125,6 +125,7 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
             post('reply', ['as' => 'inquiry.reply', 'uses' => 'InquiryController@reply']);
             post('reserve', ['as' => 'inquiry.reserve', 'uses' => 'InquiryController@postReserve']);
             post('delivered', ['as' => 'inquiry.delivered', 'uses' => 'DeliverController@create']);
+            get('product/{product_id}', ['as' => 'inquiry.product', 'uses' => 'InquiryController@getInquiryByProduct']);
         });
         Route::group(['prefix' => 'inbox'], function()
         {
