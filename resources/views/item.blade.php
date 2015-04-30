@@ -1,5 +1,23 @@
 @extends('home')
 
+@section('head.pre')
+
+<meta property="og:type" content="product" />
+<meta property="og:title" content="{{ $product->name }}" />
+<meta property="og:image" content="{{ $product->thumbnail[2]['url'] }}" />
+@foreach ( $product->images as $key => $value)
+<meta property="og:image" content="{{ $value->sizes[2]['url'] }}" />
+@endforeach
+<meta property="og:description" content="{{ strip_tags( $product->description ) }}" />
+<meta property="og:updated_time" content="{{ $product->updated_at }}" />
+@foreach ( $product->related as $key => $value)
+<meta property="og:see_also" content="{{ route('item.show', $value->id) }}" />
+@endforeach
+<meta property="product:category" content="{{ $product->categories()->first() }}" />
+<meta property="product:original_price" content="{{ $product->price }}" />
+<meta property="product:price" content="{{ $product->price }}" />
+<meta property="product:sale_price" content="{{ $product->sale_price }}" />
+@stop
 
 @section('main-content')
 
@@ -26,6 +44,24 @@
                     >
                         <rating readonly="true" ng-model="item.rating.average" max="rating.maximum" popover-append-to-body="true" popover-placement="right" popover="The rating of the product. @if( Auth::check() ) Click if you want to rate this product @endif" popover-title="F.A.Q" title="F.A.Q" popover-trigger="mouseenter"></rating> <span class="small" ng-if="!item.rating.count">NOT YET RATED</span>
                     </div>
+                    @if( Auth::check() )
+                    <div class="collapse" id="ratingCollapse">
+                        {!! Form::open(['ng-show' => 'ratingState', 'class' => 'animate', 'name' => 'form_rate_item', 'ng-submit' => 'form_rate_item.$valid && rateTheItem( $event, item.id )', 'route' => ['item.rate', '_ITEM_ID_']]) !!}
+                        <div class="rating-star">
+                            <rating ng-if="!item.review" required="required" ng-required="true" ng-model="item.rating.rating" max="rating.maximum" popover-append-to-body="true" popover-placement="right" popover="Rate this product" popover-title="F.A.Q" title="F.A.Q" popover-trigger="mouseenter"></rating> <span class="small" ng-if="!item.rating.count">BE THE FIRST TO RATE THIS PRODUCT</span>
+                            <rating ng-if="item.review" required="required" ng-required="true" ng-model="item.review.rating" max="rating.maximum" popover-append-to-body="true" popover-placement="right" popover="Rate this product" popover-title="F.A.Q" title="F.A.Q" popover-trigger="mouseenter"></rating> <span ng-if="item.review" class="small">YOU CAN UPDATE YOUR RATING</span>
+                        </div>
+                        <div ng-if="!item.review" class="no-buttons content-description" ta-toolbar="[['p', 'undo', 'redo', 'clear']]" ng-minlength="5" placeholder="Tell us about this product" text-angular ng-model="item.rating.message"></div>
+                        <div ng-if="item.review" class="no-buttons content-description" ta-toolbar="[['p', 'undo', 'redo', 'clear']]" ng-minlength="5" placeholder="Tell us about this product" text-angular ng-model="item.review.message"></div>
+                        <div class="buttons">
+                            <button type="button" ng-show="form_rate_item.$invalid && ! rateSubmittingState" class="btn btn-warning">SUBMIT</button>
+                            <button type="submit" ng-click="form_rate_item.$valid && rateTheItem( $event, item.id )" ng-show="form_rate_item.$valid && ! rateSubmittingState" class="btn btn-success">SUBMIT</button>
+                            <button type="button" ng-show="rateSubmittingState" class="btn btn-success">LOADING</button>
+                            <button ng-click="ratingItem()" ng-hide="rateSubmittingState" type="button" data-toggle="collapse" data-target="#ratingCollapse" aria-expanded="false" aria-controls="ratingCollapse" class="btn btn-warning">CANCEL</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="item-info" ng-hide="inquireState">
@@ -41,6 +77,7 @@
                         <div>{!! $product->description !!}</div>
                     </div>
                     <hr />
+                    @if( config('product.item.remaining') )
                     <div class="input-group input-group-sm item-unit col-md-3">
                         <span class="input-group-addon" id="sizing-addon2">REMAINING
                             <a href="javascript:void(0)" popover-append-to-body="true" popover-placement="right" popover="The availability of the product" class="fa fa-question-circle" popover-title="F.A.Q" title="F.A.Q" data-content="How many items are available" popover-trigger="mouseenter"></a>
@@ -48,6 +85,7 @@
                         <span class="form-control">{{ $product->unit }}</span>
                     </div>
                     <br />
+                    @endif
                     @if( Auth::check() )
                         @if( Auth::user()->isUser() )
                     <div class="item-inquire">
