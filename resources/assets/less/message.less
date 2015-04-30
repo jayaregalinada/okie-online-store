@@ -192,10 +192,14 @@
                     .time {
                         color: @gray-light;
                         font-size: ceil((@font-size-base * 0.7));
+                        margin-bottom: @padding-xs-horizontal;
                     }
                     img {
                         max-width: 100%;
                         height: auto;
+                        &.receipt {
+                            cursor: pointer;
+                        }
                     }
                     p {
                         margin: 0;
@@ -240,6 +244,11 @@
                         // .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
                     }
                 }
+            }
+            #uploadPreview {
+                display: none;
+                margin-top: @padding-base-vertical;
+                border: 0;
             }
         }
     }

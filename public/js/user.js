@@ -1,5 +1,5 @@
 (function() {
-  _okie.controller('MessageController', function($scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory) {
+  _okie.controller('MessageController', function($scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory, $modal, Lightbox) {
     $scope.heading = 'Messages';
     $scope.messages = [];
     $scope.conversation = [];
@@ -301,7 +301,25 @@
         $scope.inquiryInfo = data.data.inquiry;
         $scope.backToTextArea();
         $timeout(function() {
-          return $scope.inquiryState = false;
+          $scope.inquiryState = false;
+          return $('img.receipt').click(function(data) {
+            $scope.item = data;
+            $rootScope.modalInstance = $modal.open({
+              templateUrl: 'views/lightbox-receipt.html',
+              controller: function($rootScope) {
+                $rootScope.close = function() {
+                  return $rootScope.modalInstance.close();
+                };
+                $rootScope.receiptUrl = $scope.item.target.alt;
+              },
+              windowClass: 'lightbox-modal',
+              resolve: {
+                item: function() {
+                  return $scope.receiptUrl;
+                }
+              }
+            });
+          });
         }, 3000);
       });
     };
@@ -381,9 +399,17 @@
     $scope.moveToDelivered = function() {
       InquiryFactory.markAsDeliver({
         inquiry: $rootScope.$stateParams.inquiryId
-      }).success(function(data, xhr) {
-        $log.log('moveToDelivered::data', data);
-        return $log.info('moveToDelivered()::Checkuser', $rootScope.user.is_permitted);
+      }).success(function(success) {
+        $log.log('moveToDelivered::success', success);
+        $log.info('moveToDelivered()::Checkuser', $rootScope.me.user.is_permitted);
+        Notification.success(success.success.message);
+        if ($rootScope.me.user.is_permitted) {
+          $state.go('delivered.viewDeliver', {
+            deliverId: success.success.data.deliver.id
+          });
+        }
+      }).error(function(errorData) {
+        Notification.error(errorData.error.message);
       });
     };
 
@@ -647,6 +673,52 @@
       }).then(function(data) {
         $scope.changeHeading('Inquiries by ' + data.data.success.data.product.name);
         $scope.pushToInquiries(data.data.success.data.inquiries.data);
+      });
+    };
+    $scope.initializeInquiryUpload = function(inquiry, token) {
+      $scope.dropzoneInit = new Dropzone(document.body, {
+        url: $window._url.inquiry.replyReceipt,
+        previewsContainer: '#uploadPreview .upload-preview',
+        clickable: false,
+        acceptedFiles: 'image/*',
+        params: {
+          '_token': token,
+          'inquiry': inquiry
+        }
+      });
+      $scope.dropzoneInit.on('queuecomplete', function(file, xhr) {
+        $scope.inquiryConversations = [];
+        Notification.success({
+          title: 'Hooray!',
+          message: 'Send to inquiry'
+        });
+        this.removeAllFiles();
+        $('#DZINDICATOR').fadeOut();
+        $('#uploadPreview ').hide();
+        $('#inquiry_reply_ta').fadeIn();
+        $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId);
+      });
+      $scope.dropzoneInit.on('dragenter', function(file, xhr) {
+        $log.info('DROPZONE DRAG ENTER');
+        $('#DZINDICATOR').fadeIn();
+        $('#inquiry_reply_ta').hide();
+      });
+      $scope.dropzoneInit.on('drop', function(file, xhr) {
+        $log.info('DROPZONE DROP');
+        $('#DZINDICATOR').animate({
+          opacity: .5
+        }, 1000);
+        $('#uploadPreview ').fadeIn();
+        $('#inquiry_reply_ta').hide();
+      });
+    };
+    $scope.toggleReceiptAllowness = function(value) {
+      return InquiryFactory.updateReceiptUploads($rootScope.$stateParams.inquiryId, value).success(function(successData) {
+        Notification.success(successData.success.message);
+        $scope.inquiryConversations = [];
+        $scope.getToInquiryMessages($rootScope.$stateParams.inquiryId);
+      }).error(function(errorData) {
+        Notification.error(errorData.error.message);
       });
     };
   });
@@ -963,6 +1035,27 @@
         url: url ? url : $window._url.inquiry.byProduct.replace('_INQUIRY_ID_', id),
         method: method ? method : "GET",
         params: angular.isNumber(params) ? defaultParams : params
+      });
+    };
+
+    /**
+     * @param  {int} id
+     * @param  {string|boolean} value
+     * @param  {string} url
+     * @param  {object} params
+     * @param  {string} method
+     *
+     * @return {$http}
+     */
+    _i.updateReceiptUploads = function(id, value, url, params, method) {
+      return $http({
+        url: url ? url : $window._url.inquiry.receiptAllowness,
+        method: method ? method : "POST",
+        params: params,
+        data: {
+          inquiry: id,
+          uploads: value
+        }
       });
     };
     return _i;

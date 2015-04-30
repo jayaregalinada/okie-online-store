@@ -106,4 +106,23 @@ _okie.factory 'InquiryFactory', ( $http, $window )->
             method: if method then method else "GET"
             params: if angular.isNumber( params ) then defaultParams else params
 
+    ###*
+     * @param  {int} id
+     * @param  {string|boolean} value
+     * @param  {string} url
+     * @param  {object} params
+     * @param  {string} method
+     *
+     * @return {$http}
+    ###
+    _i.updateReceiptUploads = ( id, value, url, params, method )->
+        $http
+            url: if url then url else $window._url.inquiry.receiptAllowness
+            method: if method then method else "POST"
+            params: params
+            data:
+                inquiry: id
+                uploads: value
+
+
     _i

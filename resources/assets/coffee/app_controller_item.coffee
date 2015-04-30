@@ -105,12 +105,7 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
                 $scope.errorMessage = null
                 $scope.categoryInfo = success.category
                 $rootScope.categoryInfo = $scope.categoryInfo
-                # if data.to > 0
-                #     if $scope.items.length < data.total
-                #         $scope.getItemsByCategory( data.current_page + 1 )
-                #         angular.forEach data.data, ( value, key )->
-                #             $scope.items.push value
-                #             return
+
                 if Boolean success.products.next_page_url
                     $scope.getItemsByCategory( data.current_page + 1 )
 
@@ -154,9 +149,6 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
         return
 
     $scope.affixItem = ->
-        # $log.log 'ItemController@affixItem', $( '#item_container .item-right').outerHeight( true ) >= ( $( '#item_content_left .item-carousel' ).outerHeight( true ) + 100 )
-        # $log.log 'ItemController@affixItem::.item-right', $( '#item_container .item-right').outerHeight( true )
-        # $log.log 'ItemController@affixItem::.item-carousel', $( '#item_content_left .item-carousel' ).outerHeight( true )
         if $( '#item_container .item-right').outerHeight( true ) >= $( '#item_content_left .item-carousel' ).outerHeight( true )
             $( '#item_content_left .item-carousel' ).affix
                 offset:
@@ -233,7 +225,6 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
         return
 
     $scope.getAllBanads = ->
-
         $http.get 'banners'
             .success ( success )->
                 $log.log 'ItemController@getAllBanads::success', success

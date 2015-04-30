@@ -234,6 +234,8 @@ body.dz-drag-hover {
 }
 .dropzone-indicator {
     display: none;
+    z-index: @zindex-tooltip * 2;
+    position: relative;
     div {
         position: fixed;
         border: 4px solid @brand-info;
@@ -288,6 +290,21 @@ body.dz-drag-hover {
 }
 .margin-auto-right {
     margin-right: auto;
+}
+.no-padding {
+    padding: 0;
+}
+.no-padding-top {
+    padding-top: 0;
+}
+.no-padding-bottom {
+    padding-bottom: 0;
+}
+.no-padding-left {
+    padding-left: 0;
+}
+.no-padding-right {
+    padding-right: 0;
 }
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/

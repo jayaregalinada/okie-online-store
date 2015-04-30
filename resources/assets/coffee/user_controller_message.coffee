@@ -1,4 +1,4 @@
-_okie.controller 'MessageController', ( $scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory )->
+_okie.controller 'MessageController', ( $scope, $document, $window, $log, $interval, $http, $state, $stateParams, $rootScope, $sce, $timeout, MessageFactory, textAngularManager, UserFactory, SearchFactory, InquiryFactory, localStorageService, InboxFactory, Notification, RatingFactory, $modal, Lightbox )->
 
     $scope.heading = 'Messages'
     $scope.messages = []
@@ -310,8 +310,9 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                     $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId, data.conversations.current_page + 1 )
 
                 $scope.autoSubmitConversation = localStorageService.get 'auto_submit'
-                return
 
+
+                return
             .error ( data, xhr )->
                 $scope.inquiryErrorState = true
                 $log.error 'getToInquiryMessages::data', data
@@ -327,6 +328,21 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                 $scope.backToTextArea()
                 $timeout(->
                     $scope.inquiryState = false
+                    $( 'img.receipt' ).click ( data )->
+                        $scope.item = data
+                        $rootScope.modalInstance = $modal.open
+                            templateUrl: 'views/lightbox-receipt.html'
+                            controller: ( $rootScope )->
+                                $rootScope.close = ->
+                                    $rootScope.modalInstance.close()
+                                $rootScope.receiptUrl = $scope.item.target.alt
+
+                                return
+                            windowClass: 'lightbox-modal'
+                            resolve: 
+                                item: ->
+                                    $scope.receiptUrl
+                        return
                 , 3000 )
 
                 return
@@ -432,17 +448,19 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.moveToDelivered = ->
         InquiryFactory.markAsDeliver
             inquiry: $rootScope.$stateParams.inquiryId
-        .success ( data, xhr )->
-            $log.log 'moveToDelivered::data', data
-            $log.info 'moveToDelivered()::Checkuser', $rootScope.user.is_permitted
+        .success ( success )->
+            $log.log 'moveToDelivered::success', success
+            $log.info 'moveToDelivered()::Checkuser', $rootScope.me.user.is_permitted
+            Notification.success success.success.message
+            if $rootScope.me.user.is_permitted
+                $state.go 'delivered.viewDeliver',
+                    deliverId: success.success.data.deliver.id
 
-        # MessageFactory.updateToDeliver( $rootScope.$stateParams.threadId )
-        #     .success ( data, xhr )->
-        #         $log.log 'moveToDelivered::data', data
-        #         UserFactory.getNotify() # So notification change
-        #         $state.go 'messages.inquiries'
+            return
+        .error ( errorData )->
+            Notification.error errorData.error.message
 
-        #         return
+            return
 
         return
 
@@ -761,7 +779,60 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
 
         return
 
+    $scope.initializeInquiryUpload = ( inquiry, token )->
+        $scope.dropzoneInit = new Dropzone( document.body,
+            url: $window._url.inquiry.replyReceipt
+            previewsContainer: '#uploadPreview .upload-preview'
+            clickable: false
+            acceptedFiles: 'image/*'
+            params: 
+                '_token': token
+                'inquiry': inquiry
+        )
+        $scope.dropzoneInit.on 'queuecomplete', ( file, xhr )->
+            $scope.inquiryConversations = []
+            Notification.success
+                title: 'Hooray!'
+                message: 'Send to inquiry'
+            @.removeAllFiles()
+            $( '#DZINDICATOR' ).fadeOut()
+            $( '#uploadPreview ' ).hide()
+            $( '#inquiry_reply_ta' ).fadeIn()
+            $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId )
 
+            return
+        $scope.dropzoneInit.on 'dragenter', ( file, xhr )->
+            $log.info 'DROPZONE DRAG ENTER'
+            $( '#DZINDICATOR' ).fadeIn()
+            $( '#inquiry_reply_ta' ).hide()
+
+            return
+        $scope.dropzoneInit.on 'drop', ( file, xhr )->
+            $log.info 'DROPZONE DROP'
+            $( '#DZINDICATOR' ).animate(
+                opacity: .5
+            , 1000 )
+            $( '#uploadPreview ' ).fadeIn()
+            $( '#inquiry_reply_ta' ).hide()
+
+
+            return
+
+
+        return
+
+    $scope.toggleReceiptAllowness = ( value )->
+        InquiryFactory.updateReceiptUploads( $rootScope.$stateParams.inquiryId, value )
+            .success ( successData )->
+                Notification.success successData.success.message
+                $scope.inquiryConversations = []
+                $scope.getToInquiryMessages( $rootScope.$stateParams.inquiryId )
+
+                return
+            .error ( errorData )->
+                Notification.error errorData.error.message
+
+                return
 
 
     return

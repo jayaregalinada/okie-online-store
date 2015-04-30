@@ -7093,10 +7093,14 @@ a.list-group-item-danger.active:focus {
 .message-container.conversation .message .media-body .message-body .time {
   color: #999999;
   font-size: 11px;
+  margin-bottom: 5px;
 }
 .message-container.conversation .message .media-body .message-body img {
   max-width: 100%;
   height: auto;
+}
+.message-container.conversation .message .media-body .message-body img.receipt {
+  cursor: pointer;
 }
 .message-container.conversation .message .media-body .message-body p {
   margin: 0;
@@ -7141,6 +7145,11 @@ a.list-group-item-danger.active:focus {
   font-size: 13px;
   line-height: 1.5;
   border-radius: 0;
+}
+.message-container.conversation .message-reply #uploadPreview {
+  display: none;
+  margin-top: 10px;
+  border: 0;
 }
 .message-container.create .placeholder-text {
   color: #999999;
@@ -8806,6 +8815,8 @@ body.dz-drag-hover .dropzone-indicator {
 }
 .dropzone-indicator {
   display: none;
+  z-index: 2140;
+  position: relative;
 }
 .dropzone-indicator div {
   position: fixed;
@@ -8860,6 +8871,21 @@ body.dz-drag-hover .dropzone-indicator {
 }
 .margin-auto-right {
   margin-right: auto;
+}
+.no-padding {
+  padding: 0;
+}
+.no-padding-top {
+  padding-top: 0;
+}
+.no-padding-bottom {
+  padding-bottom: 0;
+}
+.no-padding-left {
+  padding-left: 0;
+}
+.no-padding-right {
+  padding-right: 0;
 }
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/
