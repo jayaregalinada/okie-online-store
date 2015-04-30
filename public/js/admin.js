@@ -1,5 +1,5 @@
 (function() {
-  _okie.controller('AdminSettingsController', function($scope, $log, $window, $rootScope, Notification, SettingsFactory, $state, $stateParams, $timeout) {
+  _okie.controller('AdminSettingsController', function($scope, $log, $window, $rootScope, Notification, SettingsFactory, $state, $stateParams, $timeout, $http) {
     $scope.users = [];
     $scope.settings = {
       permission: {
@@ -7,6 +7,9 @@
       }
     };
     $scope.updatingState = [];
+    $scope.banners = [];
+    $scope.bannerInterval = 3000;
+    $scope.bannerError = false;
 
     /**
      * Change the heading
@@ -67,6 +70,70 @@
       }).error(function(error) {
         $log.info('AdminSettingsController.changeValue::error', error);
         Notification.error(error.error);
+      });
+    };
+    $scope.getAllBanads = function() {
+      $scope.changeHeading('Banner');
+      $scope.banners = [];
+      $http.get('banners').success(function(success) {
+        $log.log('AdminSettingsController@getAllBanads::success', success);
+        $scope.bannerError = false;
+        $scope.bannerInterval = success.success.data.interval;
+        angular.forEach(success.success.data.banners, function(val, key) {
+          $scope.banners.push(val);
+        });
+      }).error(function(error) {
+        $scope.bannerError = true;
+        $scope.bannerErrorMessage = error.error.message;
+      });
+    };
+    $scope.removeBanad = function(id) {
+      $log.log('AdminSettingsController@removeBanads', id);
+      $http({
+        url: $window._url.settings.deleteBanner.replace('_BANNER_ID_', id),
+        method: "DELETE"
+      }).success(function(success) {
+        $scope.banners = [];
+        $log.log('AdminSettingsController@removeBanad::success', success);
+        Notification.success(success.success);
+        $scope.bannerInterval = success.success.data.interval;
+        angular.forEach(success.success.data.banners, function(val, key) {
+          $scope.banners.push(val);
+        });
+      }).error(function(error) {
+        Notification.error(error.error);
+      });
+    };
+    $scope.initializeDropzone = function(token) {
+      $scope.dropzoneInit = new Dropzone(document.body, {
+        url: $window._url.settings.banner,
+        previewsContainer: '#bannerPreview .banner-preview',
+        clickable: false,
+        acceptedFiles: 'image/*',
+        params: {
+          '_token': token
+        }
+      });
+      $scope.dropzoneInit.on('queuecomplete', function(file, xhr) {
+        $scope.getAllBanads();
+        Notification.success({
+          title: 'Hooray!',
+          message: 'Uploading complete'
+        });
+        this.removeAllFiles();
+        $('#DZINDICATOR').fadeOut();
+        $('#bannerPreview ').hide();
+      });
+      $scope.dropzoneInit.on('dragenter', function(file, xhr) {
+        $log.info('DROPZONE DRAG ENTER');
+        $('#DZINDICATOR').fadeIn();
+      });
+      $scope.dropzoneInit.on('drop', function(file, xhr) {
+        $log.info('DROPZONE DROP');
+        $('#DZINDICATOR').animate({
+          opacity: .5
+        }, 1000);
+        $('#bannerPreview ').fadeIn();
       });
     };
     $scope.checkState();

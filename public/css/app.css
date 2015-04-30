@@ -6814,6 +6814,58 @@ a.list-group-item-danger.active:focus {
   border-bottom-color: #333333;
   background-color: transparent;
 }
+@media (min-width: 992px) {
+  .home-container .banner {
+    margin-top: -20px;
+  }
+}
+.home-container .banner .carousel-indicators {
+  -webkit-transform: translate(0, 100%);
+  -ms-transform: translate(0, 100%);
+  transform: translate(0, 100%);
+  opacity: 0;
+  transition: all 0.4s;
+}
+.home-container .banner .carousel-indicators li {
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 2px solid #222222;
+  box-shadow: 0 0 2px rgba(230, 230, 230, 0.5);
+}
+.home-container .banner .carousel-indicators li.active {
+  background-color: #222222;
+}
+.home-container .banner .carousel-control {
+  opacity: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+.home-container .banner .carousel-control span {
+  font-family: 'FontAwesome';
+  color: #999999;
+  text-shadow: none;
+  margin-top: -35px;
+  font-size: 4em;
+}
+.home-container .banner .carousel-control.right span:before {
+  content: "\f105";
+}
+.home-container .banner .carousel-control.left span:before {
+  content: "\f104";
+}
+.home-container .banner img {
+  width: 100%;
+}
+.home-container .banner:hover .carousel-control {
+  opacity: .7;
+}
+.home-container .banner:hover .carousel-indicators {
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+  opacity: 1;
+}
 .message-mine-mine from {
   background-color: #2780e3;
 }
@@ -7838,6 +7890,12 @@ a.list-group-item-danger.active:focus {
 #item_container .popover-content {
   padding: 9px 14px;
 }
+.item-modal {
+  padding: 0;
+}
+.item-modal .modal-footer {
+  padding: 0;
+}
 #item_container > hr {
   margin-top: 0;
 }
@@ -8134,6 +8192,65 @@ a.list-group-item-danger.active:focus {
   color: #555555;
   margin-top: 5px;
   font-size: 13px;
+}
+.settings-container.settings-banner #bannerPreview {
+  display: none;
+  margin-top: 10px;
+  border: 0;
+}
+.settings-container.settings-banner .settings-carousel .carousel-indicators {
+  -webkit-transform: translate(0, 100%);
+  -ms-transform: translate(0, 100%);
+  transform: translate(0, 100%);
+  opacity: 0;
+  transition: all 0.4s;
+}
+.settings-container.settings-banner .settings-carousel .carousel-indicators li {
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 2px solid #222222;
+  box-shadow: 0 0 2px rgba(230, 230, 230, 0.5);
+}
+.settings-container.settings-banner .settings-carousel .carousel-indicators li.active {
+  background-color: #222222;
+}
+.settings-container.settings-banner .settings-carousel .carousel-control {
+  opacity: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+.settings-container.settings-banner .settings-carousel .carousel-control span {
+  font-family: 'FontAwesome';
+  color: #999999;
+  text-shadow: none;
+  margin-top: -35px;
+  font-size: 4em;
+}
+.settings-container.settings-banner .settings-carousel .carousel-control.right span:before {
+  content: "\f105";
+}
+.settings-container.settings-banner .settings-carousel .carousel-control.left span:before {
+  content: "\f104";
+}
+.settings-container.settings-banner .settings-carousel img {
+  width: 100%;
+}
+.settings-container.settings-banner .settings-carousel .options {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.settings-container.settings-banner .settings-carousel:hover .carousel-control {
+  opacity: .7;
+}
+.settings-container.settings-banner .settings-carousel:hover .carousel-indicators {
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+  opacity: 1;
+}
+.settings-container.settings-banner .settings-carousel:hover .options {
+  opacity: 1;
 }
 .ui-notification {
   position: fixed;
@@ -8548,7 +8665,7 @@ body {
   font-family: "Lato", sans-serif !important;
 }
 .content-container {
-  padding-top: 20px;
+  padding: 20px 0 0 0;
 }
 .navbar-brand img {
   height: 100%;
@@ -8664,6 +8781,35 @@ body.dz-drag-hover .dropzone-indicator {
   left: 0;
   top: 0;
   height: 100%;
+}
+.no-margin {
+  margin: 0;
+}
+.no-margin-top {
+  margin-top: 0;
+}
+.no-margin-bottom {
+  margin-bottom: 0;
+}
+.no-margin-left {
+  margin-left: 0;
+}
+.no-margin-right {
+  margin-right: 0;
+}
+.no-margin-top-bottom {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.no-margin-left-right {
+  margin-left: 0;
+  margin-right: 0;
+}
+.margin-auto-left {
+  margin-left: auto;
+}
+.margin-auto-right {
+  margin-right: auto;
 }
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/

@@ -24,7 +24,7 @@
     };
     LightboxProvider.calculateModalDimensions = function(dimensions) {
       var width;
-      width = Math.max(400, dimensions.imageDisplayWidth + 32);
+      width = Math.max(400, dimensions.imageDisplayWidth - 8);
       if (width >= dimensions.windowWidth - 20 || dimensions.windowWidth < 768) {
         width = 'auto';
       }
@@ -33,7 +33,7 @@
         'height': 'auto'
       };
     };
-    LightboxProvider.templateUrl = '/views/product/lightbox.html';
+    LightboxProvider.templateUrl = 'views/lightbox.html';
     localStorageServiceProvider.setPrefix('okie');
     $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
     $animateProvider.classNameFilter(/carousel|animate/);
@@ -103,6 +103,10 @@
         'items': {
           templateUrl: '/views/items/index.html',
           controller: 'ItemController'
+        },
+        'banner': {
+          templateUrl: '/views/banners.html',
+          controller: 'BannerController'
         }
       }
     }).state('item', {
@@ -161,9 +165,9 @@
       parent: 'messages',
       url: '^/inquiries/product/:productId',
       templateUrl: '/views/messages/inquiries.html',
-      controller: function($scope) {
-        $scope.header = 'Inquiries';
-        $scope.getAllInquiries();
+      controller: function($scope, $stateParams) {
+        $scope.header = 'Inquiries by Product ' + $stateParams.productId;
+        $scope.getInquiriesByProductId($stateParams.productId);
         $scope.keyBinder();
       }
     }).state('messages.create', {
@@ -259,6 +263,13 @@
       templateUrl: '/views/settings/general.html',
       controller: function($scope) {
         $scope.getGeneral();
+      }
+    }).state('asettings.banners', {
+      parent: 'asettings',
+      url: '^/banners',
+      templateUrl: '/views/settings/banner.html',
+      controller: function($scope) {
+        $scope.getAllBanads();
       }
     });
     $stateProvider.state('reviews', {
@@ -365,7 +376,66 @@
 }).call(this);
 
 (function() {
-  _okie.controller('ItemController', function($rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification) {
+  _okie.controller('BannerController', function($scope, $log, $http, $state, $stateParams) {
+    $scope.banners = [];
+    $scope.bannerInterval = 3000;
+    $scope.checkState = function() {
+      $log.info('BannerController@checkState', $state.current);
+      switch ($state.current.name) {
+        case 'index':
+          $scope.getAllBanads();
+          break;
+        default:
+          $log.log('Nothing will return');
+      }
+    };
+    $scope.getAllBanads = function() {
+      $scope.banners = [];
+      $http.get('banners').success(function(success) {
+        $log.log('ItemController@getAllBanads::success', success);
+        $scope.bannerInterval = success.success.data.interval;
+        angular.forEach(success.success.data.banners, function(val, key) {
+          $scope.banners.push(val);
+        });
+      });
+    };
+    $scope.initializeDropzone = function(url, token) {
+      $log.info('ProductController.initializeDropzone', url);
+      $scope.dropzoneInit = new Dropzone(document.body, {
+        url: url,
+        previewsContainer: '#productPreview',
+        clickable: false,
+        acceptedFiles: 'image/*',
+        params: {
+          '_token': token
+        }
+      });
+      $scope.dropzoneInit.on('queuecomplete', function(file, xhr) {
+        $scope.getAllBanads();
+        Notification.success({
+          title: 'Hooray!',
+          message: 'Uploading complete'
+        });
+        this.removeAllFiles();
+        $('#product_add_image_form header.drag').fadeIn();
+        $('#product_add_image_form header.dropping').hide();
+      });
+      $scope.dropzoneInit.on('dragenter', function(file, xhr) {
+        $log.info('DROPZONE DRAG ENTER');
+        $('#product_add_image_form header.drag').hide();
+        $('#product_add_image_form header.dropping').fadeIn();
+      });
+      $scope.dropzoneInit.on('drop', function(file, xhr) {
+        $('#product_add_image_form header').hide();
+      });
+    };
+    $scope.checkState();
+  });
+
+}).call(this);
+
+(function() {
+  _okie.controller('ItemController', function($rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification, Lightbox) {
     $scope.items = [];
     $scope.item = {};
     $scope.categoryInfo = {};
@@ -389,8 +459,10 @@
     $scope.rateSubmittingState = false;
     $scope.ratingState = false;
     $scope.featured = {};
-    $scope.clickImage = function(url) {
-      $log.info('clickImage', url);
+    $scope.banads = [];
+    $scope.clickImage = function(index) {
+      $log.info('clickImage', index);
+      Lightbox.openModal($scope.item.images, index);
     };
     $scope.backToHeader = function(delayTime, animateTime) {
       $timeout(function() {
@@ -543,6 +615,14 @@
         $log.error(error);
         $scope.rateSubmittingState = false;
         Notification.error(error.error);
+      });
+    };
+    $scope.getAllBanads = function() {
+      $http.get('banners').success(function(success) {
+        $log.log('ItemController@getAllBanads::success', success);
+        angular.forEach(success, function(val, key) {
+          $scope.banners.push(val);
+        });
       });
     };
     $scope.checkState();

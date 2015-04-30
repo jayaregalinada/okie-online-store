@@ -626,6 +626,27 @@
       tA = textAngularManager.retrieveEditor('reply');
       tA.scope.$parent.reply = '';
     };
+    $scope.getInquiriesByProductId = function(id, page) {
+      $scope.inquiries = [];
+      $scope.changeHeading('Inquiries by Product ' + id);
+      $scope.inquiryState = true;
+      $scope.inquiryLoadingState = true;
+      $scope.inquiryErrorState = false;
+      $scope.inquiryConversations = [];
+      InquiryFactory.getByProduct(id, page).success(function(success) {
+        $log.log('MessageController@getInquiriesByProductId::success', success);
+        $scope.inquiryErrorState = false;
+        if (Boolean(success.next_page_url)) {
+          $scope.getInquiriesByProductId($stateParams.productId, success.current_page + 1);
+        }
+      }).error(function(error) {
+        $scope.inquiryErrorState = true;
+        $scope.inquiryLoadingState = false;
+        $scope.inquiryErrorMessage = error.error.message.replace('[INQUIRY] ', '');
+      }).then(function(data) {
+        $scope.pushToInquiries(data.data.success.data.data);
+      });
+    };
   });
 
 }).call(this);
@@ -920,6 +941,26 @@
         data: data,
         method: method ? method : "POST",
         params: params
+      });
+    };
+
+    /**
+     * @param  {int} id
+     * @param  {int|object} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+     */
+    _i.getByProduct = function(id, params, url, method) {
+      var defaultParams;
+      defaultParams = {
+        page: params
+      };
+      return $http({
+        url: url ? url : $window._url.inquiry.byProduct.replace('_INQUIRY_ID_', id),
+        method: method ? method : "GET",
+        params: angular.isNumber(params) ? defaultParams : params
       });
     };
     return _i;
