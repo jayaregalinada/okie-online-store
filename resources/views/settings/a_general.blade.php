@@ -94,6 +94,12 @@
                     <input ng-init="general.other_items = '{{ config('responses.other_items') }}'" data-default="{{ config('responses.other_items') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'responses.other_items', value: general.other_items })" type="text" ng-model="general.other_items" class="content-description form-control" placeholder="Message for other products found in every item" />
                 </div>
             </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Inquiry msg.</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.inquiry_message = '{{ config('responses.inquiry') }}'" data-default="{{ config('responses.inquiry') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'responses.inquiry', value: general.inquiry_message })" type="text" ng-model="general.inquiry_message" class="content-description form-control" placeholder="Message for other products found in every item" />
+                </div>
+            </div>
         </fieldset>
 
     </form>
