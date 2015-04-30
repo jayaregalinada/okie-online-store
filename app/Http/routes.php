@@ -105,6 +105,7 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
     Route::get('/', ['as' => 'me', 'uses' => 'UserController@getUserInfo']);
     Route::get('friends', ['as' => 'me.friends', 'uses' => 'UserController@getFriendsList']);
     Route::get('banners', ['as' => 'me.banners', 'uses' => 'OptionController@getAllBanads']);
+    Route::get('views/{view}.html', 'ViewHandlerController@getMessagesView');
     Route::group(['prefix' => 'settings'], function()
     {
         Route::get('/', ['as' => 'settings.index', 'uses' => 'SettingsController@index']);
@@ -124,7 +125,6 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
     Route::group(['prefix' => 'messages'], function()
     {
         Route::get('/', ['as' => 'messages.index', 'uses' => 'MessageController@index']);
-
         Route::get('offset', ['as' => 'messages.offset', 'uses' => 'ThreadController@getMessagesByOffset']);
         Route::post('create', ['as' => 'messages.create', 'uses' => 'MessageController@createMessage']);
         Route::group(['prefix' => 'inquiry'], function()
@@ -133,8 +133,10 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
             get('{inquiry_id}', ['as' => 'inquiry', 'uses' => 'InquiryController@get']);
             get('{inquiry_id}/conversations', ['as' => 'inquiry.conversations', 'uses' => 'InquiryController@getConversations']);
             post('reply', ['as' => 'inquiry.reply', 'uses' => 'InquiryController@reply']);
+            post('replyReceipt', ['as' => 'inquiry.replyReceipt', 'uses' => 'InquiryController@replyReceipt']);
             post('reserve', ['as' => 'inquiry.reserve', 'uses' => 'InquiryController@postReserve']);
             post('delivered', ['as' => 'inquiry.delivered', 'uses' => 'DeliverController@create']);
+            post('receipt', ['as' => 'inquiry.receipt', 'uses' => 'InquiryController@toggleUpload']);
             get('product/{product_id}', ['as' => 'inquiry.product', 'uses' => 'InquiryController@getInquiryByProduct']);
         });
         Route::group(['prefix' => 'inbox'], function()

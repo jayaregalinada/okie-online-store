@@ -192,4 +192,21 @@ class ViewHandlerController extends Controller {
 		}
 	}
 
+	public function getMessagesView( $view )
+	{
+		switch ( $view )
+		{
+			case 'lightbox-receipt':
+				return view( 'messages.lightbox-receipt' );
+			break;
+
+			default:
+				if( View::exists( 'messages.a_' . $view ) )
+					return view( 'messages.a_' . $view );
+				else
+					return abort( 404, 'Not Found' );
+			break;
+		}
+	}
+
 }
