@@ -17,6 +17,7 @@ class ProductsTableSeeder extends Seeder {
 			0 => 
 			array (
 				'id' => 1,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Right Pack Expression',
 				'code' => 'right-pack-expression',
@@ -33,6 +34,7 @@ class ProductsTableSeeder extends Seeder {
 			1 => 
 			array (
 				'id' => 2,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Superbreak - 1',
 				'code' => 'superbreak-1',
@@ -49,6 +51,7 @@ class ProductsTableSeeder extends Seeder {
 			2 => 
 			array (
 				'id' => 3,
+				'featured' => 1,
 				'user_id' => 1,
 				'name' => 'Pilipinas',
 				'code' => 'superbreak-pilipinas',
@@ -59,12 +62,13 @@ class ProductsTableSeeder extends Seeder {
 				'unit' => 5,
 				'thumbnail_id' => 0,
 				'created_at' => '2015-04-17 07:15:52',
-				'updated_at' => '2015-04-22 10:19:35',
+				'updated_at' => '2015-04-29 10:24:29',
 				'deleted_at' => NULL,
 			),
 			3 => 
 			array (
 				'id' => 4,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Galaxy',
 				'code' => 'superbreak-galaxy',
@@ -81,6 +85,7 @@ class ProductsTableSeeder extends Seeder {
 			4 => 
 			array (
 				'id' => 5,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Pink Mint Green',
 				'code' => 'pink-mint-green',
@@ -97,6 +102,7 @@ class ProductsTableSeeder extends Seeder {
 			5 => 
 			array (
 				'id' => 6,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Big Student - Plain',
 				'code' => 'big-student-plain',
@@ -113,6 +119,7 @@ class ProductsTableSeeder extends Seeder {
 			6 => 
 			array (
 				'id' => 7,
+				'featured' => 1,
 				'user_id' => 1,
 				'name' => 'Benny Gold',
 				'code' => 'benny-gold',
@@ -123,12 +130,13 @@ class ProductsTableSeeder extends Seeder {
 				'unit' => 1,
 				'thumbnail_id' => 21,
 				'created_at' => '2015-04-18 10:15:01',
-				'updated_at' => '2015-04-21 08:37:41',
+				'updated_at' => '2015-04-29 10:24:43',
 				'deleted_at' => NULL,
 			),
 			7 => 
 			array (
 				'id' => 8,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Dark Blue',
 				'code' => 'right-pack-dark-blue',
@@ -145,6 +153,7 @@ class ProductsTableSeeder extends Seeder {
 			8 => 
 			array (
 				'id' => 9,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Lacoste Polo',
 				'code' => 'lacoste-polo',
@@ -161,6 +170,7 @@ class ProductsTableSeeder extends Seeder {
 			9 => 
 			array (
 				'id' => 10,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Lacoste V-neck',
 				'code' => 'lacoste-v-neck',
@@ -177,6 +187,7 @@ class ProductsTableSeeder extends Seeder {
 			10 => 
 			array (
 				'id' => 11,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Can Can Perfume',
 				'code' => 'can-can-perfume',
@@ -193,6 +204,7 @@ class ProductsTableSeeder extends Seeder {
 			11 => 
 			array (
 				'id' => 12,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Galaxy',
 				'code' => 'overexposed-galaxy',
@@ -209,6 +221,7 @@ class ProductsTableSeeder extends Seeder {
 			12 => 
 			array (
 				'id' => 13,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Sling Bags Plain',
 				'code' => 'sling-bags-plain',
@@ -225,6 +238,7 @@ class ProductsTableSeeder extends Seeder {
 			13 => 
 			array (
 				'id' => 14,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Neon',
 				'code' => 'overexposed-neon',
@@ -241,6 +255,7 @@ class ProductsTableSeeder extends Seeder {
 			14 => 
 			array (
 				'id' => 15,
+				'featured' => 0,
 				'user_id' => 1,
 				'name' => 'Pinoy Ako T-shirt',
 				'code' => 'pinoy-ako-t-shirt',
@@ -257,9 +272,10 @@ class ProductsTableSeeder extends Seeder {
 			15 => 
 			array (
 				'id' => 16,
+				'featured' => 1,
 				'user_id' => 1,
-				'name' => 'Fashionice bags',
-				'code' => 'fashionice-bags',
+				'name' => 'Bea',
+				'code' => 'fashionice-bea',
 			'description' => '<p>Fashionice bags, BEA-BAGS  (ORIGINAL)</p><p><span>Colors: Red, Blue, Brown, Black, White, Copper</span><br/></p>',
 				'badge' => 'a:2:{s:5:"class";s:14:"ribbon-default";s:11:"class_array";a:1:{i:0;a:1:{s:4:"text";s:14:"ribbon-default";}}}',
 				'price' => '1200.00',
@@ -267,23 +283,24 @@ class ProductsTableSeeder extends Seeder {
 				'unit' => 10,
 				'thumbnail_id' => 49,
 				'created_at' => '2015-04-22 10:27:14',
-				'updated_at' => '2015-04-22 10:46:08',
+				'updated_at' => '2015-04-29 10:24:15',
 				'deleted_at' => NULL,
 			),
 			16 => 
 			array (
 				'id' => 17,
+				'featured' => 1,
 				'user_id' => 1,
 				'name' => 'Dell XPS 12 Intel Haswell i7 8GB',
 				'code' => 'dell-xps-12-intel-haswell-i7-8gb',
 			'description' => '<h1>KWAN CORPORATION</h1><h4>Dell XPS 12 Intel Haswell i7 8GB 256SSD </h4><ul><li style="text-align: left;">Mall Price 90k, SALE PRICE: 50k</li><li style="text-align: left;">Bnew: Mall Display</li><li style="text-align: left;">Dell XPS12 9Q33</li><li style="text-align: left;"><span>Windows 8.1 Pro x64</span></li><li style="text-align: left;"><span>Intel Haswell Core i7-4510U Ultrabook Processor (2-3.1GHz)</span></li><li style="text-align: left;"><span>1.8GB Intel HD 4400</span></li><li style="text-align: left;"><span>8GB 1600MHz (8GB Max)</span></li><li style="text-align: left;"><span>256GB SSD</span></li><li style="text-align: left;"><span>12.5 FullHD (1920×1080)</span></li><li style="text-align: left;"><span>Touchscreen</span></li><li style="text-align: left;"><span>Backlit KB</span></li><li style="text-align: left;"><span>4-8 Battery Life</span></li><li style="text-align: left;"><span>One Week Personal Warranty</span></li></ul><p><span><br/></span></p><p></p><p>Package:</p><ul><li>Unit</li><li>Charger</li><li>200+ FullHD Movies</li><li>Installers Office, Photoshop, etc.</li><li>Original Box</li></ul><p><br/></p><p><i>P.S.</i></p><p><i>Please check for updates via FB Page: kwancorporation<br/>More than 1000 units sold<br/>Meetups: Taytay / Robinson’s Galleria<br/>Shipping: LBC</i></p>',
 				'badge' => 'a:2:{s:5:"class";s:14:"ribbon-default";s:11:"class_array";a:1:{i:0;a:1:{s:4:"text";s:14:"ribbon-default";}}}',
-				'price' => '9999.99',
-				'sale_price' => NULL,
+				'price' => '90000.00',
+				'sale_price' => '50000.00',
 				'unit' => 2000,
 				'thumbnail_id' => 61,
 				'created_at' => '2015-04-22 10:45:04',
-				'updated_at' => '2015-04-22 11:46:16',
+				'updated_at' => '2015-04-29 10:25:15',
 				'deleted_at' => NULL,
 			),
 		));
