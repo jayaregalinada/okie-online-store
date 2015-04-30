@@ -80,16 +80,16 @@ class Handler extends ExceptionHandler {
 					];
 					if( $request->wantsJson() || $request->ajax() )
 						return response()->json( $response, $e->getStatusCode() )->setCallback( $request->input( 'callback' ) );
-
-					return response( $response, 500 );
-				}
-				else
-				{
 					if( config( 'app.debug' ) )
 						return $this->renderExceptionWithWhoops( $request, $e );
 					
 					return parent::render( $request, $e );
 				}
+				
+				if( config( 'app.debug' ) )
+					return $this->renderExceptionWithWhoops( $request, $e );
+				
+				return parent::render( $request, $e );
 			break;
 		}
 	}
