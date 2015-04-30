@@ -8063,6 +8063,13 @@ a.list-group-item-danger.active:focus {
   font-size: 13px;
   background-color: #161616;
 }
+#footer .copyright a {
+  color: #999999;
+}
+#footer .copyright a:hover {
+  color: #999999;
+  text-decoration: underline;
+}
 #footer .panel {
   background-color: transparent;
   border-color: transparent;
