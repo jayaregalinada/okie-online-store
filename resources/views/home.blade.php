@@ -1,7 +1,5 @@
 @extends('app')
 
-@section('title', '{# bigTitle #}')
-
 @section('content')
 
 <div class="content-container home-container">
@@ -10,6 +8,7 @@
 
 	@section( 'main-content' )
 	<div ui-view></div>
+	<div ui-view="banner" class="banner container"></div>
 	<div ui-view="items">
 		
 		<div class="center-block text-center page-header">

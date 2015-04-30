@@ -23,7 +23,7 @@
     
     <ol class="breadcrumb">
         <li>
-            <a href="{{ route('products.index') }}#/all">ALL PRODUCTS</a>
+            <a href="{{ route('products.index') }}{# $state.href('products.all') #}">ALL PRODUCTS</a>
         </li>
         <li class="active">
             {# product.name | uppercase #}
@@ -47,7 +47,7 @@
                     @endif
                 </h3>
             </div>
-
+            @if ( Auth::user()->isAdmin() )
             <ul class="list-group" ng-class="{ 'edit-mode': editState }">
                 <li class="list-group-item">
                     <span ng-hide="editState"><em class="small">NAME: </em>{# product.name #}</span>
@@ -77,6 +77,7 @@
                     <!-- <textarea ng-show="editState" placeholder="{# (product.name) ? product.name + '\'s' : 'Product' #} description" style="resize:none;border:none;" ng-model="product.description" name="description" id="description" cols="30" rows="6" class="form-control"></textarea> -->
                 </li>
             </ul>
+            @endif
         </div>
 
         <div class="panel panel-success product-featured">
@@ -87,8 +88,13 @@
             </div>
             <div class="panel-body">
                 <div class="btn-group">
+                    @if ( Auth::user()->isAdmin() )
                     <label ng-click="productFeature( true )" ng-class="{ 'btn-success': product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="true" uncheckable>YES</label>
                     <label ng-click="productFeature( false )" ng-class="{ 'btn-success': !product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="false" uncheckable>NO</label>
+                    @else
+                    <label ng-class="{ 'btn-success': product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="true" uncheckable>YES</label>
+                    <label ng-class="{ 'btn-success': !product.featured }" class="btn btn-default btn-sm" ng-model="product.featured" btn-radio="false" uncheckable>NO</label>
+                    @endif
                 </div>
             </div>
         </div>
@@ -104,10 +110,14 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <div class="clearfix" ng-hide="editStateCategory">
+                <div class="clearfix" 
+                @if ( Auth::user()->isAdmin() )
+                ng-hide="editStateCategory"
+                @endif>
                     <span ng-repeat="category in product.categories" class="category label label-primary">{# category.name #}</span>
                     <span ng-if="product.categories < 1" class="category label label-warning"><i class="fa fa-exclamation-circle"></i> No category found</span>
                 </div>
+                @if ( Auth::user()->isAdmin() )
                 <form name="form_product_category" ng-show="editStateCategory">
                     <select name="categories" class="form-control" multiple ng-model="product.categories">
                         @foreach ( $category as $key => $value )
@@ -119,6 +129,7 @@
                         @endforeach
                     </select>
                 </form>
+                @endif
             </div>
         </div>
 
@@ -138,6 +149,7 @@
                     <span>{# product.badge.title #}</span>
                 </div>
             </div>
+            @if ( Auth::user()->isAdmin() )
             <ul class="list-group" ng-show="editStateBadge">
                 <li class="preview list-group-item">
                     <div ng-if="product.badge" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
@@ -172,8 +184,10 @@
                     {!! Form::close() !!}
                 </li>
             </ul>
+            @endif
         </div>
-
+        
+        @if ( Auth::user()->isAdmin() )
         <div class="panel panel-danger">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -184,9 +198,10 @@
                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#attempting_to_delete_product"><i class="fa fa-exclamation-triangle"></i> DELETE PRODUCT</button>
             </div>
         </div>
+        @endif
 
     </div>
-
+    @if ( Auth::user()->isAdmin() )
     <div class="product-preview col-md-3" ng-show="editState">
         <div class="item-container">
             <div class="preview-product-item">
@@ -202,6 +217,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 
     <div class="product-right col-md-9" ng-init="id = {{ $product->id }}; getImages(); getInformation(); initializeDropzone('{{ route( 'product.add_image.post', $product->id ) }}','{{ csrf_token() }}')">

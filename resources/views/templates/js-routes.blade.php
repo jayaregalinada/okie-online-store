@@ -26,6 +26,8 @@ window._url = {
         ,'users': '{{ route( 'me.friends' ) }}'
         ,'permissions': '{{ route ( 'settings.permissions' ) }}'
         ,'general': '{{ route( 'settings.general' ) }}'
+        ,'banner': '{{ route( 'settings.banner' ) }}'
+        ,'deleteBanner': '{{ route( 'settings.banner.delete', '_BANNER_ID_' ) }}'
         @endif
    }
 @if ( Auth::user()->isPermitted() )

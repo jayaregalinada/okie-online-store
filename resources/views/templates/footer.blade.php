@@ -25,12 +25,12 @@
                     <h3 class="panel-title">FEATURED ITEMS</h3>
                 </div>
                 <div class="panel-body">
-                    @if ( $products )
+                    @if ( ! $products->isEmpty() )
                     <ul class="list-unstyled">
                     @foreach ( $products as $key => $product )
                         @if( $product->images()->exists() )
                         <li class="product-item">
-                            <a href="/#/item/{{ $product->id }}">
+                            <a href="{{ route('index') }}{# $state.href('item', { itemId: {{ $product->id }} }) #}">
                                 <img src="{{ $product->thumbnail[1]['url'] }}" alt="{{ $product->name }}" />
                             </a>
                         </li>
@@ -39,7 +39,7 @@
                     </ul>
                     @else
                     <div class="alert alert-warning">
-                        <h3>PLEASE UPLOAD PRODUCTS</h3>
+                        <h3 class="no-margin">NO FEATURED ITEMS AS OF THE MOMENT</h3>
                     </div>
                     @endif
                 </div>

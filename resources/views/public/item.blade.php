@@ -5,7 +5,7 @@
             <div class="item-carousel animated fadeInLeft">
                 <carousel interval="carouselInterval">
                     <slide ng-repeat="image in item.images" active="image.active">
-                        <img ng-click="clickImage( image.sizes[0].url )" ng-src="{# image.sizes[2].url #}" alt="{# image.caption #}" />
+                        <img ng-click="clickImage( $index )" ng-src="{# image.sizes[2].url #}" alt="{# image.caption #}" />
                     </slide>
                 </carousel>
             </div>
@@ -72,7 +72,7 @@
                     </div>
                         @else
                     <div class="item-inquire">
-                        <a href="javascript:void(0)" class="btn btn-primary">CHECK FOR INQUIRIES<span class="hidden-xs hidden-sm"> ON THIS PRODUCT</span></a>
+                        <a href="{{ route('messages.index') }}{# $state.href('messages.inquiriesProduct', { productId: item.id } )#}" class="btn btn-primary">CHECK FOR INQUIRIES<span class="hidden-xs hidden-sm"> ON THIS PRODUCT</span></a>
                         @if( Auth::user()->isAdmin() )
                         <a href="{{ route('product.show', '') }}/{# item.id #}" class="btn btn-info">EDIT THIS PRODUCT</a>
                         @endif
@@ -118,7 +118,7 @@
     <div class="item-related clearfix">
         <hr />
         <header class="page-header">
-            <h2>You may also looking for this</h2>
+            <h2>{{ config( 'responses.other_items' ) }}</h2>
         </header>
         <ul class="container-fluid list-unstyled item-container">
             <li ng-repeat="product in item.related" class="items-animation animate product-{# product.id #} col-md-3 product-item"

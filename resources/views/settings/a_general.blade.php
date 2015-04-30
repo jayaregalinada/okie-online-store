@@ -1,42 +1,44 @@
 <div class="settings-container settings-general clearfix">
     <form class="form-horizontal">
-
-        <div class="form-group">
-            <label for="" class="col-sm-2 control-label">Site Title</label>
-            <div class="col-sm-10">
-                <input ng-init="general.title = '{{ config('app.title') }}'" data-default="{{ config('app.title') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.title', value: general.title })" type="text" ng-model="general.title" class="content-description form-control" placeholder="Your website title" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="" class="col-sm-2 control-label">Description</label>
-            <div class="col-sm-10">
-                <textarea rows="5" style="resize:none;" ng-init="general.description = '{{ config('app.description') }}'" ng-model-options="{ debounce: 2000 }" data-default="{{ config('app.title') }}" ng-change="changeValue({ key: 'app.description', value: general.description })" type="text" ng-model="general.description" class="content-description form-control" placeholder="Your website description">
-                </textarea>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="" class="col-sm-2 control-label">Address</label>
-            <div class="col-sm-10">
-                <input ng-init="general.address = '{{ config('app.address') }}'" data-default="{{ config('app.address') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.address', value: general.address })" type="text" ng-model="general.address" class="content-description form-control" placeholder="Your website address" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="" class="col-sm-2 control-label">Site URL</label>
-            <div class="col-sm-10">
-                <input ng-init="general.url = '{{ config('app.url') }}'" data-default="{{ config('app.url') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.url', value: general.url })" type="text" ng-model="general.url" class="content-description form-control" placeholder="Your website URL" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="" class="col-sm-2 control-label">Footer text</label>
-            <div class="col-sm-10">
-                <input ng-init="general.footer = '{{ config('app.footer') }}'" data-default="{{ config('app.footer') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.footer', value: general.footer })" type="text" ng-model="general.footer" class="content-description form-control" placeholder="Your footer text" />
-            </div>
-            <div class="col-sm-10 col-sm-push-2 input-description">
-                <em>You can use helpers like, __YEAR__ and __TITLE__</em>
-            </div>
-        </div>
         <fieldset>
-            <legend>BRAND</legend>
+            <legend class="content-description h2">WEBSITE</legend>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Site Title</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.title = '{{ config('app.title') }}'" data-default="{{ config('app.title') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.title', value: general.title })" type="text" ng-model="general.title" class="content-description form-control" placeholder="Your website title" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Description</label>
+                <div class="col-sm-10">
+                    <textarea rows="5" style="resize:none;" ng-init="general.description = '{{ config('app.description') }}'" ng-model-options="{ debounce: 2000 }" data-default="{{ config('app.title') }}" ng-change="changeValue({ key: 'app.description', value: general.description })" type="text" ng-model="general.description" class="content-description form-control" placeholder="Your website description">
+                    </textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Address</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.address = '{{ config('app.address') }}'" data-default="{{ config('app.address') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.address', value: general.address })" type="text" ng-model="general.address" class="content-description form-control" placeholder="Your website address" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Site URL</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.url = '{{ config('app.url') }}'" data-default="{{ config('app.url') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.url', value: general.url })" type="text" ng-model="general.url" class="content-description form-control" placeholder="Your website URL" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Footer text</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.footer = '{{ config('app.footer') }}'" data-default="{{ config('app.footer') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'app.footer', value: general.footer })" type="text" ng-model="general.footer" class="content-description form-control" placeholder="Your footer text" />
+                </div>
+                <div class="col-sm-10 col-sm-push-2 input-description">
+                    <em>You can use helpers like, __YEAR__ and __TITLE__</em>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend class="content-description h2">BRAND</legend>
             <div class="form-group">
                 <label for="" class="col-sm-2 control-label">Logo Brand Name</label>
                 <div class="col-sm-10">
@@ -55,7 +57,7 @@
             </div>
         </fieldset>
         <fieldset>
-            <legend>CONTACT</legend>
+            <legend class="content-description h2">CONTACT</legend>
             <div class="form-group">
                 <label for="" class="col-sm-2 control-label">Telephone</label>
                 <div class="col-sm-10">

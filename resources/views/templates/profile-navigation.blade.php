@@ -74,6 +74,10 @@
                         <span class="badge"></span>
                         <i class="profile-nav-icon fa fa-wrench"></i> General
                     </a>
+                    <a ui-sref="asettings.banners" ng-class="{ active: $state.is('asettings.banners') }" ng-href="#banners" class="list-group-item">
+                        <span class="badge"></span>
+                        <i class="profile-nav-icon fa fa-photo"></i> Banner
+                    </a>
                     
                     @endif
                 </div>
