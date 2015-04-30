@@ -1,7 +1,6 @@
 <?php
 
 return [
-    
     'upload' => [
         'basename' => 'uploads/',
         'fullpath' => public_path( 'uploads/' )
@@ -39,6 +38,11 @@ return [
                 'suffix' => 'org'
             ]
         ]
+    ],
+    'featured' => [
+        'rating' => 4,
+        'operator' => '>',
+        'count' => 20
     ]
 
 ];
