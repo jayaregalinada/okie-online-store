@@ -31,6 +31,12 @@
     font-family: 'fontelico', sans-serif;
     font-style: normal;
 }
+// Content Container
+@content-container-padding-top: 20px;
+@content-container-padding-left: 0;
+@content-container-padding-right: 0;
+@content-container-padding-bottom: 0;
+@content-container-padding: 20px 0 0 0;
 
 // @btn-font-weight: 300;
 // @font-family-sans-serif: "Roboto", Helvetica, Arial, sans-serif;
@@ -71,7 +77,7 @@
 
 
 body, label, .checkbox label {
-	font-weight: 400;
+    font-weight: 400;
 }
 .font-light {
     font-weight: 300!important;
@@ -106,7 +112,7 @@ body {
 }
 
 .content-container {
-    padding-top: 20px;
+    padding: @content-container-padding;
 }
 
 .navbar-brand {
@@ -253,6 +259,35 @@ body.dz-drag-hover {
         top: 0;
         height: 100%;
     }
+}
+.no-margin {
+    margin: 0;
+}
+.no-margin-top {
+    margin-top: 0;
+}
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+.no-margin-left {
+    margin-left: 0;
+}
+.no-margin-right {
+    margin-right: 0;
+}
+.no-margin-top-bottom {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.no-margin-left-right {
+    margin-left: 0;
+    margin-right: 0;
+}
+.margin-auto-left {
+    margin-left: auto;
+}
+.margin-auto-right {
+    margin-right: auto;
 }
 /* Have to set height explicity on ui-view 
 to prevent collapsing during animation*/

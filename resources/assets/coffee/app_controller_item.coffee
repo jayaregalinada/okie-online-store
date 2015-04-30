@@ -1,4 +1,4 @@
-_okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification )->
+_okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification, Lightbox )->
 
     $scope.items = []
     $scope.item = {}
@@ -20,9 +20,11 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
     $scope.rateSubmittingState = false
     $scope.ratingState = false
     $scope.featured = {}
+    $scope.banads = []
 
-    $scope.clickImage = ( url )->
-        $log.info 'clickImage', url
+    $scope.clickImage = ( index )->
+        $log.info 'clickImage', index
+        Lightbox.openModal( $scope.item.images, index );
 
         return
 
@@ -229,6 +231,22 @@ _okie.controller 'ItemController', ( $rootScope, $scope, $log, $http, $window, I
                 return
 
         return
+
+    $scope.getAllBanads = ->
+
+        $http.get 'banners'
+            .success ( success )->
+                $log.log 'ItemController@getAllBanads::success', success
+                
+                angular.forEach success, ( val, key )->
+                    $scope.banners.push val
+
+                    return
+
+                return
+
+        return
+
 
     $scope.checkState()
     

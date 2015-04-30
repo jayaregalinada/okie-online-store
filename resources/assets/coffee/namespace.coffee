@@ -32,7 +32,7 @@ window._okie.config ( $interpolateProvider, $locationProvider, LightboxProvider,
         image.caption
 
     LightboxProvider.calculateModalDimensions = ( dimensions )->
-        width = Math.max 400, dimensions.imageDisplayWidth + 32
+        width = Math.max 400, dimensions.imageDisplayWidth - 8
 
         if width >= dimensions.windowWidth - 20 or dimensions.windowWidth < 768
             width = 'auto'
@@ -45,7 +45,8 @@ window._okie.config ( $interpolateProvider, $locationProvider, LightboxProvider,
     #     'maxWidth': if dimensions.windowWidth >= 768 then dimensions.windowWidth - 92 else dimensions.windowWidth - 52
     #     'maxHeight': 1600
 
-    LightboxProvider.templateUrl = '/views/product/lightbox.html'
+    # LightboxProvider.templateUrl = '/views/product/lightbox.html'
+    LightboxProvider.templateUrl = 'views/lightbox.html'
 
     localStorageServiceProvider.setPrefix( 'okie' )
 

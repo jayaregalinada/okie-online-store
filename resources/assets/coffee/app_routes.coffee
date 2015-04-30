@@ -13,6 +13,9 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
                 'items': 
                     templateUrl: '/views/items/index.html'
                     controller: 'ItemController'
+                'banner':
+                    templateUrl: '/views/banners.html'
+                    controller: 'BannerController'
 
         .state 'item',
             url: '/item/:itemId'
@@ -86,9 +89,9 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
             parent: 'messages'
             url: '^/inquiries/product/:productId'
             templateUrl: '/views/messages/inquiries.html'
-            controller: ( $scope )->
-                $scope.header = 'Inquiries'
-                $scope.getAllInquiries()
+            controller: ( $scope, $stateParams )->
+                $scope.header = 'Inquiries by Product ' + $stateParams.productId
+                $scope.getInquiriesByProductId( $stateParams.productId )
                 $scope.keyBinder()
 
                 return
@@ -210,6 +213,15 @@ window._okie.config ( $stateProvider, $urlRouterProvider )->
             templateUrl: '/views/settings/general.html'
             controller: ( $scope )->
                 $scope.getGeneral()
+
+                return
+
+        .state 'asettings.banners',
+            parent: 'asettings'
+            url: '^/banners'
+            templateUrl: '/views/settings/banner.html'
+            controller: ( $scope )->
+                $scope.getAllBanads()
 
                 return
 

@@ -90,4 +90,20 @@ _okie.factory 'InquiryFactory', ( $http, $window )->
             method: if method then method else "POST"
             params: params
 
+    ###*
+     * @param  {int} id
+     * @param  {int|object} url
+     * @param  {string} method
+     * @param  {object} params
+     *
+     * @return {$http}
+    ###
+    _i.getByProduct = ( id, params, url, method )->
+        defaultParams = 
+            page: params
+        $http
+            url: if url then url else $window._url.inquiry.byProduct.replace '_INQUIRY_ID_', id
+            method: if method then method else "GET"
+            params: if angular.isNumber( params ) then defaultParams else params
+
     _i

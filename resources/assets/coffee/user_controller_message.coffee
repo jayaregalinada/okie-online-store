@@ -731,4 +731,35 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
 
         return
 
+    $scope.getInquiriesByProductId = ( id, page )->
+        $scope.inquiries = []
+        $scope.changeHeading 'Inquiries by Product ' + id
+        $scope.inquiryState = true
+        $scope.inquiryLoadingState = true
+        $scope.inquiryErrorState = false
+        $scope.inquiryConversations = []
+        InquiryFactory.getByProduct( id, page )
+            .success ( success )->
+                $log.log 'MessageController@getInquiriesByProductId::success', success
+                $scope.inquiryErrorState = false
+                if Boolean( success.next_page_url )
+                    $scope.getInquiriesByProductId( $stateParams.productId, success.current_page + 1 )
+
+                return
+            .error ( error )->
+                $scope.inquiryErrorState = true
+                $scope.inquiryLoadingState = false
+                $scope.inquiryErrorMessage = error.error.message.replace '[INQUIRY] ', ''
+
+                return
+            .then ( data )->
+                $scope.pushToInquiries data.data.success.data.data
+
+                return
+
+        return
+
+
+
+
     return
