@@ -21,6 +21,7 @@
     $scope.inquiriesKey = 'inquiries';
     $scope.inquiryStateReserve = false;
     $scope.reserve = 0;
+    $scope.inquiryProduct = {};
     $scope.inbox = [];
     $scope.inboxConversations = [];
     $scope.inboxInfo = {};
@@ -628,7 +629,7 @@
     };
     $scope.getInquiriesByProductId = function(id, page) {
       $scope.inquiries = [];
-      $scope.changeHeading('Inquiries by Product ' + id);
+      $scope.changeHeading('Loading inquiries');
       $scope.inquiryState = true;
       $scope.inquiryLoadingState = true;
       $scope.inquiryErrorState = false;
@@ -636,6 +637,8 @@
       InquiryFactory.getByProduct(id, page).success(function(success) {
         $log.log('MessageController@getInquiriesByProductId::success', success);
         $scope.inquiryErrorState = false;
+        $scope.inquiryProduct = success.data.product;
+        $scope.changeHeading('Inquiries by ' + success.data.product.name);
         if (Boolean(success.next_page_url)) {
           $scope.getInquiriesByProductId($stateParams.productId, success.current_page + 1);
         }
@@ -644,7 +647,7 @@
         $scope.inquiryLoadingState = false;
         $scope.inquiryErrorMessage = error.error.message.replace('[INQUIRY] ', '');
       }).then(function(data) {
-        $scope.pushToInquiries(data.data.success.data.data);
+        $scope.pushToInquiries(data.data.success.data.inquiries.data);
       });
     };
   });

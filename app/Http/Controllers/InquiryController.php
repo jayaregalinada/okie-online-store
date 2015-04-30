@@ -8,6 +8,7 @@ use Okie\Http\Requests;
 use Illuminate\Http\Request;
 use Okie\Http\Controllers\Controller;
 use Okie\Exceptions\ThreadException;
+use Okie\Exceptions\ProductException;
 
 class InquiryController extends Controller {
 
@@ -166,11 +167,18 @@ class InquiryController extends Controller {
 	public function getInquiryByProduct( Request $request, $id )
 	{
 		$inquiry = Inquiry::whereProductId( $id );
+		$product = Product::find( $id );
 		if( ! ( $inquiry->count() ) )
 			throw new ThreadException( 'INQUIRY', 'No inquiry for that product' );
+		if( is_null( $product ) )
+			throw new ProductException( 'Product does not exists' );
+			
 		$this->checkIfAllowed( $inquiry );
 		
-		return $this->responseSuccess( 'Successfully get all inquiries', $inquiry->paginate()->toArray() );
+		return $this->responseSuccess( 'Successfully get all inquiries', [ 
+			'product'   => $product,
+			'inquiries' => $inquiry->paginate()->toArray()
+		] );
 	}
 
 	/**
