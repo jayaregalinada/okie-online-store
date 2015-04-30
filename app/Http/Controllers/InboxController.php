@@ -193,8 +193,12 @@ class InboxController extends Controller {
 	 */
 	protected function checkIfAllowed( $inbox )
 	{
-		if( Auth::user()->isUser() && ( $inbox->sender_id != Auth::id() || $inbox->recipient_id != Auth::id() ) )
-			throw new ThreadException( 'INBOX', 'You are not allowed here', 401 );
+		if( Auth::user()->isUser() && ( $inbox->sender_id != Auth::id() ) )
+			throw new ThreadException( 'INBOX', 'You are not allowed here', 401, 'Opps', [
+				'sender' => $inbox->sender_id,
+				'recipient' => $inbox->recipient_id,
+				'user' => Auth::id()
+			] );
 	}
 
 }
