@@ -43,6 +43,9 @@ return [
         'rating' => 4,
         'operator' => '>',
         'count' => 20
+    ],
+    'item' => [
+        'remaining' => false
     ]
 
 ];

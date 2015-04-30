@@ -57,6 +57,7 @@
                         <div ng-bind-html="item.description"></div>
                     </div>
                     <hr />
+                    @if( config( 'product.item.remaining' ) )
                     <div class="input-group input-group-sm item-unit col-md-3">
                         <span class="input-group-addon" id="sizing-addon2">REMAINING
                             <a href="javascript:void(0)" popover-append-to-body="true" popover-placement="right" popover="The availability of the product" class="fa fa-question-circle" popover-title="F.A.Q" title="F.A.Q" data-content="How many items are available" popover-trigger="mouseenter"></a>
@@ -64,6 +65,7 @@
                         <span class="form-control">{# item.unit #}</span>
                     </div>
                     <br />
+                    @endif
                     @if( Auth::check() )
                         @if( Auth::user()->isUser() )
                     <div class="item-inquire">
@@ -115,7 +117,7 @@
         </div>
     </div>
 
-    <div class="item-related clearfix">
+    <div class="item-related clearfix" ng-if="item.related.length">
         <hr />
         <header class="page-header">
             <h2>{{ config( 'responses.other_items' ) }}</h2>
