@@ -77,6 +77,24 @@
                 </div>
             </div>
         </fieldset>
+        <fieldset>
+            <legend class="content-description h2">PRODUCT</legend>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Include Remaining</label>
+                <div class="col-sm-10">
+                    <div class="btn-group" ng-init="general.item_remaining = {{ config( 'product.item.remaining' ) }}">
+                        <label ng-click="changeValue({ key: 'product.item.remaining', value: true })" ng-class="{ 'btn-success': general.item_remaining }" class="btn btn-default" ng-model="general.item_remaining" btn-radio="true" uncheckable>YES</label>
+                        <label ng-click="changeValue({ key: 'product.item.remaining', value: false })" ng-class="{ 'btn-success': !general.item_remaining }" class="btn btn-default" ng-model="general.item_remaining" btn-radio="false" uncheckable>NO</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Other Items msg.</label>
+                <div class="col-sm-10">
+                    <input ng-init="general.other_items = '{{ config('responses.other_items') }}'" data-default="{{ config('responses.other_items') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'responses.other_items', value: general.other_items })" type="text" ng-model="general.other_items" class="content-description form-control" placeholder="Message for other products found in every item" />
+                </div>
+            </div>
+        </fieldset>
 
     </form>
 </div>
