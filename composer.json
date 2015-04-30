@@ -18,6 +18,7 @@
 		"doctrine/dbal": "~2.3",
 		"orangehill/iseed": "dev-master",
 		"filp/whoops": "~1.1",
+		"composer/composer": "dev-master",
 		"itsgoingd/clockwork": "~1.7"
 	},
 	"autoload": {

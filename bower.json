@@ -50,6 +50,7 @@
     "select2": "~3.4.5",
     "selectize": "~0.8.5",
     "ng-tags-input": "~2.3.0",
-    "angular-tags": "~0.2.10"
+    "angular-tags": "~0.2.10",
+    "angular-seo": "*"
   }
 }
