@@ -65,12 +65,12 @@ class ThreadException extends Exception {
 	{
 		return [
 			'error' => [
-				'title'     => $this->getTitle(),
-				'message'   => $this->getMessage(),
-				'type'      => $this->getType(),
-				'code'      => $this->getCode(),
-				'exception' => class_basename( get_class( $this ) ),
-				'data'      => $this->getData(),
+				'title'      => $this->getTitle(),
+				'message'    => $this->getMessage(),
+				'type'       => $this->getType(),
+				'code'       => $this->getCode(),
+				'exception'  => class_basename( get_class( $this ) ),
+				'data'       => $this->getData(),
 				'__toString' => $this->__toString()
 			]
 		];
