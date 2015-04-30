@@ -75,6 +75,11 @@ class SettingsController extends Controller {
 		] );
 	}
 
+	/**
+	 * @param $view
+	 *
+	 * @return \View
+	 */
 	public function getPublicView( $view )
 	{
 		if( View::exists( 'settings.a_' . $view ) )

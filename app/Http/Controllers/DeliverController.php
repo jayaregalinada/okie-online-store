@@ -55,14 +55,9 @@ class DeliverController extends Controller {
 			] );
 		}
 
-		return $this->responseInJSON( [
-			'success' => [
-				'message' => 'Successfully moved to Delivered',
-				'data'    => [
-					'deliver'      => $deliver,
-					'conversation' => $deliver->conversations
-				]
-			]
+		return $this->responseSuccess( 'Successfully moved to delivered', [
+			'deliver' => $deliver,
+			'conversation' => $deliver->conversations
 		] );
 	}
 
@@ -77,10 +72,7 @@ class DeliverController extends Controller {
 		$conversation->type     = 'deliver-reply';
 		$deliver->conversations()->save( $conversation );
 
-		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully replied',
-			'data' => Conversation::find( $conversation->id ) ]
-		] );
+		return $this->responseSuccess( 'Successfully replied', Conversation::find( $conversation->id ) );
 	}
 
 	/**

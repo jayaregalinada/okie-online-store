@@ -17,11 +17,9 @@ class ItemController extends Controller {
 	/**
 	 * Show all products
 	 *
-	 * @param  \Illuminate\Http\Request $request
-	 *
 	 * @return mixed|\Okie\Product
 	 */
-	public function index( Request $request )
+	public function index()
 	{
 		$products = Product::with( [ 'images', 'categories' ] )->latest( 'created_at' );
 		if( ! $products->exists() )
@@ -51,7 +49,6 @@ class ItemController extends Controller {
 	}
 
 	/**
-	 * @param \Illuminate\Http\Request $request
 	 * @param                          $id
 	 *
 	 * @return mixed
@@ -61,29 +58,33 @@ class ItemController extends Controller {
 		$find = Product::with( [ 'categories', 'images' ] )->find( $id );
 		$find->__set( 'related', Product::getRelated( $id, 4 ) );
 		if( Auth::check() )
-			// $inquiry = Inquiry::getUserInquiry( $id, Auth::id() );
 			if( Inquiry::getUserInquiry( $id, Auth::id() )->exists() )
 				$find->__set( 'inquiry', Inquiry::getUserInquiry( $id, Auth::id() )->first() );
 			if( Review::whereUserId( Auth::id() )->exists() )
 				$find->__set( 'review', Review::whereUserId( Auth::id() )->whereProductId( $id )->first() );
 		if( ! $find )
 			throw new ProductException( 'We do not have that kind of product', 404 );
+		if( $request->ajax() || $request->wantsJson() )
+		{
+			return $this->responseInJSON( $find );
+		}
+		else
+		{
+			return view( 'item' )->with( [ 'product' => $find ] );
+		}
 
-		return $this->responseInJSON( $find );
 	}
 
 	/**
 	 * Show products by category
 	 * Category can be either id or slug
 	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param                          $id
+	 * @param  $id
 	 *
 	 * @return mixed|\Okie\Category
 	 */
-	public function showByCategory( Request $request, $id )
+	public function showByCategory( $id )
 	{
-		$i = [];
 		if( is_numeric( $id ) )
 		{
 			$category = Category::find( $id );
@@ -104,6 +105,14 @@ class ItemController extends Controller {
 		] );
 	}
 
+	/**
+	 * Rate an Item
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @param                          $id
+	 *
+	 * @return mixed
+	 */
 	public function rateItem( Request $request, $id )
 	{
 		$review = Review::updateOrCreate([
@@ -118,11 +127,7 @@ class ItemController extends Controller {
 				'approved_by' => Auth::id()
 			] );
 
-		return $this->responseInJSON( [ 'success' => [
-			'title' => 'Nice!',
-			'message' => 'Thank you for reviewing this product',
-			'data' => Review::find( $review->id ) ]
-		] );
+		return $this->responseSuccess( 'Thank you for reviewing this product', Review::find( $review->id ) );
 	}
 
 }

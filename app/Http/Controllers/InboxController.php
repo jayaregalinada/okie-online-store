@@ -127,6 +127,11 @@ class InboxController extends Controller {
 		] );
 	}
 
+	/**
+	 * @param $string
+	 *
+	 * @return mixed
+	 */
 	private function changeTitle( $string )
 	{
 		$title = [
@@ -158,22 +163,34 @@ class InboxController extends Controller {
 		$findConve = Conversation::find( $conversation->id );
 		$findConve->__set( 'reply', 'reply-reply' );
 
-		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully replied',
-			'data'    => $findConve ]
-		] );
+		return $this->responseSuccess( 'Successfully replied', $findConve );
 	}
 
+	/**
+	 * Deleting conversation
+	 *
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
 	public function destroyConversation( $id )
 	{
-		Conversation::destroy( $id );
+		if( ! Auth::user()->isPermitted() )
+			throw new ThreadException( 'INBOX', 'You are not permitted to delete a message', 401 );
+		$conversation = Conversation::destroy( $id );
+		if( ! $conversation )
+			return $this->responseError( 'Someting went wrong on deleting a message', [ 'id' => $id ], 400 );
 
-		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully remove message' ]
-		] );
+		return $this->responseSuccess( 'Successfully remove message' );
 	}
 
-	/** TODO: PhpDocs */
+	/**
+	 * Check if user is allowed to
+	 *
+	 * @param $inbox
+	 *
+	 * @throws \Okie\Exceptions\ThreadException
+	 */
 	protected function checkIfAllowed( $inbox )
 	{
 		if( Auth::user()->isUser() && ( $inbox->sender_id != Auth::id() || $inbox->recipient_id != Auth::id() ) )

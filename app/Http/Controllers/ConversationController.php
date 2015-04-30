@@ -38,9 +38,9 @@ class ConversationController extends Controller {
 		], [
 			'title'          => 'Inquiring for ' . $product->name . ' by ' . $user->getFullName()
 		] );
-		$conversation = new Conversation;
+		$conversation          = new Conversation;
 		$conversation->user_id = $user->id;
-		$conversation->body = $this->filterBodyOnly( $request->input( 'message' ) );
+		$conversation->body    = $this->filterBodyOnly( $request->input( 'message' ) );
 		$inquiry->conversations()->save( $conversation );
 		$inquiry->update( [
 			'reserve' => $request->input( 'reserve' )
@@ -50,14 +50,9 @@ class ConversationController extends Controller {
 				'unit' => $product->unit - $request->input( 'reserve' ) 
 			] );
 
-		return $this->responseInJSON( [
-			'success' => [
-				'message' => 'Thank you for inquiring this product. We will get in touch with you soon. Please always check your messages for possible response',
-				'data'    => [
-					'inquiry'      => $inquiry,
-					'conversation' => $conversation
-				]
-			]
+		return $this->responseSuccess( config( 'responses.inquiry' ), [
+			'inquiry'      => $inquiry,
+			'conversation' => $conversation
 		] );
 	}
 

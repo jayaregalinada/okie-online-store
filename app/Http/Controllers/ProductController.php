@@ -1,5 +1,6 @@
 <?php namespace Okie\Http\Controllers;
 
+use Okie\Exceptions\OptionException;
 use Okie\Http\Requests;
 use Okie\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -361,6 +362,9 @@ class ProductController extends Controller {
 	public function updateBadge( $id, Request $request )
 	{
 		$product = Product::find( $id );
+		if( is_null( $product ) )
+			throw new ProductException( 'No product exists' );
+
 		$product->editBadge( [
 			'title'       => $request->input( 'title' ),
 			'description' => $request->input( 'description' ),
@@ -368,35 +372,48 @@ class ProductController extends Controller {
 			'class'       => $request->input( 'class' )
 		] );
 
-		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully update product badge',
-			'data' => Product::find( $id ) ]
-		] );
+		return $this->responseSuccess( 'Successfully update product badge', Product::find( $id ) );
 	}
 
-	/** TODO: PhpDocs */
+	/**
+	 * Remove badge by ID
+	 *
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
 	public function removeBadge( $id )
 	{
 		Product::find( $id )->destroyBadge();
 
-		return $this->responseInJSON( [ 'success' => [
-			'message' => 'Successfully remove product badge',
-			'data' => Product::find( $id ) ]
-		] );
+		return $this->responseSuccess( 'Successfully remove product badge', Product::find( $id ) );
 	}
 
-	/** TODO: PhpDocs */
+	/**
+	 * @param \Illuminate\Http\Request $request
+	 * @param                          $id
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ProductException
+	 */
 	public function featuredItem( Request $request, $id )
 	{
 		$product = Product::find( $id );
 		if( is_null( $product->exists() ) )
 			throw new ProductException( 'Product is not found' );
-			
-		$product->update( [
+
+		$updating = $product->update( [
 			'featured' => $request->input( 'featured' )
 		] );
+		if( ! $updating )
+			return $this->responseError( 'Something went wrong on updating this into featured item. Please contact your support immediately', [], 400 );
 
 		return $this->responseSuccess( 'Updated to featured item', $product );
+	}
+
+	public function getLightboxView()
+	{
+		return view( 'product.template_lightbox' );
 	}
 
 }

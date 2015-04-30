@@ -32,6 +32,12 @@ class ReviewController extends Controller {
 		return $this->responseInJSON( $review->paginate() );
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ReviewException
+	 */
 	public function approvedReview( $id )
 	{
 		$review = Review::find( $id );
@@ -56,6 +62,12 @@ class ReviewController extends Controller {
 		] );
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ReviewException
+	 */
 	public function unapprovedReview( $id )
 	{
 		$review = Review::find( $id );

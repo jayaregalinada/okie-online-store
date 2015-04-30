@@ -49,9 +49,9 @@ class TestController extends Controller {
 		return json_encode( unserialize( $b ) );
 	}
 
-	public function getProduct( $id = 1)
+	public function getProduct( $id = 1 )
 	{
-		return Product::getFeatured();
+		return dd( Product::getFeatured() );
 	}
 
 	public function getCategory( $slug )
@@ -124,7 +124,7 @@ class TestController extends Controller {
 
 	public function getReview( $id = 1 )
 	{
-		return Review::find( $id );
+		return dd( Review::find( $id ) );
 	}
 
 	public function getReserve( $request )
@@ -170,4 +170,28 @@ class TestController extends Controller {
         ob_end_flush();
 	}
 
+
+	public function getBanner()
+	{
+		$value = '[{"width":851,"height":315,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_org.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_org.jpg"},{"width":50,"height":50,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_sqr.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_sqr.jpg"},{"width":500,"height":500,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_thn.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_thn.jpg"},{"width":150,"height":56,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_sml.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_sml.jpg"},{"width":300,"height":111,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_mdm.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_mdm.jpg"},{"width":600,"height":222,"url":"uploads\/1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_lrg.jpg","base_dir":"1f075d7f8829e82bce44de7348861aca8230bd78\/2015-4-27-201837_61750cb4e456fd7d573c518d44045bf1253a013a_lrg.jpg"}]';
+
+		//Option::create([
+		//	'type' => 'banner',
+		//	'key' => 'banner',
+		//],[
+		//	'value' => $value
+		//]);
+		$get = Option::whereType( 'banner' )->get();
+		$i = [];
+		foreach ($get as $key => $value)
+		{
+			$i[] = $value->value;
+		}
+		return $i;
+	}
+
+	public function getAsset()
+	{
+		return asset( 'uploads' ) . '/';
+	}
 }

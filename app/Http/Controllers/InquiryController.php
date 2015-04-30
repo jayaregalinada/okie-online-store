@@ -154,7 +154,15 @@ class InquiryController extends Controller {
 		] );
 	}
 
-	/** TODO: PhpDocs */
+	/**
+	 * Get all inquiries by Product
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @param                          $id
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ThreadException
+	 */
 	public function getInquiryByProduct( Request $request, $id )
 	{
 		$inquiry = Inquiry::whereProductId( $id );
@@ -165,7 +173,13 @@ class InquiryController extends Controller {
 		return $this->responseSuccess( 'Successfully get all inquiries', $inquiry->paginate()->toArray() );
 	}
 
-	/** TODO: PhpDocs */
+	/**
+	 * Check if user is allowed
+	 *
+	 * @param $inquiry
+	 *
+	 * @throws \Okie\Exceptions\ThreadException
+	 */
 	protected function checkIfAllowed( $inquiry )
 	{
 		if( Auth::user()->isUser() && $inquiry->inquisition_id != Auth::id() )

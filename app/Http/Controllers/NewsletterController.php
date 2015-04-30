@@ -47,11 +47,7 @@ class NewsletterController extends Controller {
 				'message' => 'Sorry you have to log in first' ]
 			] );
 
-		return $this->responseInJSON( [ 'success' => [
-			'title'   => 'Success',
-			'message' => 'Successfull get all email subscribtion by user',
-			'data'    => Newsletter::whereUserId( Auth::id() )->get() ]
-		] );
+		return $this->responseSuccess( 'Successfull get all email subscribtion by user', Newsletter::whereUserId( Auth::id() )->get() );
 	}
 
 	/**
@@ -65,12 +61,10 @@ class NewsletterController extends Controller {
 		$newsletter = Newsletter::whereEmail( $request->input( 'email' ) );
 		if( ! $newsletter->exists() )
 			throw new NewsletterException( $request->input( 'email' ), 'No such email exists' );
-		
-		if( $newsletter->delete() )
-			return $this->responseInJSON( [ 'success' => [
-				'message' => 'Successfully unsubscribe',
-				'data' => Newsletter::whereUserId( Auth::id() )->get() ]
-			] );
+		if( ! $newsletter->delete() )
+			return $this->responseError( 'Something went wrong on unsubscribing an email', [ 'email' => $request->input( 'email' ) ] );
+
+		return $this->responseSuccess( 'Successfully unsubscribe', Newsletter::whereUserId( Auth::id() )->get() );
 	}
 
 }

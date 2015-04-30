@@ -61,34 +61,19 @@ class CategoryController extends Controller {
 		switch ( key( $request->query() ) )
 		{
 			case 'update':
-				return $this->responseInJSON( [ 'success' => [
-					'title' => 'Nice!',
-					'message' => 'Category is successfully update',
-					'data' => $this->updateCategory( $request ) ]
-				] );
+				return $this->responseSuccess( 'Category is successfully updated', $this->updateCategory( $request ) );
 			break;
 
 			case 'create':
-				return $this->responseInJSON( [ 'success' => [
-					'title' => 'Nice!',
-					'message' => 'New Category', 
-					'data' => $this->addCategory( $request->input( 'category' ) ) ]
-				] );
+				return $this->responseSuccess( 'New Category created', $this->addCategory( $request->input( 'category' ) ) );
 			break;
 
 			case 'delete':
-				return $this->responseInJSON( [ 'success' => [
-					'message' => 'Category is deleted',
-					'title' => 'Success',
-					'data' => $this->deleteCategory( $request->input( 'id' ) ) ]
-				] );
+				return $this->responseSuccess( 'Category was deleted', $this->deleteCategory( $request->input( 'id' ) ) );
 			break;
 			
 			default:
-				return $this->responseInJSON( [ 'error' => [
-					'message' => 'NO! NO! NO!',
-					'query' => $request->query() ]
-				], 404 );
+				return $this->responseError( 'Something went wrong.', [ 'query' => $request->query() ], 400 );
 			break;
 		}
 	}

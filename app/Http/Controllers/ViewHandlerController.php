@@ -25,9 +25,16 @@ class ViewHandlerController extends Controller {
 			case 'index':
 				return view( 'index' );
 			break;
-			
+
+			case 'lightbox':
+				return view( 'public.item_lightbox' );
+			break;
+
 			default:
-				return abort( 404, 'Not Found' );
+				if( View::exists( 'public.a_' . $view ) )
+					return view( 'public.a_' . $view );
+				else
+					return abort( 404, 'Not found' );
 			break;
 		}
 	}
@@ -59,9 +66,27 @@ class ViewHandlerController extends Controller {
 			case 'reviews':
 				return $this->getReviewPublicView( $view );
 			break;
+
+			case 'views':
+				return $this->getViewsPublicView( $view );
+			break;
 			
 			default:
 				# code...
+			break;
+		}
+	}
+
+	public function getViewsPublicView( $view )
+	{
+		switch ( $view )
+		{
+			case 'lightbox':
+				return view( 'public.item_lightbox' );
+			break;
+			
+			default:
+				
 			break;
 		}
 	}
