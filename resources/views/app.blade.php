@@ -70,7 +70,7 @@
 								<li role="presentation" class="text-center dropdown-header">Account</li>
 								<li><a href="{{ route('me') }}">Profile</a></li>
 								<li><a href="{{ route('messages.index') }}{# $state.href('messages.inquiries') #}">Messages</a></li>
-								<li><a href="{{ route('settings.index') }}{# $state.href('asettings.general') #}">Settings</a></li>
+								<li><a href="{{ route('settings.index') }}{# $state.href('settings.newsletter') #}">Settings</a></li>
 								@if ( Auth::user()->isAdmin() )
 								<li><a href="{{ route('products.index') }}{# $state.href('products.all') #}">Products</a></li>
 								@endif
