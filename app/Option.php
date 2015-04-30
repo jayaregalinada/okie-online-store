@@ -30,7 +30,7 @@ class Option extends Model {
 		if( is_null( $value ) )
 			return $this->attributes[ 'value' ] = null;
 		else
-			return $this->attributes[ 'value' ] = serialize( $value );
+			return $this->attributes[ 'value' ] = base64_encode( serialize( $value ) );
 	}
 
 	/**
@@ -43,7 +43,11 @@ class Option extends Model {
 		if( is_null( $value ) )
 			return null;
 
-		return unserialize( $value );
+		$value = unserialize( base64_decode( $value ) );
+		if( is_array( json_decode( $value ) ) )
+			return json_decode( $value );
+
+		return $value;
 	}
 
 	/**

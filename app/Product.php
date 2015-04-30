@@ -298,9 +298,12 @@ class Product extends Model {
 		return $query->where( 'id', '!=', $id )->orderByRaw( "RAND()" )->limit( $limit )->get();
 	}
 
-	public function scopeGetFeatured( $query, $limit = 3, $rating = 2, $operator = '>')
+	public function scopeGetFeatured( $query, $limit = 3, $rating = null, $operator = null, $count = null )
 	{
-		return ( new FeaturedCollection( $this->all() ) )->getFeatured( $rating, $operator, $limit );
+		$rating   = ( $rating ) ? $rating : config( 'product.featured.rating' );
+		$operator = ( $operator ) ? $operator : config( 'product.featured.operator' );
+		$count    = ( $count ) ? $count : config( 'product.featured.count' );
+		return ( new FeaturedCollection( $this->all() ) )->getFeatured( $rating, $operator, $limit, $count );
 	}
 
 }
