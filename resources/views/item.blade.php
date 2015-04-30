@@ -105,7 +105,7 @@
             <h2>{{ config( 'responses.other_items' ) }}</h2>
         </header>
         <ul class="container-fluid list-unstyled item-container">
-            <li ng-repeat="product in item.related" class="items-animation animate product-{# product.id #} col-md-3 product-item"
+            <li ng-repeat="product in item.related" class="items-animation animate product-{# product.id #} col-md-3 product-item-related"
                 data-product-id="{# product.id #}"
                 data-product-name="{# product.name #}"
                 data-product-code="{# product.code #}">

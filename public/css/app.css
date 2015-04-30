@@ -8058,6 +8058,42 @@ a.list-group-item-danger.active:focus {
 #item_container .item-inquire .btn-group {
   font-family: "Lato", sans-serif;
 }
+#item_container .item-related .product-item-related {
+  opacity: 1;
+}
+#item_container .item-related .product-item-related.ng-enter-stagger,
+#item_container .item-related .product-item-related.ng-leave-stagger,
+#item_container .item-related .product-item-related.ng-move-stagger {
+  transition-delay: 0.1s;
+}
+#item_container .item-related .product-item-related.ng-enter,
+#item_container .item-related .product-item-related.ng-leave,
+#item_container .item-related .product-item-related.ng-move {
+  transition: all 0.3s;
+}
+#item_container .item-related .product-item-related.ng-enter-stagger {
+  transition-duration: 0s;
+}
+#item_container .item-related .product-item-related.ng-enter {
+  opacity: 0;
+  -webkit-transform: translate3d(0, 10%, 0);
+  transform: translate3d(0, 10%, 0);
+}
+#item_container .item-related .product-item-related.ng-enter.ng-enter-active {
+  opacity: 1;
+  -ms-transform: none;
+      transform: none;
+  -webkit-transform: none;
+}
+#item_container .item-related .product-item-related.ng-leave {
+  opacity: 1;
+  -webkit-animation: fadeOut 0.1s;
+  animation: fadeOut 0.1s;
+}
+#item_container .item-related .product-item-related.ng-leave.ng-leave-active {
+  transition: all 0.1s;
+  opacity: 0;
+}
 #footer {
   background-color: #222222;
   border-top: 5px solid #999999;
