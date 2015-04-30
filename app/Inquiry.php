@@ -42,7 +42,7 @@ class Inquiry extends Model {
 	/**
 	 * @type array
 	 */
-	protected $fillable = [ 'title', 'inquisition_id', 'product_id', 'reserve' ];
+	protected $fillable = [ 'title', 'inquisition_id', 'product_id', 'reserve', 'uploads' ];
 
 	/**
 	 * @type array
@@ -51,7 +51,8 @@ class Inquiry extends Model {
 		'id'             => 'integer',
 		'inquisition_id' => 'integer',
 		'product_id'     => 'integer',
-		'reserve'        => 'integer'
+		'reserve'        => 'integer',
+		'uploads'        => 'boolean'
 	];
 
 	/**
@@ -84,7 +85,6 @@ class Inquiry extends Model {
 	}
 
 	/**
-	 *
 	 * @param $query
 	 * @param $inquisition
 	 * @param $product

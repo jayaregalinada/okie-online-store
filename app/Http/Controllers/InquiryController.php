@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Okie\Http\Controllers\Controller;
 use Okie\Exceptions\ThreadException;
 use Okie\Exceptions\ProductException;
+use Okie\Services\Inquiry\UploadFactory;
+use Okie\Services\Inquiry\ImageProcessor;
 
 class InquiryController extends Controller {
 
@@ -124,6 +126,20 @@ class InquiryController extends Controller {
 		] );
 	}
 
+	/** TODO: PhpDocs */
+	public function replyReceipt( Request $request, UploadFactory $factory )
+	{
+		$directory = "conversations_" . sha1( $request->file( 'file' )->getClientOriginalName() . date( "Y-n-d-His" ) ) . '/';
+		$factory->createDirectory( $directory );
+		$images = $factory->compileImage( $directory, $request->file( 'file' ), new ImageProcessor );
+		$create = $factory->create( [
+			'images' => $images,
+			'inquiry' => $request->input( 'inquiry' )
+		] );
+
+		return $this->responseSuccess( 'Successfully replied with image', $create );
+	}
+
 	/**
 	 * @param \Illuminate\Http\Request $request
 	 *
@@ -192,6 +208,28 @@ class InquiryController extends Controller {
 	{
 		if( Auth::user()->isUser() && $inquiry->inquisition_id != Auth::id() )
 			throw new ThreadException( 'INQUIRY', 'You are not allowed here', 401 );
+	}
+
+	/**
+	 * Update the inquiry to allow/disallow the receipt upload
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
+	 * @return mixed
+	 * @throws \Okie\Exceptions\ThreadException
+	 */
+	public function toggleUpload( Request $request )
+	{
+		$inquiry = Inquiry::find( $request->input( 'inquiry' ) );
+		if( is_null( $inquiry) )
+			throw new ThreadException( 'INQUIRY', 'No inquiry exists' );
+		$this->checkIfAllowed( $inquiry );
+
+		$inquiry->update( [
+			'uploads' => $request->input( 'uploads' ) 
+		] );
+
+		return $this->responseSuccess( 'Successfully update this inquiry to allow receipt uploads', $inquiry );
 	}
 
 }
