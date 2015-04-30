@@ -50,7 +50,17 @@ class Handler extends ExceptionHandler {
 				if( $e->getCode() == 404 )
 					return abort( 404, $e->getMessage() );
 				
-				return response( $e->showInResponse(), $e->getCode() );
+				if( ! app()->environment( 'local' ) )
+				{
+					if( config( 'app.debug' ) )
+						return $this->renderExceptionWithWhoops( $request, $e );
+					
+					return parent::render( $request, $e );
+				}
+				else
+				{
+					return response( $e->showInResponse(), $e->getCode() );
+				}
 			break;
 			
 			default:
