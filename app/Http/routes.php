@@ -30,6 +30,8 @@ Route::get('/testing/force-login/{id}', function( $id )
     return abort( 400, 'This feature is only available on local mode' );
 });
 
+Route::get('banners', ['as' => 'banner', 'uses' => 'WelcomeController@getAllBanads']);
+
 // Route::controllers([
 //  'auth' => 'Auth\AuthController',
 //  'password' => 'Auth\PasswordController',
@@ -64,6 +66,7 @@ Route::resource('product', 'ProductController',
 Route::match(['post', 'put', 'patch'], 'product/{product}/category', ['as' => 'product.update.category', 'uses' => 'ProductController@updateCategory']);
 Route::post('product/{id}/add-image', ['as' => 'product.add_image.post', 'uses' => 'ProductController@addImagePost']);
 Route::get('product/{product}/images', ['as' => 'product.images', 'uses' => 'ProductController@showImages']);
+Route::get('product/views/lightbox.html', 'ProductController@getLightboxView');
 Route::match(['post', 'delete'], 'product/{product}/images', ['as' => 'product.images.post', 'uses' => 'ProductController@postImages']);
 Route::match(['post', 'put', 'patch'], 'product/{product}/badge', ['as' => 'product.update.badge', 'uses' => 'ProductController@updateBadge']);
 Route::match(['post', 'put', 'patch'], 'product/{product}/badge/remove', ['as' => 'product.update.badge.remove', 'uses' => 'ProductController@removeBadge']);
@@ -98,12 +101,16 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function()
 {
     Route::get('/', ['as' => 'me', 'uses' => 'UserController@getUserInfo']);
     Route::get('friends', ['as' => 'me.friends', 'uses' => 'UserController@getFriendsList']);
+    Route::get('banners', ['as' => 'me.banners', 'uses' => 'OptionController@getAllBanads']);
     Route::group(['prefix' => 'settings'], function()
     {
         Route::get('/', ['as' => 'settings.index', 'uses' => 'SettingsController@index']);
         Route::post('newsletter', ['as' => 'settings.newsletter.unsubscribe', 'uses' => 'NewsletterController@unsubscribeEmail']);
         Route::patch('permissions', ['as' => 'settings.permissions', 'uses' => 'SettingsController@changeUserPermission']);
         Route::post('general', ['as' => 'settings.general', 'uses' => 'OptionController@updateAppConfig']);
+        Route::get('banners', ['as' => 'settings.banners', 'uses' => 'OptionController@getAllBanads']);
+        Route::post('banner', ['as' => 'settings.banner', 'uses' => 'OptionController@addBanner']);
+        Route::delete('banner/{id}', ['as' => 'settings.banner.delete', 'uses' => 'OptionController@removeBanad']);
     });
     Route::group(['prefix' => 'products'], function()
     {
@@ -175,5 +182,8 @@ Route::group(['prefix' => 'item'], function()
     post('/{id}/rate', ['as' => 'item.rate', 'uses' => 'ItemController@rateItem', 'middleware' => 'auth']);
 });
 
-
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function()
+{
+    get('update', ['as' => 'app.update', 'uses' => 'AdminSettingController@update']);
+});
 // Route::resource( 'category', 'CategoryController' );
