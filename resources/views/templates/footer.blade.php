@@ -89,7 +89,7 @@
     </div>
 
     <div class="text-center copyright content-serif">
-        {{ config( 'app.footer' ) }}
+        {{ config( 'app.footer' ) }} &bull; <a href="{{ config( 'okie.privacy_policy.url' ) }}">Privacy Policy</a> &bull; <a href="{{ config( 'okie.terms_and_conditions.url' ) }}">Terms and Conditions</a>
     </div>
 </footer>
 
