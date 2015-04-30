@@ -61,4 +61,20 @@ class WelcomeController extends Controller {
 		] );
 	}
 
+	public function getPrivacyPolicy( Request $request )
+	{
+		if( $request->ajax() || $request->wantsJson() )
+			return $this->responseSuccess( 'Privacy Policy contents', config( 'okie.privacy_policy.contents' ) );
+
+		return view( 'privacy_policy' )->with( [ 'contents' => config( 'okie.privacy_policy.contents' ), 'title' => 'Privacy Policy' ] );
+	}
+
+	public function getTermsAndConditions( Request $request )
+	{
+		if( $request->ajax() || $request->wantsJson() )
+			return $this->responseSuccess( 'Terms and Conditions contents', config( 'okie.terms_and_conditions.contents' ) );
+
+		return view( 'terms_and_conditions' )->with( [ 'contents' => config( 'okie.terms_and_conditions.contents' ), 'title' => 'Terms and Conditions' ] );
+	}
+
 }

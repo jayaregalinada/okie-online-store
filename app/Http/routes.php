@@ -17,6 +17,9 @@ get('angular-ui-notification.html', function(){
     return view( 'public.ui-notification' );
 });
 
+get(config('okie.privacy_policy.url'), 'WelcomeController@getPrivacyPolicy');
+get(config('okie.terms_and_conditions.url'), 'WelcomeController@getTermsAndConditions');
+
 Route::get('permission', 'UserController@getPermission');
 
 Route::controller('test', 'TestController');
