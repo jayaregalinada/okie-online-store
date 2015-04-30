@@ -733,7 +733,6 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
         return
 
     $scope.getInquiriesByProductId = ( id, page )->
-        $scope.inquiries = []
         $scope.changeHeading 'Loading inquiries'
         $scope.inquiryState = true
         $scope.inquiryLoadingState = true
@@ -743,8 +742,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
             .success ( success )->
                 $log.log 'MessageController@getInquiriesByProductId::success', success
                 $scope.inquiryErrorState = false
-                $scope.inquiryProduct = success.data.product
-                $scope.changeHeading 'Inquiries by ' + success.data.product.name
+                $scope.inquiryProduct = success.success.data.product
                 if Boolean( success.next_page_url )
                     $scope.getInquiriesByProductId( $stateParams.productId, success.current_page + 1 )
 
@@ -756,6 +754,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
 
                 return
             .then ( data )->
+                $scope.changeHeading 'Inquiries by ' + data.data.success.data.product.name
                 $scope.pushToInquiries data.data.success.data.inquiries.data
 
                 return

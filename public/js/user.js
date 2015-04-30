@@ -628,7 +628,6 @@
       tA.scope.$parent.reply = '';
     };
     $scope.getInquiriesByProductId = function(id, page) {
-      $scope.inquiries = [];
       $scope.changeHeading('Loading inquiries');
       $scope.inquiryState = true;
       $scope.inquiryLoadingState = true;
@@ -637,8 +636,7 @@
       InquiryFactory.getByProduct(id, page).success(function(success) {
         $log.log('MessageController@getInquiriesByProductId::success', success);
         $scope.inquiryErrorState = false;
-        $scope.inquiryProduct = success.data.product;
-        $scope.changeHeading('Inquiries by ' + success.data.product.name);
+        $scope.inquiryProduct = success.success.data.product;
         if (Boolean(success.next_page_url)) {
           $scope.getInquiriesByProductId($stateParams.productId, success.current_page + 1);
         }
@@ -647,6 +645,7 @@
         $scope.inquiryLoadingState = false;
         $scope.inquiryErrorMessage = error.error.message.replace('[INQUIRY] ', '');
       }).then(function(data) {
+        $scope.changeHeading('Inquiries by ' + data.data.success.data.product.name);
         $scope.pushToInquiries(data.data.success.data.inquiries.data);
       });
     };

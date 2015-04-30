@@ -59,6 +59,7 @@
             .carousel-control {
                 opacity: .7;
             }
+            cursor: pointer;
         }
         .carousel-indicators li {
             margin-left: 5px;
@@ -103,6 +104,12 @@
                 @media (min-width: @screen-md-min) {
                     .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
                 }
+            }
+        }
+        .item-description {
+            * {
+                background-color: transparent!important;
+                color: @gray-base;
             }
         }
     }
