@@ -1,5 +1,5 @@
 <ul class="container-fluid list-unstyled item-container" ng-if="!errorMessage">
-    <li ng-repeat="feature in featured" class="items-animation animate product-featured-item product-featured-{# feature.id #} col-md-4">
+    <li ng-if="featured.length > 2" ng-repeat="feature in featured" class="items-animation animate product-featured-item product-featured-{# feature.id #} col-md-4">
         <a href="#" ui-sref="item({ itemId: feature.id })" class="product-featured-item-container">
             <div class="img">
                 <img class="img-responsive" ng-src="{# feature.thumbnail[2].url #}" alt="img" />
