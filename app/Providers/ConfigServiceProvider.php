@@ -2,6 +2,7 @@
 
 use DB;
 use Illuminate\Support\ServiceProvider;
+use Schema;
 
 class ConfigServiceProvider extends ServiceProvider {
 
@@ -25,14 +26,17 @@ class ConfigServiceProvider extends ServiceProvider {
 	/**
 	 * @return void
 	 */
-	public function __construct()
+	public function getDatabaseConfig()
 	{
-		$this->table = DB::table( 'options' );
 		$this->helper = [
 			'__TITLE__' => config( 'app.title' ),
 			'__YEAR__' => date( "Y" ),
 		];
-		$this->config = $this->changeConfigWithHelpers( $this->table->where( 'type', 'config' )->lists( 'value', 'key' ) );
+		if( Schema::hasTable( 'options' ) )
+		{
+			$this->table = $this->app[ 'db' ]->table( 'options' );
+			config( $this->changeConfigWithHelpers( $this->table->where( 'type', 'config' )->lists( 'value', 'key' ) ) );
+		}
 	}
 
 	/**
@@ -54,7 +58,7 @@ class ConfigServiceProvider extends ServiceProvider {
 	{
 		foreach( $config as $key => $value )
 		{
-			$config[ $key ] = ( empty( trim( unserialize( $value ) ) ) ? config( $key ) : $this->replaceHelpers( unserialize( $value ) ) );
+			$config[ $key ] = ( empty( trim( unserialize( base64_decode( $value ) ) ) ) ? config( $key ) : $this->replaceHelpers( unserialize( base64_decode( $value ) ) ) );
 		}
 
 		return $config;
@@ -73,7 +77,8 @@ class ConfigServiceProvider extends ServiceProvider {
 		config([
 
 		]);
-		config( $this->config );
+		// config( $this->config );
+		$this->getDatabaseConfig();
 	}
 
 	/**
