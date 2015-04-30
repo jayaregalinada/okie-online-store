@@ -6,9 +6,11 @@ window._url = {
         'conversations': '{{ route( 'inquiry.conversations', '_INQUIRY_ID_' ) }}',
         'reply': '{{ route( 'inquiry.reply' ) }}',
         'delivered': '{{ route( 'inquiry.delivered' ) }}',
-        'reserve': '{{ route( 'inquiry.reserve' ) }}'
+        'reserve': '{{ route( 'inquiry.reserve' ) }}',
+        'replyReceipt': '{{ route( 'inquiry.replyReceipt' ) }}'
         @if ( Auth::user()->isPermitted() )
         ,'byProduct': '{{ route( 'inquiry.product', '_INQUIRY_ID_' ) }}'
+        ,'receiptAllowness': '{{ route( 'inquiry.receipt' ) }}'
         @endif
    },
    'inbox': {

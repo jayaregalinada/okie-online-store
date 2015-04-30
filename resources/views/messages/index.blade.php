@@ -6,6 +6,15 @@
 
 @section('navigate.messages', 'in')
 
+@section('body.pre')
+<div class="dropzone-indicator" id="DZINDICATOR">
+    <div class="top"></div>
+    <div class="right"></div>
+    <div class="bottom"></div>
+    <div class="left"></div>
+</div>
+@stop
+
 @section('settings.content')
 
 <div ui-view>

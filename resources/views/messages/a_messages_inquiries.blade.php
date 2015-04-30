@@ -23,7 +23,10 @@
             <h4 class="media-heading">{# message.title #}<br />
                 <span class="small font-light">{# message.latest.time #}</span></small>
             </h4>
-            <div class="message-body" ng-bind-html="message.latest.body"></div>
+            <div class="message-body clearfix">
+                <em ng-if="me.user.is_permitted" class="pull-left">{# (message.latest.user.id === me.user.id ) ? 'You' : message.latest.user.first_name #}: &nbsp;&nbsp;</em>
+                <div ng-bind-html="message.latest.body"></div>
+            </div>
         </div>
     </div>
 

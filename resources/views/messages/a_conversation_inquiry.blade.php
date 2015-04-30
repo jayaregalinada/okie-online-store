@@ -9,6 +9,11 @@
         <a ng-class="{ inactive: inquiryStateReserve }" href="#" ng-click="moveToDelivered()" class="btn btn-info btn-sm">MARK AS DELIVERED</a>
         <a ng-class="{ inactive: inquiryStateReserve }" href="{{ route('product.index') }}/{# inquiryInfo.product_id #}" target="_blank" class="btn btn-info btn-sm">VIEW PRODUCT INQUIRED</a>
         <a ng-class="{ active: inquiryStateReserve }" href="#" ng-click="inquiryReserve( $event )" class="btn btn-info btn-sm">RESERVED ITEM</a>
+        <div ng-class="{ inactive: inquiryStateReserve }" href="#" class="btn-group">
+            <label class="disabled btn btn-info btn-sm">ALLOW RECEIPTS UPLOAD</label>
+            <label ng-click="toggleReceiptAllowness( true )" ng-class="{ 'btn-success': inquiryInfo.uploads }" class="btn btn-default btn-sm" ng-model="inquiryInfo.uploads" btn-radio="true" uncheckable>YES</label>
+            <label ng-click="toggleReceiptAllowness( false )" ng-class="{ 'btn-success': !inquiryInfo.uploads }" class="btn btn-default btn-sm" ng-model="inquiryInfo.uploads" btn-radio="false" uncheckable>NO</label>
+        </div>
     </div>
     <div class="inquiry-reserve-container" ng-show="inquiryStateReserve">
         <div class="col-md-4 text-center">
@@ -49,18 +54,30 @@
         </div>
     </div>
 
+    
     <div class="message-reply container-fluid" id="reply">
         <alert ng-repeat="alert in alerts" type="danger" close="closeAlert( $index )"><i class="fa fa-exclamation-triangle"></i> {# alert.message #}</alert>
+        <div class="dropzone" id="uploadPreview" ng-if="inquiryInfo.uploads">
+            <div class="upload-preview"></div>
+        </div>
+        <div class="upload" ng-if="inquiryInfo.uploads">
+            <div ng-init="initializeInquiryUpload( inquiryInfo.id, '{{ csrf_token() }}' )"></div>
+        </div>
         {!! Form::open(['route' => 'inquiry.reply', 'name' => 'form_reply', 'ng-submit' => 'form_reply.$valid && inquiryReplySubmit( $event, form_reply )']) !!}
-            <div ng-keyup="conversationShortcuts( $event, form_reply )" serial="r3p1y" name="reply" class="content-description" ta-toolbar="[['bold', 'italics', 'underline', 'undo', 'redo', 'clear']]" ng-minlength="5" required ng-required="true" placeholder="Write a reply {{ Auth::user()->first_name }}" text-angular ng-model="reply"></div>
+            <div id="inquiry_reply_ta" ng-keyup="conversationShortcuts( $event, form_reply )" serial="r3p1y" name="reply" class="content-description" ta-toolbar="[['bold', 'italics', 'underline', 'undo', 'redo', 'clear']]" ng-minlength="5" required ng-required="true" placeholder="Write a reply {{ Auth::user()->first_name }}" text-angular ng-model="reply"></div>
             <div ta-bind ng-model="reply" id="reply_bind" class="hidden"></div>
             <div class="buttons">
                 {{-- <span>Please enter to send <input ng-change="autoSubmit()" type="checkbox" ng-checked="autoSubmitConversation" ng-model="autoSubmitConversation"></span>&nbsp;&nbsp; --}}
                 <input id="conversation_submit" ng-hide="replySubmitButton.state" type="submit" ng-class="{ 'btn-success': form_reply.$valid }" class="btn btn-primary" ng-disabled="form_reply.$invalid" value="SUBMIT" />
+                <button ng-if="inquiryInfo.uploads" type="button" class="disabled btn btn-info" ng-hide="replySubmitButton.state">YOU CAN UPLOAD YOUR RECEIPT. DRAG AND DROP ANYWHERE</button>
                 <button ng-show="replySubmitButton.state" type="button" class="btn btn-success"><i class="fa fa-circle-o-notch fa-spin" ng-show="replySubmitButton.state"></i> SUBMITTING</button>
             </div>
         {!! Form::close() !!}
     </div>
+
+    
+
+    
 
 </div>
 
