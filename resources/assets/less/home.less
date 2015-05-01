@@ -75,6 +75,12 @@
         }
     }
     .banner {
+        &.full-width {
+            width: 100%;
+            max-width: @container-large-desktop * 2;
+            margin-left: auto;
+            margin-right: auto;
+        }
         @media ( min-width: @screen-md-min ) {
             margin-top: -@content-container-padding-top;
         }

@@ -28,6 +28,15 @@
                     <input ng-init="bannerInterval = {{ config('okie.banner.interval') }}" data-default="{{ config('okie.banner.interval') }}" ng-model-options="{ debounce: 2000 }" ng-change="changeValue({ key: 'okie.banner.interval', value: bannerInterval })" type="number" ng-model="bannerInterval" class="content-description form-control" placeholder="Banner slide milliseconds interval" />
                 </div>
             </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">Full Width</label>
+                <div class="col-sm-10">
+                    <div class="btn-group" ng-init="banner.full_width = {{ config('okie.banner.full_width') }}">
+                        <label ng-click="changeValue({ key: 'okie.banner.full_width', value: true })" ng-class="{ 'btn-success': banner.full_width }" class="btn btn-default btn-sm" ng-model="banner.full_width" btn-radio="true" uncheckable>YES</label>
+                        <label ng-click="changeValue({ key: 'okie.banner.full_width', value: false })" ng-class="{ 'btn-success': !banner.full_width }" class="btn btn-default btn-sm" ng-model="banner.full_width" btn-radio="false" uncheckable>NO</label>
+                    </div>
+                </div>
+            </div>
         </fieldset>
     </form>
 </div>

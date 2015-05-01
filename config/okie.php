@@ -10,6 +10,7 @@ return [
 			'jpg' =>90,
 			'image' => 80
 		],
+		'full_width' => false,
 		'interval' => 3000,
 		'sizes' => [
 			'square' => [

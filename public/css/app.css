@@ -6814,6 +6814,12 @@ a.list-group-item-danger.active:focus {
   border-bottom-color: #333333;
   background-color: transparent;
 }
+.home-container .banner.full-width {
+  width: 100%;
+  max-width: 2340px;
+  margin-left: auto;
+  margin-right: auto;
+}
 @media (min-width: 992px) {
   .home-container .banner {
     margin-top: -20px;

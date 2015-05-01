@@ -8,7 +8,13 @@
 
 	@section( 'main-content' )
 	<div ui-view></div>
-	<div ui-view="banner" class="banner container"></div>
+	<div ui-view="banner" class="banner 
+	@if( config('okie.banner.full_width') )
+	full-width
+	@else
+	container
+	@endif
+	"></div>
 	<div ui-view="items">
 		
 		<div class="center-block text-center page-header">
