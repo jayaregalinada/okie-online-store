@@ -38,6 +38,12 @@ return [
 		'client_id' => env('SRV_FACEBOOK_ID'),
 		'client_secret' => env('SRV_FACEBOOK_SECRET'),
 		'redirect' => env('SRV_FACEBOOK_REDIRECT')
+	],
+
+	'google' => [
+		'analytics' => [
+			'tracking_id' => 'UA-62501909-1'
+		]
 	]
 
 ];
