@@ -2,7 +2,7 @@
     <li ng-repeat="product in products" class="col-md-3 col-xs-6 product-item animate">
         <div class="product-item-container" ng-click="goToItem({# product.id #})">
             <div class="img">
-                <img ng-src="{# product.thumbnail[2].url #}" alt="" class="img-responsive" />
+                <img src="{{ asset('/images/defaults/product_thn.jpg') }}" ng-src="{# product.thumbnail[2].url #}" alt="" class="img-responsive" />
             </div>
             <div class="description">
                 {# product.name #}
