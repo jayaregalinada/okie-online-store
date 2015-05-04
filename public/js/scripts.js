@@ -400,7 +400,7 @@
       });
     };
     $scope.initializeDropzone = function(url, token) {
-      $log.info('ProductController.initializeDropzone', url);
+      $log.info('BannerController@initializeDropzone::url', url);
       $scope.dropzoneInit = new Dropzone(document.body, {
         url: url,
         previewsContainer: '#productPreview',
