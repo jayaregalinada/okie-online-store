@@ -27,7 +27,7 @@ _okie.controller 'BannerController', ( $scope, $log, $http, $state, $stateParams
         return
 
     $scope.initializeDropzone = ( url, token )->
-        $log.info 'ProductController.initializeDropzone', url
+        $log.info 'BannerController@initializeDropzone::url', url
         $scope.dropzoneInit = new Dropzone( document.body,
             url: url
             previewsContainer: '#productPreview'
