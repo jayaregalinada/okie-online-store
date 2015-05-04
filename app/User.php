@@ -273,4 +273,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function getEmailForPasswordReset()
 	{
 		return $this->email;
-	}}
+	}
+
+}
