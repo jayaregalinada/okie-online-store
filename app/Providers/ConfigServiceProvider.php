@@ -46,6 +46,7 @@ class ConfigServiceProvider extends ServiceProvider {
 
 		return $config;
 	}
+	
 	/**
 	 * Overwrite any vendor / package configuration.
 	 *
