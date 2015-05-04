@@ -13,10 +13,10 @@
 @foreach ( $product->related as $key => $value)
 <meta property="og:see_also" content="{{ route('item.show', $value->id) }}" />
 @endforeach
-<meta property="product:category" content="{{ $product->categories()->first() }}" />
-<meta property="product:original_price" content="{{ $product->price }}" />
-<meta property="product:price" content="{{ $product->price }}" />
-<meta property="product:sale_price" content="{{ $product->sale_price }}" />
+<meta property="product:category" content="{{ ( !empty( $product->categories()->first() ) ? $product->categories()->first()->name : 'All' ) }}" />
+<meta property="product:original_price:amount" content="{{ $product->price }}" />
+<meta property="product:price:amount" content="{{ $product->price }}" />
+<meta property="product:sale_price:amount" content="{{ $product->sale_price }}" />
 @stop
 
 @section('main-content')
@@ -148,7 +148,7 @@
                 data-product-name="{# product.name #}"
                 data-product-code="{# product.code #}">
                 
-                <a class="product-item-container" href="#" ui-sref="item({ itemId: product.id })">
+                <a class="product-item-container" href="{{ route('index' ) }}{# $state.href('item', { itemId: product.id }) #}">
                     <div class="ribbon {# product.badge.class #} ribbon-default" ng-if="product.badge.title">
                         <span>{# product.badge.title #}</span>
                     </div>
