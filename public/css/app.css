@@ -8075,6 +8075,7 @@ a.list-group-item-danger.active:focus {
 }
 #item_container .item-related .product-item-related {
   opacity: 1;
+  margin-bottom: 10px;
 }
 #item_container .item-related .product-item-related.ng-enter-stagger,
 #item_container .item-related .product-item-related.ng-leave-stagger,
