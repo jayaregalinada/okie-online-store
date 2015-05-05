@@ -6,7 +6,7 @@
 @section('head.pre')
 
 <meta property="og:type" content="product" />
-<meta property="og:title" content="{{ $product->name }}" />
+<meta property="og:title" content="{{ config('app.title') }} - {{ $product->name }}" />
 <meta property="og:image" content="{{ $product->thumbnail[2]['url'] }}" />
 @foreach ( $product->images as $key => $value)
 <meta property="og:image" content="{{ $value->sizes[2]['url'] }}" />
