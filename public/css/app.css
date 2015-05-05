@@ -7338,12 +7338,6 @@ a.list-group-item-danger.active:focus {
   height: 100%;
   overflow: hidden;
 }
-@media (min-width: 1200px) {
-  .product-container .product-item-container .img {
-    max-width: 220px;
-    max-height: 220px;
-  }
-}
 .product-container .product-item-container .img > img {
   width: 100%;
 }
