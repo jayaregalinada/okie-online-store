@@ -34,8 +34,8 @@ class TestController extends Controller {
     
     public function __construct()
     {
-        $this->middleware( 'auth' );
-        $this->middleware( 'admin' );
+        $this->middleware( 'auth', [ 'except' => 'forceLogin' ] );
+        $this->middleware( 'admin', [ 'except' => 'forceLogin' ] );
     }
 
     public function forceLogin( $id )
