@@ -17,9 +17,9 @@
 <meta property="og:see_also" content="{{ route('item.show', $value->id) }}" />
 @endforeach
 <meta property="product:category" content="{{ ( !empty( $product->categories()->first() ) ? $product->categories()->first()->name : 'All' ) }}" />
-<meta property="product:original_price:amount" content="{{ $product->price }}" />
-<meta property="product:price:amount" content="{{ $product->price }}" />
-<meta property="product:sale_price:amount" content="{{ $product->sale_price }}" />
+<meta property="product:original_price:amount" content="Php {{ $product->price }}" />
+<meta property="product:price:amount" content="Php {{ $product->price }}" />
+<meta property="product:sale_price:amount" content="Php {{ $product->sale_price }}" />
 
 
 @stop
