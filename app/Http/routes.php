@@ -8,14 +8,9 @@
 
 Route::get('/', ['as' => 'index', 'uses' => 'WelcomeController@index']);
 
-Route::get('home', function()
-{
-    return redirect('/');
-});
+Route::get('home', 'WelcomeController@redirectHome');
 
-get('angular-ui-notification.html', function(){
-    return view( 'public.ui-notification' );
-});
+get('angular-ui-notification.html', 'ViewHandlerController@angularUiNotificationView');
 
 get(config('okie.privacy_policy.url'), 'WelcomeController@getPrivacyPolicy');
 get(config('okie.terms_and_conditions.url'), 'WelcomeController@getTermsAndConditions');
@@ -24,14 +19,7 @@ Route::get('permission', 'UserController@getPermission');
 
 Route::controller('test', 'TestController');
 
-Route::get('/testing/force-login/{id}', function( $id )
-{
-    if( $this->app->environment('local') )
-        Auth::loginUsingId( $id );
-        return redirect( route('me') );
-
-    return abort( 400, 'This feature is only available on local mode' );
-});
+Route::get('/testing/force-login/{id}', 'TestController@forceLogin');
 
 Route::get('banners', ['as' => 'banner', 'uses' => 'WelcomeController@getAllBanads']);
 
@@ -45,10 +33,7 @@ Route::controller('auth', 'Auth\AuthController', [
     'postLogin' => 'auth.login.post'
 ]);
 
-Route::get( 'login', function()
-{
-    return redirect('/auth/login');
-});
+Route::get( 'login', 'WelcomeController@redirectLogin');
 
 Route::get('routes', 'HomeController@getAllRoutes');
 

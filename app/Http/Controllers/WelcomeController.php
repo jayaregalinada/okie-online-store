@@ -77,4 +77,14 @@ class WelcomeController extends Controller {
 		return view( 'terms_and_conditions' )->with( [ 'contents' => config( 'okie.terms_and_conditions.contents' ), 'title' => 'Terms and Conditions' ] );
 	}
 
+	public function redirectHome()
+	{
+		return redirect( '/' );
+	}
+
+	public function redirectLogin()
+	{
+		return redirect( '/auth/login' );
+	}
+
 }

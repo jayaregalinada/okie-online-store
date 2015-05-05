@@ -209,4 +209,9 @@ class ViewHandlerController extends Controller {
 		}
 	}
 
+	public function angularUiNotificationView()
+	{
+		return view( 'public.ui-notification' );
+	}
+
 }
