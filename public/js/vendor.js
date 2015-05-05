@@ -2615,7 +2615,7 @@ angular.module('ngAnimate', ['ng'])
 
 /**
  * State-based routing for AngularJS
- * @version v0.2.13
+ * @version v0.2.14
  * @link http://angular-ui.github.com/
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -2683,7 +2683,7 @@ function objectKeys(object) {
   }
   var result = [];
 
-  angular.forEach(object, function(val, key) {
+  forEach(object, function(val, key) {
     result.push(key);
   });
   return result;
@@ -3295,7 +3295,7 @@ var $$UMFP; // reference to $UrlMatcherFactoryProvider
  * of search parameters. Multiple search parameter names are separated by '&'. Search parameters
  * do not influence whether or not a URL is matched, but their values are passed through into
  * the matched parameters returned by {@link ui.router.util.type:UrlMatcher#methods_exec exec}.
- * 
+ *
  * Path parameter placeholders can be specified using simple colon/catch-all syntax or curly brace
  * syntax, which optionally allows a regular expression for the parameter to be specified:
  *
@@ -3306,13 +3306,13 @@ var $$UMFP; // reference to $UrlMatcherFactoryProvider
  *   regexp itself contain curly braces, they must be in matched pairs or escaped with a backslash.
  *
  * Parameter names may contain only word characters (latin letters, digits, and underscore) and
- * must be unique within the pattern (across both path and search parameters). For colon 
+ * must be unique within the pattern (across both path and search parameters). For colon
  * placeholders or curly placeholders without an explicit regexp, a path parameter matches any
  * number of characters other than '/'. For catch-all placeholders the path parameter matches
  * any number of characters.
- * 
+ *
  * Examples:
- * 
+ *
  * * `'/hello/'` - Matches only if the path is exactly '/hello/'. There is no special treatment for
  *   trailing slashes, and patterns have to match the entire path, not just a prefix.
  * * `'/user/:id'` - Matches '/user/bob' or '/user/1234!!!' or even '/user/' but not '/user' or
@@ -3345,7 +3345,7 @@ var $$UMFP; // reference to $UrlMatcherFactoryProvider
  *
  * @property {string} sourceSearch  The search portion of the source property
  *
- * @property {string} regex  The constructed regex that will be used to match against the url when 
+ * @property {string} regex  The constructed regex that will be used to match against the url when
  *   it is time to determine which url will match.
  *
  * @returns {Object}  New `UrlMatcher` object
@@ -3383,13 +3383,13 @@ function UrlMatcher(pattern, config, parentMatcher) {
     return params[id];
   }
 
-  function quoteRegExp(string, pattern, squash) {
+  function quoteRegExp(string, pattern, squash, optional) {
     var surroundPattern = ['',''], result = string.replace(/[\\\[\]\^$*+?.()|{}]/g, "\\$&");
     if (!pattern) return result;
     switch(squash) {
-      case false: surroundPattern = ['(', ')'];   break;
+      case false: surroundPattern = ['(', ')' + (optional ? "?" : "")]; break;
       case true:  surroundPattern = ['?(', ')?']; break;
-      default:    surroundPattern = ['(' + squash + "|", ')?'];  break;
+      default:    surroundPattern = ['(' + squash + "|", ')?']; break;
     }
     return result + surroundPattern[0] + pattern + surroundPattern[1];
   }
@@ -3404,7 +3404,7 @@ function UrlMatcher(pattern, config, parentMatcher) {
     cfg         = config.params[id];
     segment     = pattern.substring(last, m.index);
     regexp      = isSearch ? m[4] : m[4] || (m[1] == '*' ? '.*' : null);
-    type        = $$UMFP.type(regexp || "string") || inherit($$UMFP.type("string"), { pattern: new RegExp(regexp) });
+    type        = $$UMFP.type(regexp || "string") || inherit($$UMFP.type("string"), { pattern: new RegExp(regexp, config.caseInsensitive ? 'i' : undefined) });
     return {
       id: id, regexp: regexp, segment: segment, type: type, cfg: cfg
     };
@@ -3416,7 +3416,7 @@ function UrlMatcher(pattern, config, parentMatcher) {
     if (p.segment.indexOf('?') >= 0) break; // we're into the search part
 
     param = addParameter(p.id, p.type, p.cfg, "path");
-    compiled += quoteRegExp(p.segment, param.type.pattern.source, param.squash);
+    compiled += quoteRegExp(p.segment, param.type.pattern.source, param.squash, param.isOptional);
     segments.push(p.segment);
     last = placeholder.lastIndex;
   }
@@ -3527,7 +3527,7 @@ UrlMatcher.prototype.exec = function (path, searchParams) {
 
   function decodePathArray(string) {
     function reverseString(str) { return str.split("").reverse().join(""); }
-    function unquoteDashes(str) { return str.replace(/\\-/, "-"); }
+    function unquoteDashes(str) { return str.replace(/\\-/g, "-"); }
 
     var split = reverseString(string).split(/-(?!\\)/);
     var allReversed = map(split, reverseString);
@@ -3560,7 +3560,7 @@ UrlMatcher.prototype.exec = function (path, searchParams) {
  *
  * @description
  * Returns the names of all path and search parameters of this pattern in an unspecified order.
- * 
+ *
  * @returns {Array.<string>}  An array of parameter names. Must be treated as read-only. If the
  *    pattern has no parameters, an empty array is returned.
  */
@@ -3765,6 +3765,11 @@ Type.prototype.pattern = /.*/;
 
 Type.prototype.toString = function() { return "{Type:" + this.name + "}"; };
 
+/** Given an encoded string, or a decoded object, returns a decoded object */
+Type.prototype.$normalize = function(val) {
+  return this.is(val) ? val : this.decode(val);
+};
+
 /*
  * Wraps an existing custom Type as an array of Type, depending on 'mode'.
  * e.g.:
@@ -3778,7 +3783,6 @@ Type.prototype.toString = function() { return "{Type:" + this.name + "}"; };
 Type.prototype.$asArray = function(mode, isSearch) {
   if (!mode) return this;
   if (mode === "auto" && !isSearch) throw new Error("'auto' array mode is for query parameters only");
-  return new ArrayType(this, mode);
 
   function ArrayType(type, mode) {
     function bindTo(type, callbackName) {
@@ -3827,8 +3831,12 @@ Type.prototype.$asArray = function(mode, isSearch) {
     this.is     = arrayHandler(bindTo(type, 'is'), true);
     this.equals = arrayEqualsHandler(bindTo(type, 'equals'));
     this.pattern = type.pattern;
+    this.$normalize = arrayHandler(bindTo(type, '$normalize'));
+    this.name = type.name;
     this.$arrayMode = mode;
   }
+
+  return new ArrayType(this, mode);
 };
 
 
@@ -3856,7 +3864,7 @@ function $UrlMatcherFactory() {
     string: {
       encode: valToString,
       decode: valFromString,
-      is: regexpMatches,
+      is: function(val) { return typeof val === "string"; },
       pattern: /[^/]*/
     },
     int: {
@@ -4230,7 +4238,10 @@ function $UrlMatcherFactory() {
      */
     function $$getDefaultValue() {
       if (!injector) throw new Error("Injectable functions cannot be called at configuration time");
-      return injector.invoke(config.$$fn);
+      var defaultValue = injector.invoke(config.$$fn);
+      if (defaultValue !== null && defaultValue !== undefined && !self.type.is(defaultValue))
+        throw new Error("Default value (" + defaultValue + ") for parameter '" + self.id + "' is not an instance of Type (" + self.type.name + ")");
+      return defaultValue;
     }
 
     /**
@@ -4244,7 +4255,7 @@ function $UrlMatcherFactory() {
         return replacement.length ? replacement[0] : value;
       }
       value = $replace(value);
-      return isDefined(value) ? self.type.decode(value) : $$getDefaultValue();
+      return !isDefined(value) ? $$getDefaultValue() : self.type.$normalize(value);
     }
 
     function toString() { return "{Param:" + id + " " + type + " squash: '" + squash + "' optional: " + isOptional + "}"; }
@@ -4300,15 +4311,20 @@ function $UrlMatcherFactory() {
       return equal;
     },
     $$validates: function $$validate(paramValues) {
-      var result = true, isOptional, val, param, self = this;
-
-      forEach(this.$$keys(), function(key) {
-        param = self[key];
-        val = paramValues[key];
-        isOptional = !val && param.isOptional;
-        result = result && (isOptional || !!param.type.is(val));
-      });
-      return result;
+      var keys = this.$$keys(), i, param, rawVal, normalized, encoded;
+      for (i = 0; i < keys.length; i++) {
+        param = this[keys[i]];
+        rawVal = paramValues[keys[i]];
+        if ((rawVal === undefined || rawVal === null) && param.isOptional)
+          break; // There was no parameter value, but the param is optional
+        normalized = param.type.$normalize(rawVal);
+        if (!param.type.is(normalized))
+          return false; // The value was not of the correct Type, and could not be decoded to the correct Type
+        encoded = param.type.encode(normalized);
+        if (angular.isString(encoded) && !param.type.pattern.exec(encoded))
+          return false; // The value was of the correct type, but when encoded, did not match the Type's regexp
+      }
+      return true;
     },
     $$parent: undefined
   };
@@ -4673,7 +4689,14 @@ function $UrlRouterProvider(   $locationProvider,   $urlMatcherFactory) {
       },
 
       push: function(urlMatcher, params, options) {
-        $location.url(urlMatcher.format(params || {}));
+         var url = urlMatcher.format(params || {});
+
+        // Handle the special hash param, if needed
+        if (url !== null && params && params['#']) {
+            url += '#' + params['#'];
+        }
+
+        $location.url(url);
         lastPushedUrl = options && options.$$avoidResync ? $location.url() : undefined;
         if (options && options.replace) $location.replace();
       },
@@ -4717,6 +4740,12 @@ function $UrlRouterProvider(   $locationProvider,   $urlMatcherFactory) {
         if (!isHtml5 && url !== null) {
           url = "#" + $locationProvider.hashPrefix() + url;
         }
+
+        // Handle special hash param, if needed
+        if (url !== null && params && params['#']) {
+          url += '#' + params['#'];
+        }
+
         url = appendBasePath(url, isHtml5, options.absolute);
 
         if (!options.absolute || !url) {
@@ -4951,6 +4980,13 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
     var globSegments = glob.split('.'),
         segments = $state.$current.name.split('.');
 
+    //match single stars
+    for (var i = 0, l = globSegments.length; i < l; i++) {
+      if (globSegments[i] === '*') {
+        segments[i] = '*';
+      }
+    }
+
     //match greedy starts
     if (globSegments[0] === '**') {
        segments = segments.slice(indexOf(segments, globSegments[1]));
@@ -4964,13 +5000,6 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
     if (globSegments.length != segments.length) {
       return false;
-    }
-
-    //match single stars
-    for (var i = 0, l = globSegments.length; i < l; i++) {
-      if (globSegments[i] === '*') {
-        segments[i] = '*';
-      }
     }
 
     return segments.join('') === globSegments.join('');
@@ -5181,6 +5210,13 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    *   published to scope under the controllerAs name.
    * <pre>controllerAs: "myCtrl"</pre>
    *
+   * @param {string|object=} stateConfig.parent
+   * <a id='parent'></a>
+   * Optionally specifies the parent state of this state.
+   *
+   * <pre>parent: 'parentState'</pre>
+   * <pre>parent: parentState // JS variable</pre>
+   *
    * @param {object=} stateConfig.resolve
    * <a id='resolve'></a>
    *
@@ -5212,6 +5248,9 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    *   transitioned to, the `$stateParams` service will be populated with any 
    *   parameters that were passed.
    *
+   *   (See {@link ui.router.util.type:UrlMatcher UrlMatcher} `UrlMatcher`} for
+   *   more details on acceptable patterns )
+   *
    * examples:
    * <pre>url: "/home"
    * url: "/users/:userid"
@@ -5219,8 +5258,9 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
    * url: "/books/{categoryid:int}"
    * url: "/books/{publishername:string}/{categoryid:int}"
    * url: "/messages?before&after"
-   * url: "/messages?{before:date}&{after:date}"</pre>
+   * url: "/messages?{before:date}&{after:date}"
    * url: "/messages/:mailboxid?{before:date}&{after:date}"
+   * </pre>
    *
    * @param {object=} stateConfig.views
    * <a id='views'></a>
@@ -5524,8 +5564,8 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
      * @methodOf ui.router.state.$state
      *
      * @description
-     * A method that force reloads the current state. All resolves are re-resolved, events are not re-fired, 
-     * and controllers reinstantiated (bug with controllers reinstantiating right now, fixing soon).
+     * A method that force reloads the current state. All resolves are re-resolved,
+     * controllers reinstantiated, and events re-fired.
      *
      * @example
      * <pre>
@@ -5545,11 +5585,33 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
      * });
      * </pre>
      *
+     * @param {string=|object=} state - A state name or a state object, which is the root of the resolves to be re-resolved.
+     * @example
+     * <pre>
+     * //assuming app application consists of 3 states: 'contacts', 'contacts.detail', 'contacts.detail.item' 
+     * //and current state is 'contacts.detail.item'
+     * var app angular.module('app', ['ui.router']);
+     *
+     * app.controller('ctrl', function ($scope, $state) {
+     *   $scope.reload = function(){
+     *     //will reload 'contact.detail' and 'contact.detail.item' states
+     *     $state.reload('contact.detail');
+     *   }
+     * });
+     * </pre>
+     *
+     * `reload()` is just an alias for:
+     * <pre>
+     * $state.transitionTo($state.current, $stateParams, { 
+     *   reload: true, inherit: false, notify: true
+     * });
+     * </pre>
+
      * @returns {promise} A promise representing the state of the new transition. See
      * {@link ui.router.state.$state#methods_go $state.go}.
      */
-    $state.reload = function reload() {
-      return $state.transitionTo($state.current, $stateParams, { reload: true, inherit: false, notify: true });
+    $state.reload = function reload(state) {
+      return $state.transitionTo($state.current, $stateParams, { reload: state || true, inherit: false, notify: true});
     };
 
     /**
@@ -5653,9 +5715,11 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
      * - **`relative`** - {object=}, When transitioning with relative path (e.g '^'), 
      *    defines which state to be relative from.
      * - **`notify`** - {boolean=true}, If `true` will broadcast $stateChangeStart and $stateChangeSuccess events.
-     * - **`reload`** (v0.2.5) - {boolean=false}, If `true` will force transition even if the state or params 
+     * - **`reload`** (v0.2.5) - {boolean=false|string=|object=}, If `true` will force transition even if the state or params 
      *    have not changed, aka a reload of the same state. It differs from reloadOnSearch because you'd
      *    use this when you want to force a reload when *everything* is the same, including search params.
+     *    if String, then will reload the state with the name given in reload, and any children.
+     *    if Object, then a stateObj is expected, will reload the state found in stateObj, and any chhildren.
      *
      * @returns {promise} A promise representing the state of the new transition. See
      * {@link ui.router.state.$state#methods_go $state.go}.
@@ -5668,6 +5732,9 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
       var from = $state.$current, fromParams = $state.params, fromPath = from.path;
       var evt, toState = findState(to, options.relative);
+
+      // Store the hash param for later (since it will be stripped out by various methods)
+      var hash = toParams['#'];
 
       if (!isDefined(toState)) {
         var redirect = { to: to, toParams: toParams, options: options };
@@ -5700,9 +5767,27 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
       // Starting from the root of the path, keep all levels that haven't changed
       var keep = 0, state = toPath[keep], locals = root.locals, toLocals = [];
+      var skipTriggerReloadCheck = false;
 
       if (!options.reload) {
         while (state && state === fromPath[keep] && state.ownParams.$$equals(toParams, fromParams)) {
+          locals = toLocals[keep] = state.locals;
+          keep++;
+          state = toPath[keep];
+        }
+      } else if (isString(options.reload) || isObject(options.reload)) {
+        if (isObject(options.reload) && !options.reload.name) {
+          throw new Error('Invalid reload state object');
+        }
+        
+        var reloadState = options.reload === true ? fromPath[0] : findState(options.reload);
+        if (options.reload && !reloadState) {
+          throw new Error("No such reload state '" + (isString(options.reload) ? options.reload : options.reload.name) + "'");
+        }
+
+        skipTriggerReloadCheck = true;
+ 
+        while (state && state === fromPath[keep] && state !== reloadState) {
           locals = toLocals[keep] = state.locals;
           keep++;
           state = toPath[keep];
@@ -5714,7 +5799,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
       // TODO: We may not want to bump 'transition' if we're called from a location change
       // that we've initiated ourselves, because we might accidentally abort a legitimate
       // transition initiated from code?
-      if (shouldTriggerReload(to, from, locals, options)) {
+      if (!skipTriggerReloadCheck && shouldTriggerReload(to, from, locals, options)) {
         if (to.self.reloadOnSearch !== false) $urlRouter.update();
         $state.transition = null;
         return $q.when($state.current);
@@ -5753,6 +5838,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
          * </pre>
          */
         if ($rootScope.$broadcast('$stateChangeStart', to.self, toParams, from.self, fromParams).defaultPrevented) {
+          $rootScope.$broadcast('$stateChangeCancel', to.self, toParams, from.self, fromParams);
           $urlRouter.update();
           return TransitionPrevented;
         }
@@ -5798,6 +5884,9 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
             $injector.invoke(entering.self.onEnter, entering.self, entering.locals.globals);
           }
         }
+
+        // Re-add the saved hash before we start returning things
+        if (hash) toParams['#'] = hash;
 
         // Run it again, to catch any transitions in callbacks
         if ($state.transition !== transition) return TransitionSuperseded;
@@ -6024,7 +6113,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
       if (!nav || nav.url === undefined || nav.url === null) {
         return null;
       }
-      return $urlRouter.href(nav.url, filterByKeys(state.params.$$keys(), params || {}), {
+      return $urlRouter.href(nav.url, filterByKeys(state.params.$$keys().concat('#'), params || {}), {
         absolute: options.absolute
       });
     };
@@ -6076,7 +6165,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
         promises.push($resolve.resolve(injectables, locals, dst.resolve, state).then(function (result) {
           // References to the controller (only instantiated at link time)
           if (isFunction(view.controllerProvider) || isArray(view.controllerProvider)) {
-            var injectLocals = angular.extend({}, injectables, locals);
+            var injectLocals = angular.extend({}, injectables, locals, result);
             result.$$controller = $injector.invoke(view.controllerProvider, null, injectLocals);
           } else {
             result.$$controller = view.controller;
@@ -6224,7 +6313,7 @@ function $ViewScrollProvider() {
     }
 
     return function ($element) {
-      $timeout(function () {
+      return $timeout(function () {
         $element[0].scrollIntoView();
       }, 0, false);
     };
@@ -6509,6 +6598,7 @@ function $ViewDirectiveFill (  $compile,   $controller,   $state,   $interpolate
 
         if (locals.$$controller) {
           locals.$scope = scope;
+          locals.$element = $element;
           var controller = $controller(locals.$$controller, locals);
           if (locals.$$controllerAs) {
             scope[locals.$$controllerAs] = controller;
@@ -6616,7 +6706,7 @@ function stateContext(el) {
  */
 $StateRefDirective.$inject = ['$state', '$timeout'];
 function $StateRefDirective($state, $timeout) {
-  var allowedOptions = ['location', 'inherit', 'reload'];
+  var allowedOptions = ['location', 'inherit', 'reload', 'absolute'];
 
   return {
     restrict: 'A',
@@ -6624,9 +6714,12 @@ function $StateRefDirective($state, $timeout) {
     link: function(scope, element, attrs, uiSrefActive) {
       var ref = parseStateRef(attrs.uiSref, $state.current.name);
       var params = null, url = null, base = stateContext(element) || $state.$current;
-      var newHref = null, isAnchor = element.prop("tagName") === "A";
+      // SVGAElement does not use the href attribute, but rather the 'xlinkHref' attribute.
+      var hrefKind = Object.prototype.toString.call(element.prop('href')) === '[object SVGAnimatedString]' ?
+                 'xlink:href' : 'href';
+      var newHref = null, isAnchor = element.prop("tagName").toUpperCase() === "A";
       var isForm = element[0].nodeName === "FORM";
-      var attr = isForm ? "action" : "href", nav = true;
+      var attr = isForm ? "action" : hrefKind, nav = true;
 
       var options = { relative: base, inherit: true };
       var optionsOverride = scope.$eval(attrs.uiSrefOpts) || {};
@@ -6645,7 +6738,7 @@ function $StateRefDirective($state, $timeout) {
 
         var activeDirective = uiSrefActive[1] || uiSrefActive[0];
         if (activeDirective) {
-          activeDirective.$$setStateInfo(ref.state, params);
+          activeDirective.$$addStateInfo(ref.state, params);
         }
         if (newHref === null) {
           nav = false;
@@ -6764,7 +6857,7 @@ function $StateRefActiveDirective($state, $stateParams, $interpolate) {
   return  {
     restrict: "A",
     controller: ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
-      var state, params, activeClass;
+      var states = [], activeClass;
 
       // There probably isn't much point in $observing this
       // uiSrefActive and uiSrefActiveEq share the same directive object with some
@@ -6772,9 +6865,14 @@ function $StateRefActiveDirective($state, $stateParams, $interpolate) {
       activeClass = $interpolate($attrs.uiSrefActiveEq || $attrs.uiSrefActive || '', false)($scope);
 
       // Allow uiSref to communicate with uiSrefActive[Equals]
-      this.$$setStateInfo = function (newState, newParams) {
-        state = $state.get(newState, stateContext($element));
-        params = newParams;
+      this.$$addStateInfo = function (newState, newParams) {
+        var state = $state.get(newState, stateContext($element));
+
+        states.push({
+          state: state || { name: newState },
+          params: newParams
+        });
+
         update();
       };
 
@@ -6782,18 +6880,27 @@ function $StateRefActiveDirective($state, $stateParams, $interpolate) {
 
       // Update route state
       function update() {
-        if (isMatch()) {
+        if (anyMatch()) {
           $element.addClass(activeClass);
         } else {
           $element.removeClass(activeClass);
         }
       }
 
-      function isMatch() {
+      function anyMatch() {
+        for (var i = 0; i < states.length; i++) {
+          if (isMatch(states[i].state, states[i].params)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function isMatch(state, params) {
         if (typeof $attrs.uiSrefActiveEq !== 'undefined') {
-          return state && $state.is(state.name, params);
+          return $state.is(state.name, params);
         } else {
-          return state && $state.includes(state.name, params);
+          return $state.includes(state.name, params);
         }
       }
     }]
@@ -12790,7 +12897,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
  * ng-currency
  * http://alaguirre.com/
 
- * Version: 0.8.2 - 2015-02-15
+ * Version: 0.8.4 - 2015-04-14
  * License: MIT
  */
 
@@ -12829,10 +12936,6 @@ angular.module('ng-currency', [])
                             .join("").match(clearRex(dSeparator));
                         cleared = cleared ? cleared[0].replace(dSeparator, ".") : null;
                     }
-                    else
-                    {
-                        cleaned = null;
-                    }
 
                     return cleared;
                 }
@@ -12845,6 +12948,19 @@ angular.module('ng-currency', [])
                     }
                 }
 
+                function reformatViewValue(){
+                    var formatters = ngModel.$formatters,
+                        idx = formatters.length;
+
+                    var viewValue = ngModel.$modelValue;
+                    while (idx--) {
+                      viewValue = formatters[idx](viewValue);
+                    }
+
+                    ngModel.$setViewValue(viewValue);
+                    ngModel.$render();
+                }
+
                 ngModel.$parsers.push(function (viewValue) {
                     var cVal = clearValue(viewValue);
                     return parseFloat(cVal);
@@ -12852,7 +12968,7 @@ angular.module('ng-currency', [])
 
                 element.on("blur", function () {
                     ngModel.$commitViewValue();
-                    element.val($filter('currency')(ngModel.$modelValue, currencySymbol()));
+                    reformatViewValue();
                 });
 
                 ngModel.$formatters.unshift(function (value) {
@@ -18223,1321 +18339,573 @@ tagsInput.run(["$templateCache", function($templateCache) {
 }]);
 
 }());
-/*global angular*/
-(function () {
-  'use strict';
-
-  try {
-    angular.module('decipher.tags.templates');
-  } catch (e) {
-    angular.module('decipher.tags.templates', []);
-  }
-
-  var tags = angular.module('decipher.tags',
-    ['ui.bootstrap.typeahead', 'decipher.tags.templates']);
-
-  var defaultOptions = {
-      delimiter: ',', // if given a string model, it splits on this
-      classes: {}, // obj of group names to classes
-      templateUrl: 'templates/tags.html', // default template
-      tagTemplateUrl: 'templates/tag.html' // default 'tag' template
-    },
-
-  // for parsing comprehension expression
-    SRC_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/,
-
-  // keycodes
-    kc = {
-      enter: 13,
-      esc: 27,
-      backspace: 8
-    },
-    kcCompleteTag = [kc.enter],
-    kcRemoveTag = [kc.backspace],
-    kcCancelInput = [kc.esc],
-    id = 0;
-
-  tags.constant('decipherTagsOptions', {});
-
-  /**
-   * TODO: do we actually share functionality here?  We're using this
-   * controller on both the subdirective and its parent, but I'm not sure
-   * if we actually use the same functions in both.
-   */
-  tags.controller('TagsCtrl',
-    ['$scope', '$timeout', '$q', function ($scope, $timeout, $q) {
-
-      /**
-       * Figures out what classes to put on the tag span.  It'll add classes
-       * if defined by group, and it'll add a selected class if the tag
-       * is preselected to delete.
-       * @param tag
-       * @returns {{}}
-       */
-      $scope.getClasses = function getGroupClass(tag) {
-        var r = {};
-
-        if (tag === $scope.toggles.selectedTag) {
-          r.selected = true;
-        }
-        angular.forEach($scope.options.classes, function (klass, groupName) {
-          if (tag.group === groupName) {
-            r[klass] = true;
+angular.module('colorpicker.module', [])
+    .factory('Helper', function () {
+      'use strict';
+      return {
+        closestSlider: function (elem) {
+          var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+          if (matchesSelector.bind(elem)('I')) {
+            return elem.parentNode;
           }
-        });
-        return r;
-      };
-
-      /**
-       * Finds a tag in the src list and removes it.
-       * @param tag
-       * @returns {boolean}
-       */
-      $scope._filterSrcTags = function filterSrcTags(tag) {
-        // wrapped in timeout or typeahead becomes confused
-        return $timeout(function () {
-          var idx = $scope.srcTags.indexOf(tag);
-          if (idx >= 0) {
-            $scope.srcTags.splice(idx, 1);
-            $scope._deletedSrcTags.push(tag);
-            return;
-          }
-          return $q.reject();
-        });
-      };
-
-      /**
-       * Adds a tag to the list of tags, and if in the typeahead list,
-       * removes it from that list (and saves it).  emits decipher.tags.added
-       * @param tag
-       */
-      $scope.add = function add(tag) {
-        var _add = function _add(tag) {
-            $scope.tags.push(tag);
-            delete $scope.inputTag;
-            $scope.$emit('decipher.tags.added', {
-              tag: tag,
-              $id: $scope.$id
-            });
-          },
-          fail = function fail() {
-            $scope.$emit('decipher.tags.addfailed', {
-              tag: tag,
-              $id: $scope.$id
-            });
-            dfrd.reject();
-          },
-          i,
-          dfrd = $q.defer();
-
-        // don't add dupe names
-        i = $scope.tags.length;
-        while (i--) {
-          if ($scope.tags[i].name === tag.name) {
-            fail();
-          }
-        }
-
-        $scope._filterSrcTags(tag)
-          .then(function () {
-            _add(tag);
-          }, function () {
-            if ($scope.options.addable) {
-              _add(tag);
-              dfrd.resolve();
+          return elem;
+        },
+        getOffset: function (elem, fixedPosition) {
+          var
+              x = 0,
+              y = 0,
+              scrollX = 0,
+              scrollY = 0;
+          while (elem && !isNaN(elem.offsetLeft) && !isNaN(elem.offsetTop)) {
+            x += elem.offsetLeft;
+            y += elem.offsetTop;
+            if (!fixedPosition && elem.tagName === 'BODY') {
+              scrollX += document.documentElement.scrollLeft || elem.scrollLeft;
+              scrollY += document.documentElement.scrollTop || elem.scrollTop;
+            } else {
+              scrollX += elem.scrollLeft;
+              scrollY += elem.scrollTop;
             }
-            else {
-              fail();
+            elem = elem.offsetParent;
+          }
+          return {
+            top: y,
+            left: x,
+            scrollX: scrollX,
+            scrollY: scrollY
+          };
+        },
+        // a set of RE's that can match strings and generate color tuples. https://github.com/jquery/jquery-color/
+        stringParsers: [
+          {
+            re: /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/,
+            parse: function (execResult) {
+              return [
+                execResult[1],
+                execResult[2],
+                execResult[3],
+                execResult[4]
+              ];
             }
+          },
+          {
+            re: /rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/,
+            parse: function (execResult) {
+              return [
+                2.55 * execResult[1],
+                2.55 * execResult[2],
+                2.55 * execResult[3],
+                execResult[4]
+              ];
+            }
+          },
+          {
+            re: /#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/,
+            parse: function (execResult) {
+              return [
+                parseInt(execResult[1], 16),
+                parseInt(execResult[2], 16),
+                parseInt(execResult[3], 16)
+              ];
+            }
+          },
+          {
+            re: /#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/,
+            parse: function (execResult) {
+              return [
+                parseInt(execResult[1] + execResult[1], 16),
+                parseInt(execResult[2] + execResult[2], 16),
+                parseInt(execResult[3] + execResult[3], 16)
+              ];
+            }
+          }
+        ]
+      };
+    })
+    .factory('Color', ['Helper', function (Helper) {
+      'use strict';
+      return {
+        value: {
+          h: 1,
+          s: 1,
+          b: 1,
+          a: 1
+        },
+        // translate a format from Color object to a string
+        'rgb': function () {
+          var rgb = this.toRGB();
+          return 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+        },
+        'rgba': function () {
+          var rgb = this.toRGB();
+          return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + rgb.a + ')';
+        },
+        'hex': function () {
+          return  this.toHex();
+        },
+
+        // HSBtoRGB from RaphaelJS
+        RGBtoHSB: function (r, g, b, a) {
+          r /= 255;
+          g /= 255;
+          b /= 255;
+
+          var H, S, V, C;
+          V = Math.max(r, g, b);
+          C = V - Math.min(r, g, b);
+          H = (C === 0 ? null :
+              V === r ? (g - b) / C :
+                  V === g ? (b - r) / C + 2 :
+                      (r - g) / C + 4
+              );
+          H = ((H + 360) % 6) * 60 / 360;
+          S = C === 0 ? 0 : C / V;
+          return {h: H || 1, s: S, b: V, a: a || 1};
+        },
+
+        //parse a string to HSB
+        setColor: function (val) {
+          val = val.toLowerCase();
+          for (var key in Helper.stringParsers) {
+            if (Helper.stringParsers.hasOwnProperty(key)) {
+              var parser = Helper.stringParsers[key];
+              var match = parser.re.exec(val),
+                  values = match && parser.parse(match);
+              if (values) {
+                this.value = this.RGBtoHSB.apply(null, values);
+                return false;
+              }
+            }
+          }
+        },
+
+        setHue: function (h) {
+          this.value.h = 1 - h;
+        },
+
+        setSaturation: function (s) {
+          this.value.s = s;
+        },
+
+        setLightness: function (b) {
+          this.value.b = 1 - b;
+        },
+
+        setAlpha: function (a) {
+          this.value.a = parseInt((1 - a) * 100, 10) / 100;
+        },
+
+        // HSBtoRGB from RaphaelJS
+        // https://github.com/DmitryBaranovskiy/raphael/
+        toRGB: function (h, s, b, a) {
+          if (!h) {
+            h = this.value.h;
+            s = this.value.s;
+            b = this.value.b;
+          }
+          h *= 360;
+          var R, G, B, X, C;
+          h = (h % 360) / 60;
+          C = b * s;
+          X = C * (1 - Math.abs(h % 2 - 1));
+          R = G = B = b - C;
+
+          h = ~~h;
+          R += [C, X, 0, 0, X, C][h];
+          G += [X, C, C, X, 0, 0][h];
+          B += [0, 0, X, C, C, X][h];
+          return {
+            r: Math.round(R * 255),
+            g: Math.round(G * 255),
+            b: Math.round(B * 255),
+            a: a || this.value.a
+          };
+        },
+
+        toHex: function (h, s, b, a) {
+          var rgb = this.toRGB(h, s, b, a);
+          return '#' + ((1 << 24) | (parseInt(rgb.r, 10) << 16) | (parseInt(rgb.g, 10) << 8) | parseInt(rgb.b, 10)).toString(16).substr(1);
+        }
+      };
+    }])
+    .factory('Slider', ['Helper', function (Helper) {
+      'use strict';
+      var
+          slider = {
+            maxLeft: 0,
+            maxTop: 0,
+            callLeft: null,
+            callTop: null,
+            knob: {
+              top: 0,
+              left: 0
+            }
+          },
+          pointer = {};
+
+      return {
+        getSlider: function() {
+          return slider;
+        },
+        getLeftPosition: function(event) {
+          return Math.max(0, Math.min(slider.maxLeft, slider.left + ((event.pageX || pointer.left) - pointer.left)));
+        },
+        getTopPosition: function(event) {
+          return Math.max(0, Math.min(slider.maxTop, slider.top + ((event.pageY || pointer.top) - pointer.top)));
+        },
+        setSlider: function (event, fixedPosition) {
+          var
+            target = Helper.closestSlider(event.target),
+            targetOffset = Helper.getOffset(target, fixedPosition);
+          slider.knob = target.children[0].style;
+          slider.left = event.pageX - targetOffset.left - window.pageXOffset + targetOffset.scrollX;
+          slider.top = event.pageY - targetOffset.top - window.pageYOffset + targetOffset.scrollY;
+
+          pointer = {
+            left: event.pageX - ((event.offsetX ? event.offsetX : event.layerX) - slider.left),
+            top: event.pageY - ((event.offsetY ? event.offsetY : event.layerY) - slider.top)
+          };
+        },
+        setSaturation: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 100,
+            maxTop: 100,
+            callLeft: 'setSaturation',
+            callTop: 'setLightness'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setHue: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 0,
+            maxTop: 100,
+            callLeft: false,
+            callTop: 'setHue'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setAlpha: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 0,
+            maxTop: 100,
+            callLeft: false,
+            callTop: 'setAlpha'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setKnob: function(top, left) {
+          slider.knob.top = top + 'px';
+          slider.knob.left = left + 'px';
+        }
+      };
+    }])
+    .directive('colorpicker', ['$document', '$compile', 'Color', 'Slider', 'Helper', function ($document, $compile, Color, Slider, Helper) {
+      'use strict';
+      return {
+        require: '?ngModel',
+        restrict: 'A',
+        link: function ($scope, elem, attrs, ngModel) {
+          var
+              thisFormat = attrs.colorpicker ? attrs.colorpicker : 'hex',
+              position = angular.isDefined(attrs.colorpickerPosition) ? attrs.colorpickerPosition : 'bottom',
+              inline = angular.isDefined(attrs.colorpickerInline) ? attrs.colorpickerInline : false,
+              fixedPosition = angular.isDefined(attrs.colorpickerFixedPosition) ? attrs.colorpickerFixedPosition : false,
+              target = angular.isDefined(attrs.colorpickerParent) ? elem.parent() : angular.element(document.body),
+              withInput = angular.isDefined(attrs.colorpickerWithInput) ? attrs.colorpickerWithInput : false,
+              inputTemplate = withInput ? '<input type="text" name="colorpicker-input">' : '',
+              closeButton = !inline ? '<button type="button" class="close close-colorpicker">&times;</button>' : '',
+              template =
+                  '<div class="colorpicker dropdown">' +
+                      '<div class="dropdown-menu">' +
+                      '<colorpicker-saturation><i></i></colorpicker-saturation>' +
+                      '<colorpicker-hue><i></i></colorpicker-hue>' +
+                      '<colorpicker-alpha><i></i></colorpicker-alpha>' +
+                      '<colorpicker-preview></colorpicker-preview>' +
+                      inputTemplate +
+                      closeButton +
+                      '</div>' +
+                      '</div>',
+              colorpickerTemplate = angular.element(template),
+              pickerColor = Color,
+              sliderAlpha,
+              sliderHue = colorpickerTemplate.find('colorpicker-hue'),
+              sliderSaturation = colorpickerTemplate.find('colorpicker-saturation'),
+              colorpickerPreview = colorpickerTemplate.find('colorpicker-preview'),
+              pickerColorPointers = colorpickerTemplate.find('i');
+
+          $compile(colorpickerTemplate)($scope);
+
+          if (withInput) {
+            var pickerColorInput = colorpickerTemplate.find('input');
+            pickerColorInput
+                .on('mousedown', function(event) {
+                  event.stopPropagation();
+                })
+                .on('keyup', function(event) {
+                  var newColor = this.value;
+                  elem.val(newColor);
+                  if(ngModel) {
+                    $scope.$apply(ngModel.$setViewValue(newColor));
+                  }
+                  event.stopPropagation();
+                  event.preventDefault();
+                });
+            elem.on('keyup', function() {
+              pickerColorInput.val(elem.val());
+            });
+          }
+
+          var bindMouseEvents = function() {
+            $document.on('mousemove', mousemove);
+            $document.on('mouseup', mouseup);
+          };
+
+          if (thisFormat === 'rgba') {
+            colorpickerTemplate.addClass('alpha');
+            sliderAlpha = colorpickerTemplate.find('colorpicker-alpha');
+            sliderAlpha
+                .on('click', function(event) {
+                  Slider.setAlpha(event, fixedPosition);
+                  mousemove(event);
+                })
+                .on('mousedown', function(event) {
+                  Slider.setAlpha(event, fixedPosition);
+                  bindMouseEvents();
+                })
+                .on('mouseup', function(event){
+                  emitEvent('colorpicker-selected-alpha');
+                });
+          }
+
+          sliderHue
+              .on('click', function(event) {
+                Slider.setHue(event, fixedPosition);
+                mousemove(event);
+              })
+              .on('mousedown', function(event) {
+                Slider.setHue(event, fixedPosition);
+                bindMouseEvents();
+              })
+              .on('mouseup', function(event){
+                emitEvent('colorpicker-selected-hue');
+              });
+
+          sliderSaturation
+              .on('click', function(event) {
+                Slider.setSaturation(event, fixedPosition);
+                mousemove(event);
+                if (angular.isDefined(attrs.colorpickerCloseOnSelect)) {
+                  hideColorpickerTemplate();
+                }
+              })
+              .on('mousedown', function(event) {
+                Slider.setSaturation(event, fixedPosition);
+                bindMouseEvents();
+              })
+              .on('mouseup', function(event){
+                emitEvent('colorpicker-selected-saturation');
+              });
+
+          if (fixedPosition) {
+            colorpickerTemplate.addClass('colorpicker-fixed-position');
+          }
+
+          colorpickerTemplate.addClass('colorpicker-position-' + position);
+          if (inline === 'true') {
+            colorpickerTemplate.addClass('colorpicker-inline');
+          }
+
+          target.append(colorpickerTemplate);
+
+          if(ngModel) {
+            ngModel.$render = function () {
+              elem.val(ngModel.$viewValue);
+            };
+            $scope.$watch(attrs.ngModel, function(newVal) {
+              update();
+
+              if (withInput) {
+                pickerColorInput.val(newVal);
+              }
+            });
+          }
+
+          elem.on('$destroy', function() {
+            colorpickerTemplate.remove();
           });
 
-        return dfrd.promise;
-      };
-
-      /**
-       * Toggle the input box active.
-       */
-      $scope.selectArea = function selectArea() {
-        $scope.toggles.inputActive = true;
-      };
-
-      /**
-       * Removes a tag.  Restores stuff into srcTags if it came from there.
-       * Kills any selected tag.  Emit a decipher.tags.removed event.
-       * @param tag
-       */
-      $scope.remove = function remove(tag) {
-        var idx;
-        $scope.tags.splice($scope.tags.indexOf(tag), 1);
-
-        if (idx = $scope._deletedSrcTags.indexOf(tag) >= 0) {
-          $scope._deletedSrcTags.splice(idx, 1);
-          if ($scope.srcTags.indexOf(tag) === -1) {
-            $scope.srcTags.push(tag);
-          }
-        }
-
-        delete $scope.toggles.selectedTag;
-
-        $scope.$emit('decipher.tags.removed', {
-          tag: tag,
-          $id: $scope.$id
-        });
-      };
-
-    }]);
-
-  /**
-   * Directive for the 'input' tag itself, which is of class
-   * decipher-tags-input.
-   */
-  tags.directive('decipherTagsInput',
-    ['$timeout', '$filter', '$rootScope',
-     function ($timeout, $filter, $rootScope) {
-       return {
-         restrict: 'C',
-         require: 'ngModel',
-         link: function (scope, element, attrs, ngModel) {
-           var delimiterRx = new RegExp('^' +
-                                        scope.options.delimiter +
-                                        '+$'),
-
-             /**
-              * Cancels the text input box.
-              */
-               cancel = function cancel() {
-               ngModel.$setViewValue('');
-               ngModel.$render();
-             },
-
-             /**
-              * Adds a tag you typed/pasted in unless it's a bunch of delimiters.
-              * @param value
-              */
-               addTag = function addTag(value) {
-               if (value) {
-                 if (value.match(delimiterRx)) {
-                   cancel();
-                   return;
-                 }
-                 if (scope.add({
-                   name: value
-                 })) {
-                   cancel();
-                 }
-               }
-             },
-
-             /**
-              * Adds multiple tags in case you pasted them.
-              * @param tags
-              */
-               addTags = function (tags) {
-               var i;
-               for (i = 0; i < tags.length;
-                    i++) {
-                 addTag(tags[i]);
-               }
-             },
-
-             /**
-              * Backspace one to select, and a second time to delete.
-              */
-               removeLastTag = function removeLastTag() {
-               var orderedTags;
-               if (scope.toggles.selectedTag) {
-                 scope.remove(scope.toggles.selectedTag);
-                 delete scope.toggles.selectedTag;
-               }
-               // only do this if the input field is empty.
-               else if (!ngModel.$viewValue) {
-                 orderedTags =
-                 $filter('orderBy')(scope.tags,
-                   scope.orderBy);
-                 scope.toggles.selectedTag =
-                 orderedTags[orderedTags.length - 1];
-               }
-             };
-
-           /**
-            * When we focus the text input area, drop the selected tag
-            */
-           element.bind('focus', function () {
-             // this avoids what looks like a bug in typeahead.  It seems
-             // to be calling element[0].focus() somewhere within a digest loop.
-             if ($rootScope.$$phase) {
-               delete scope.toggles.selectedTag;
-             } else {
-               scope.$apply(function () {
-                 delete scope.toggles.selectedTag;
-               });
-             }
-           });
-
-           /**
-            * Detects the delimiter.
-            */
-           element.bind('keypress',
-             function (evt) {
-               scope.$apply(function () {
-                 if (scope.options.delimiter.charCodeAt() ===
-                     evt.which) {
-                   addTag(ngModel.$viewValue);
-                 }
-               });
-             });
-
-           /**
-            * Inspects whatever you typed to see if there were character(s) of
-            * concern.
-            */
-           element.bind('keyup',
-             function (evt) {
-               scope.$apply(function () {
-                 // to "complete" a tag
-
-                 if (kcCompleteTag.indexOf(evt.which) >=
-                     0) {
-                   addTag(ngModel.$viewValue);
-
-                   // or if you want to get out of the text area
-                 } else if (kcCancelInput.indexOf(evt.which) >=
-                            0) {
-                   cancel();
-                   scope.toggles.inputActive =
-                   false;
-
-                   // or if you're trying to delete something
-                 } else if (kcRemoveTag.indexOf(evt.which) >=
-                            0) {
-                   removeLastTag();
-
-                   // otherwise if we're typing in here, just drop the selected tag.
-                 } else {
-                   delete scope.toggles.selectedTag;
-                   scope.$emit('decipher.tags.keyup',
-                     {
-                       value: ngModel.$viewValue,
-                       $id: scope.$id
-                     });
-                 }
-               });
-             });
-
-           /**
-            * When inputActive toggle changes to true, focus the input.
-            * And no I have no idea why this has to be in a timeout.
-            */
-           scope.$watch('toggles.inputActive',
-             function (newVal) {
-               if (newVal) {
-                 $timeout(function () {
-                   element[0].focus();
-                 });
-               }
-             });
-
-           /**
-            * Detects a paste or someone jamming on the delimiter key.
-            */
-           ngModel.$parsers.unshift(function (value) {
-             var values = value.split(scope.options.delimiter);
-             if (values.length > 1) {
-               addTags(values);
-             }
-             if (value.match(delimiterRx)) {
-               element.val('');
-               return;
-             }
-             return value;
-           });
-
-           /**
-            * Resets the input field if we selected something from typeahead.
-            */
-           ngModel.$formatters.push(function (tag) {
-             if (tag && tag.value) {
-               element.val('');
-               return;
-             }
-             return tag;
-           });
-         }
-       };
-     }]);
-
-  /**
-   * Main directive
-   */
-  tags.directive('tags',
-    ['$document', '$timeout', '$parse', 'decipherTagsOptions',
-     function ($document, $timeout, $parse, decipherTagsOptions) {
-
-       return {
-         controller: 'TagsCtrl',
-         restrict: 'E',
-         replace: true,
-         // IE8 is really, really fussy about this.
-         template: '<div><div data-ng-include="options.templateUrl"></div></div>',
-         scope: {
-           model: '='
-         },
-         link: function (scope, element, attrs) {
-           var srcResult,
-             source,
-             tags,
-             group,
-             i,
-             tagsWatch,
-             srcWatch,
-             modelWatch,
-             model,
-             pureStrings = false,
-             stringArray = false,
-             defaults = angular.copy(defaultOptions),
-             userDefaults = angular.copy(decipherTagsOptions),
-
-             /**
-              * Parses the comprehension expression and gives us interesting bits.
-              * @param input
-              * @returns {{itemName: *, source: *, viewMapper: *, modelMapper: *}}
-              */
-               parse = function parse(input) {
-               var match = input.match(SRC_REGEXP);
-               if (!match) {
-                 throw new Error(
-                   "Expected src specification in form of '_modelValue_ (as _label_)? for _item_ in _collection_'" +
-                   " but got '" + input + "'.");
-               }
-
-               return {
-                 itemName: match[3],
-                 source: $parse(match[4]),
-                 sourceName: match[4],
-                 viewMapper: $parse(match[2] || match[1]),
-                 modelMapper: $parse(match[1])
-               };
-
-             },
-
-             watchModel = function watchModel() {
-               modelWatch = scope.$watch('model', function (newVal) {
-                 var deletedTag, idx;
-                 if (angular.isDefined(newVal)) {
-                   tagsWatch();
-                   scope.tags = format(newVal);
-
-                   // remove already used tags
-                   i = scope.tags.length;
-                   while (i--) {
-                     scope._filterSrcTags(scope.tags[i]);
-                   }
-
-                   // restore any deleted things to the src array that happen to not
-                   // be in the new value.
-                   i = scope._deletedSrcTags.length;
-                   while (i--) {
-                     deletedTag = scope._deletedSrcTags[i];
-                     if (idx = newVal.indexOf(deletedTag) === -1 &&
-                               scope.srcTags.indexOf(deletedTag) === -1) {
-                       scope.srcTags.push(deletedTag);
-                       scope._deletedSrcTags.splice(i, 1);
-                     }
-                   }
-
-                   watchTags();
-                 }
-               }, true);
-
-             },
-
-             watchTags = function watchTags() {
-
-               /**
-                * Watches tags for changes and propagates to outer model
-                * in the format which we originally specified (see below)
-                */
-               tagsWatch = scope.$watch('tags', function (value, oldValue) {
-                 var i;
-                 if (value !== oldValue) {
-                   modelWatch();
-                   if (stringArray || pureStrings) {
-                     value = value.map(function (tag) {
-                       return tag.name;
-                     });
-                     if (angular.isArray(scope.model)) {
-                       scope.model.length = 0;
-                       for (i = 0; i < value.length; i++) {
-                         scope.model.push(value[i]);
-                       }
-                     }
-                     if (pureStrings) {
-                       scope.model = value.join(scope.options.delimiter);
-                     }
-                   }
-                   else {
-                     scope.model.length = 0;
-                     for (i = 0; i < value.length; i++) {
-                       scope.model.push(value[i]);
-                     }
-                   }
-                   watchModel();
-
-                 }
-               }, true);
-             },
-             /**
-              * Takes a raw model value and returns something suitable
-              * to assign to scope.tags
-              * @param value
-              */
-               format = function format(value) {
-               var arr = [],
-                 sanitize = function sanitize(tag) {
-                   return tag
-                     .replace(/&/g, '&amp;')
-                     .replace(/</g, '&lt;')
-                     .replace(/>/g, '&gt;')
-                     .replace(/'/g, '&#39;')
-                     .replace(/"/g, '&quot;');
-                 };
-               if (angular.isUndefined(value)) {
-                 return;
-               }
-               if (angular.isString(value)) {
-                 arr = value
-                   .split(scope.options.delimiter)
-                   .map(function (item) {
-                     return {
-                       name: sanitize(item.trim())
-                     };
-                   });
-               }
-               else if (angular.isArray(value)) {
-                 arr = value.map(function (item) {
-                   if (angular.isString(item)) {
-                     return {
-                       name: sanitize(item.trim())
-                     };
-                   }
-                   else if (item.name) {
-                     item.name = sanitize(item.name.trim());
-                   }
-                   return item;
-                 });
-               }
-               else if (angular.isDefined(value)) {
-                 throw 'list of tags must be an array or delimited string';
-               }
-               return arr;
-             },
-             /**
-              * Updates the source tag information.  Sets a watch so we
-              * know if the source values change.
-              */
-               updateSrc = function updateSrc() {
-               var locals,
-                 i,
-                 o,
-                 obj;
-               // default to NOT letting users add new tags in this case.
-               scope.options.addable = scope.options.addable || false;
-               scope.srcTags = [];
-               srcResult = parse(attrs.src);
-               source = srcResult.source(scope.$parent);
-               if (angular.isUndefined(source)) {
-                 return;
-               }
-               if (angular.isFunction(srcWatch)) {
-                 srcWatch();
-               }
-               locals = {};
-               if (angular.isDefined(source)) {
-                 for (i = 0; i < source.length; i++) {
-                   locals[srcResult.itemName] = source[i];
-                   obj = {};
-                   obj.value = srcResult.modelMapper(scope.$parent, locals);
-                   o = {};
-                   if (angular.isObject(obj.value)) {
-                     o = angular.extend(obj.value, {
-                       name: srcResult.viewMapper(scope.$parent, locals),
-                       value: obj.value.value,
-                       group: obj.value.group
-                     });
-                   }
-                   else {
-                     o = {
-                       name: srcResult.viewMapper(scope.$parent, locals),
-                       value: obj.value,
-                       group: group
-                     };
-                   }
-                   scope.srcTags.push(o);
-                 }
-               }
-
-               srcWatch =
-               scope.$parent.$watch(srcResult.sourceName,
-                 function (newVal, oldVal) {
-                   if (newVal !== oldVal) {
-                     updateSrc();
-                   }
-                 }, true);
-             };
-
-           // merge options
-           scope.options = angular.extend(defaults,
-             angular.extend(userDefaults, scope.$eval(attrs.options)));
-           // break out orderBy for view
-           scope.orderBy = scope.options.orderBy;
-
-           // this should be named something else since it's just a collection
-           // of random shit.
-           scope.toggles = {
-             inputActive: false
-           };
-
-           /**
-            * When we receive this event, sort.
-            */
-           scope.$on('decipher.tags.sort', function (evt, data) {
-             scope.orderBy = data;
-           });
-
-           // pass typeahead options through
-           attrs.$observe('typeaheadOptions', function (newVal) {
-             if (newVal) {
-               scope.typeaheadOptions = $parse(newVal)(scope.$parent);
-             } else {
-               scope.typeaheadOptions = {};
-             }
-           });
-
-           // determine what format we're in
-           model = scope.model;
-           if (angular.isString(model)) {
-             pureStrings = true;
-           }
-           else if (angular.isArray(model)) {
-             stringArray = true;
-             i = model.length;
-             while (i--) {
-               if (!angular.isString(model[i])) {
-                 stringArray = false;
-                 break;
-               }
-             }
-           }
-
-           // watch model for changes and update tags as appropriate
-           scope.tags = [];
-           scope._deletedSrcTags = [];
-           watchTags();
-           watchModel();
-
-           // this stuff takes the parsed comprehension expression and
-           // makes a srcTags array full of tag objects out of it.
-           scope.srcTags = [];
-           if (angular.isDefined(attrs.src)) {
-             updateSrc();
-           } else {
-             // if you didn't specify a src, you must be able to type in new tags.
-             scope.options.addable = true;
-           }
-
-           // emit identifier
-           scope.$id = ++id;
-           scope.$emit('decipher.tags.initialized', {
-             $id: scope.$id,
-             model: scope.model
-           });
-         }
-       };
-     }]);
-
-})();
-
-angular.module('decipher.tags.templates', ['templates/tags.html', 'templates/tag.html']);
-
-angular.module("templates/tags.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("templates/tags.html",
-    "<div class=\"decipher-tags\" data-ng-mousedown=\"selectArea()\">\n" +
-    "\n" +
-    "  <div class=\"decipher-tags-taglist\">\n" +
-    "    <span data-ng-repeat=\"tag in tags|orderBy:orderBy\"\n" +
-    "          data-ng-mousedown=\"$event.stopPropagation()\">\n" +
-    "      <ng-include src=\"options.tagTemplateUrl\"></ng-include>\n" +
-    "    </span>\n" +
-    "  </div>\n" +
-    "\n" +
-    "  <span class=\"container-fluid\" data-ng-show=\"toggles.inputActive\">\n" +
-    "    <input ng-if=\"!srcTags.length\"\n" +
-    "           type=\"text\"\n" +
-    "           data-ng-model=\"inputTag\"\n" +
-    "           class=\"decipher-tags-input\"/>\n" +
-    "    <!-- may want to fiddle with limitTo here, but it was inhibiting my results\n" +
-    "    so perhaps there is another way -->\n" +
-    "    <input ng-if=\"srcTags.length\"\n" +
-    "           type=\"text\"\n" +
-    "           data-ng-model=\"inputTag\"\n" +
-    "           class=\"decipher-tags-input\"\n" +
-    "           data-typeahead=\"stag as stag.name for stag in srcTags|filter:$viewValue|orderBy:orderBy\"\n" +
-    "           data-typeahead-input-formatter=\"{{typeaheadOptions.inputFormatter}}\"\n" +
-    "           data-typeahead-loading=\"{{typeaheadOptions.loading}}\"\n" +
-    "           data-typeahead-min-length=\"{{typeaheadOptions.minLength}}\"\n" +
-    "           data-typeahead-template-url=\"{{typeaheadOptions.templateUrl}}\"\n" +
-    "           data-typeahead-wait-ms=\"{{typeaheadOptions.waitMs}}\"\n" +
-    "\n" +
-    "           data-typeahead-editable=\"{{typeaheadOptions.allowsEditable}}\"\n" +
-    "           data-typeahead-on-select=\"add($item) && selectArea() && typeaheadOptions.onSelect()\"\n" +
-    "        />\n" +
-    "\n" +
-    "  </span>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("templates/tag.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("templates/tag.html",
-    "<span class=\"decipher-tags-tag\"\n" +
-    "      data-ng-class=\"getClasses(tag)\">{{tag.name}}\n" +
-    "      <i class=\"icon-remove\"\n" +
-    "         data-ng-click=\"remove(tag)\">\n" +
-    "      </i>\n" +
-    "</span>\n" +
-    "");
-}]);
-
-/*global angular*/
-(function () {
-  'use strict';
-
-  try {
-    angular.module('decipher.tags.templates');
-  } catch (e) {
-    angular.module('decipher.tags.templates', []);
-  }
-
-  var tags = angular.module('decipher.tags',
-    ['ui.bootstrap.typeahead', 'decipher.tags.templates']);
-
-  var defaultOptions = {
-      delimiter: ',', // if given a string model, it splits on this
-      classes: {}, // obj of group names to classes
-      templateUrl: 'templates/tags.html', // default template
-      tagTemplateUrl: 'templates/tag.html' // default 'tag' template
-    },
-
-  // for parsing comprehension expression
-    SRC_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/,
-
-  // keycodes
-    kc = {
-      enter: 13,
-      esc: 27,
-      backspace: 8
-    },
-    kcCompleteTag = [kc.enter],
-    kcRemoveTag = [kc.backspace],
-    kcCancelInput = [kc.esc],
-    id = 0;
-
-  tags.constant('decipherTagsOptions', {});
-
-  /**
-   * TODO: do we actually share functionality here?  We're using this
-   * controller on both the subdirective and its parent, but I'm not sure
-   * if we actually use the same functions in both.
-   */
-  tags.controller('TagsCtrl',
-    ['$scope', '$timeout', '$q', function ($scope, $timeout, $q) {
-
-      /**
-       * Figures out what classes to put on the tag span.  It'll add classes
-       * if defined by group, and it'll add a selected class if the tag
-       * is preselected to delete.
-       * @param tag
-       * @returns {{}}
-       */
-      $scope.getClasses = function getGroupClass(tag) {
-        var r = {};
-
-        if (tag === $scope.toggles.selectedTag) {
-          r.selected = true;
-        }
-        angular.forEach($scope.options.classes, function (klass, groupName) {
-          if (tag.group === groupName) {
-            r[klass] = true;
-          }
-        });
-        return r;
-      };
-
-      /**
-       * Finds a tag in the src list and removes it.
-       * @param tag
-       * @returns {boolean}
-       */
-      $scope._filterSrcTags = function filterSrcTags(tag) {
-        // wrapped in timeout or typeahead becomes confused
-        return $timeout(function () {
-          var idx = $scope.srcTags.indexOf(tag);
-          if (idx >= 0) {
-            $scope.srcTags.splice(idx, 1);
-            $scope._deletedSrcTags.push(tag);
-            return;
-          }
-          return $q.reject();
-        });
-      };
-
-      /**
-       * Adds a tag to the list of tags, and if in the typeahead list,
-       * removes it from that list (and saves it).  emits decipher.tags.added
-       * @param tag
-       */
-      $scope.add = function add(tag) {
-        var _add = function _add(tag) {
-            $scope.tags.push(tag);
-            delete $scope.inputTag;
-            $scope.$emit('decipher.tags.added', {
-              tag: tag,
-              $id: $scope.$id
-            });
-          },
-          fail = function fail() {
-            $scope.$emit('decipher.tags.addfailed', {
-              tag: tag,
-              $id: $scope.$id
-            });
-            dfrd.reject();
-          },
-          i,
-          dfrd = $q.defer();
-
-        // don't add dupe names
-        i = $scope.tags.length;
-        while (i--) {
-          if ($scope.tags[i].name === tag.name) {
-            fail();
-          }
-        }
-
-        $scope._filterSrcTags(tag)
-          .then(function () {
-            _add(tag);
-          }, function () {
-            if ($scope.options.addable) {
-              _add(tag);
-              dfrd.resolve();
+          var previewColor = function () {
+            try {
+              colorpickerPreview.css('backgroundColor', pickerColor[thisFormat]());
+            } catch (e) {
+              colorpickerPreview.css('backgroundColor', pickerColor.toHex());
             }
-            else {
-              fail();
+            sliderSaturation.css('backgroundColor', pickerColor.toHex(pickerColor.value.h, 1, 1, 1));
+            if (thisFormat === 'rgba') {
+              sliderAlpha.css.backgroundColor = pickerColor.toHex();
             }
+          };
+
+          var mousemove = function (event) {
+            var
+                left = Slider.getLeftPosition(event),
+                top = Slider.getTopPosition(event),
+                slider = Slider.getSlider();
+
+            Slider.setKnob(top, left);
+
+            if (slider.callLeft) {
+              pickerColor[slider.callLeft].call(pickerColor, left / 100);
+            }
+            if (slider.callTop) {
+              pickerColor[slider.callTop].call(pickerColor, top / 100);
+            }
+            previewColor();
+            var newColor = pickerColor[thisFormat]();
+            elem.val(newColor);
+            if(ngModel) {
+              $scope.$apply(ngModel.$setViewValue(newColor));
+            }
+            if (withInput) {
+              pickerColorInput.val(newColor);
+            }
+            return false;
+          };
+
+          var mouseup = function () {
+            emitEvent('colorpicker-selected');
+            $document.off('mousemove', mousemove);
+            $document.off('mouseup', mouseup);
+          };
+
+          var update = function () {
+            pickerColor.setColor(elem.val());
+            pickerColorPointers.eq(0).css({
+              left: pickerColor.value.s * 100 + 'px',
+              top: 100 - pickerColor.value.b * 100 + 'px'
+            });
+            pickerColorPointers.eq(1).css('top', 100 * (1 - pickerColor.value.h) + 'px');
+            pickerColorPointers.eq(2).css('top', 100 * (1 - pickerColor.value.a) + 'px');
+            previewColor();
+          };
+
+          var getColorpickerTemplatePosition = function() {
+            var
+                positionValue,
+                positionOffset = Helper.getOffset(elem[0]);
+
+            if(angular.isDefined(attrs.colorpickerParent)) {
+              positionOffset.left = 0;
+              positionOffset.top = 0;
+            }
+
+            if (position === 'top') {
+              positionValue =  {
+                'top': positionOffset.top - 147,
+                'left': positionOffset.left
+              };
+            } else if (position === 'right') {
+              positionValue = {
+                'top': positionOffset.top,
+                'left': positionOffset.left + 126
+              };
+            } else if (position === 'bottom') {
+              positionValue = {
+                'top': positionOffset.top + elem[0].offsetHeight + 2,
+                'left': positionOffset.left
+              };
+            } else if (position === 'left') {
+              positionValue = {
+                'top': positionOffset.top,
+                'left': positionOffset.left - 150
+              };
+            }
+            return {
+              'top': positionValue.top + 'px',
+              'left': positionValue.left + 'px'
+            };
+          };
+
+          var documentMousedownHandler = function() {
+            hideColorpickerTemplate();
+          };
+
+          var showColorpickerTemplate = function() {
+
+            if (!colorpickerTemplate.hasClass('colorpicker-visible')) {
+              update();
+              colorpickerTemplate
+                .addClass('colorpicker-visible')
+                .css(getColorpickerTemplatePosition());
+              emitEvent('colorpicker-shown');
+
+              if (inline === false) {
+                // register global mousedown event to hide the colorpicker
+                $document.on('mousedown', documentMousedownHandler);
+              }
+
+              if (attrs.colorpickerIsOpen) {
+                $scope[attrs.colorpickerIsOpen] = true;
+                if (!$scope.$$phase) {
+                  $scope.$digest(); //trigger the watcher to fire
+                }
+              }
+            }
+
+          };
+
+          if(inline === false) {
+            elem.on('click', showColorpickerTemplate);
+          } else {
+            showColorpickerTemplate();
+          }
+
+          colorpickerTemplate.on('mousedown', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
           });
 
-        return dfrd.promise;
-      };
+          var emitEvent = function(name) {
+            if(ngModel) {
+              $scope.$emit(name, {
+                name: attrs.ngModel,
+                value: ngModel.$modelValue
+              });
+            }
+          };
 
-      /**
-       * Toggle the input box active.
-       */
-      $scope.selectArea = function selectArea() {
-        $scope.toggles.inputActive = true;
-      };
+          var hideColorpickerTemplate = function() {
+            if (colorpickerTemplate.hasClass('colorpicker-visible')) {
+              colorpickerTemplate.removeClass('colorpicker-visible');
+              emitEvent('colorpicker-closed');
+              // unregister the global mousedown event
+              $document.off('mousedown', documentMousedownHandler);
 
-      /**
-       * Removes a tag.  Restores stuff into srcTags if it came from there.
-       * Kills any selected tag.  Emit a decipher.tags.removed event.
-       * @param tag
-       */
-      $scope.remove = function remove(tag) {
-        var idx;
-        $scope.tags.splice($scope.tags.indexOf(tag), 1);
+              if (attrs.colorpickerIsOpen) {
+                $scope[attrs.colorpickerIsOpen] = false;
+                if (!$scope.$$phase) {
+                  $scope.$digest(); //trigger the watcher to fire
+                }
+              }
+            }
+          };
 
-        if (idx = $scope._deletedSrcTags.indexOf(tag) >= 0) {
-          $scope._deletedSrcTags.splice(idx, 1);
-          if ($scope.srcTags.indexOf(tag) === -1) {
-            $scope.srcTags.push(tag);
+          colorpickerTemplate.find('button').on('click', function () {
+            hideColorpickerTemplate();
+          });
+
+          if (attrs.colorpickerIsOpen) {
+            $scope.$watch(attrs.colorpickerIsOpen, function(shouldBeOpen) {
+
+              if (shouldBeOpen === true) {
+                showColorpickerTemplate();
+              } else if (shouldBeOpen === false) {
+                hideColorpickerTemplate();
+              }
+
+            });
           }
+
         }
-
-        delete $scope.toggles.selectedTag;
-
-        $scope.$emit('decipher.tags.removed', {
-          tag: tag,
-          $id: $scope.$id
-        });
       };
-
     }]);
-
-  /**
-   * Directive for the 'input' tag itself, which is of class
-   * decipher-tags-input.
-   */
-  tags.directive('decipherTagsInput',
-    ['$timeout', '$filter', '$rootScope',
-     function ($timeout, $filter, $rootScope) {
-       return {
-         restrict: 'C',
-         require: 'ngModel',
-         link: function (scope, element, attrs, ngModel) {
-           var delimiterRx = new RegExp('^' +
-                                        scope.options.delimiter +
-                                        '+$'),
-
-             /**
-              * Cancels the text input box.
-              */
-               cancel = function cancel() {
-               ngModel.$setViewValue('');
-               ngModel.$render();
-             },
-
-             /**
-              * Adds a tag you typed/pasted in unless it's a bunch of delimiters.
-              * @param value
-              */
-               addTag = function addTag(value) {
-               if (value) {
-                 if (value.match(delimiterRx)) {
-                   cancel();
-                   return;
-                 }
-                 if (scope.add({
-                   name: value
-                 })) {
-                   cancel();
-                 }
-               }
-             },
-
-             /**
-              * Adds multiple tags in case you pasted them.
-              * @param tags
-              */
-               addTags = function (tags) {
-               var i;
-               for (i = 0; i < tags.length;
-                    i++) {
-                 addTag(tags[i]);
-               }
-             },
-
-             /**
-              * Backspace one to select, and a second time to delete.
-              */
-               removeLastTag = function removeLastTag() {
-               var orderedTags;
-               if (scope.toggles.selectedTag) {
-                 scope.remove(scope.toggles.selectedTag);
-                 delete scope.toggles.selectedTag;
-               }
-               // only do this if the input field is empty.
-               else if (!ngModel.$viewValue) {
-                 orderedTags =
-                 $filter('orderBy')(scope.tags,
-                   scope.orderBy);
-                 scope.toggles.selectedTag =
-                 orderedTags[orderedTags.length - 1];
-               }
-             };
-
-           /**
-            * When we focus the text input area, drop the selected tag
-            */
-           element.bind('focus', function () {
-             // this avoids what looks like a bug in typeahead.  It seems
-             // to be calling element[0].focus() somewhere within a digest loop.
-             if ($rootScope.$$phase) {
-               delete scope.toggles.selectedTag;
-             } else {
-               scope.$apply(function () {
-                 delete scope.toggles.selectedTag;
-               });
-             }
-           });
-
-           /**
-            * Detects the delimiter.
-            */
-           element.bind('keypress',
-             function (evt) {
-               scope.$apply(function () {
-                 if (scope.options.delimiter.charCodeAt() ===
-                     evt.which) {
-                   addTag(ngModel.$viewValue);
-                 }
-               });
-             });
-
-           /**
-            * Inspects whatever you typed to see if there were character(s) of
-            * concern.
-            */
-           element.bind('keyup',
-             function (evt) {
-               scope.$apply(function () {
-                 // to "complete" a tag
-
-                 if (kcCompleteTag.indexOf(evt.which) >=
-                     0) {
-                   addTag(ngModel.$viewValue);
-
-                   // or if you want to get out of the text area
-                 } else if (kcCancelInput.indexOf(evt.which) >=
-                            0) {
-                   cancel();
-                   scope.toggles.inputActive =
-                   false;
-
-                   // or if you're trying to delete something
-                 } else if (kcRemoveTag.indexOf(evt.which) >=
-                            0) {
-                   removeLastTag();
-
-                   // otherwise if we're typing in here, just drop the selected tag.
-                 } else {
-                   delete scope.toggles.selectedTag;
-                   scope.$emit('decipher.tags.keyup',
-                     {
-                       value: ngModel.$viewValue,
-                       $id: scope.$id
-                     });
-                 }
-               });
-             });
-
-           /**
-            * When inputActive toggle changes to true, focus the input.
-            * And no I have no idea why this has to be in a timeout.
-            */
-           scope.$watch('toggles.inputActive',
-             function (newVal) {
-               if (newVal) {
-                 $timeout(function () {
-                   element[0].focus();
-                 });
-               }
-             });
-
-           /**
-            * Detects a paste or someone jamming on the delimiter key.
-            */
-           ngModel.$parsers.unshift(function (value) {
-             var values = value.split(scope.options.delimiter);
-             if (values.length > 1) {
-               addTags(values);
-             }
-             if (value.match(delimiterRx)) {
-               element.val('');
-               return;
-             }
-             return value;
-           });
-
-           /**
-            * Resets the input field if we selected something from typeahead.
-            */
-           ngModel.$formatters.push(function (tag) {
-             if (tag && tag.value) {
-               element.val('');
-               return;
-             }
-             return tag;
-           });
-         }
-       };
-     }]);
-
-  /**
-   * Main directive
-   */
-  tags.directive('tags',
-    ['$document', '$timeout', '$parse', 'decipherTagsOptions',
-     function ($document, $timeout, $parse, decipherTagsOptions) {
-
-       return {
-         controller: 'TagsCtrl',
-         restrict: 'E',
-         replace: true,
-         // IE8 is really, really fussy about this.
-         template: '<div><div data-ng-include="options.templateUrl"></div></div>',
-         scope: {
-           model: '='
-         },
-         link: function (scope, element, attrs) {
-           var srcResult,
-             source,
-             tags,
-             group,
-             i,
-             tagsWatch,
-             srcWatch,
-             modelWatch,
-             model,
-             pureStrings = false,
-             stringArray = false,
-             defaults = angular.copy(defaultOptions),
-             userDefaults = angular.copy(decipherTagsOptions),
-
-             /**
-              * Parses the comprehension expression and gives us interesting bits.
-              * @param input
-              * @returns {{itemName: *, source: *, viewMapper: *, modelMapper: *}}
-              */
-               parse = function parse(input) {
-               var match = input.match(SRC_REGEXP);
-               if (!match) {
-                 throw new Error(
-                   "Expected src specification in form of '_modelValue_ (as _label_)? for _item_ in _collection_'" +
-                   " but got '" + input + "'.");
-               }
-
-               return {
-                 itemName: match[3],
-                 source: $parse(match[4]),
-                 sourceName: match[4],
-                 viewMapper: $parse(match[2] || match[1]),
-                 modelMapper: $parse(match[1])
-               };
-
-             },
-
-             watchModel = function watchModel() {
-               modelWatch = scope.$watch('model', function (newVal) {
-                 var deletedTag, idx;
-                 if (angular.isDefined(newVal)) {
-                   tagsWatch();
-                   scope.tags = format(newVal);
-
-                   // remove already used tags
-                   i = scope.tags.length;
-                   while (i--) {
-                     scope._filterSrcTags(scope.tags[i]);
-                   }
-
-                   // restore any deleted things to the src array that happen to not
-                   // be in the new value.
-                   i = scope._deletedSrcTags.length;
-                   while (i--) {
-                     deletedTag = scope._deletedSrcTags[i];
-                     if (idx = newVal.indexOf(deletedTag) === -1 &&
-                               scope.srcTags.indexOf(deletedTag) === -1) {
-                       scope.srcTags.push(deletedTag);
-                       scope._deletedSrcTags.splice(i, 1);
-                     }
-                   }
-
-                   watchTags();
-                 }
-               }, true);
-
-             },
-
-             watchTags = function watchTags() {
-
-               /**
-                * Watches tags for changes and propagates to outer model
-                * in the format which we originally specified (see below)
-                */
-               tagsWatch = scope.$watch('tags', function (value, oldValue) {
-                 var i;
-                 if (value !== oldValue) {
-                   modelWatch();
-                   if (stringArray || pureStrings) {
-                     value = value.map(function (tag) {
-                       return tag.name;
-                     });
-                     if (angular.isArray(scope.model)) {
-                       scope.model.length = 0;
-                       for (i = 0; i < value.length; i++) {
-                         scope.model.push(value[i]);
-                       }
-                     }
-                     if (pureStrings) {
-                       scope.model = value.join(scope.options.delimiter);
-                     }
-                   }
-                   else {
-                     scope.model.length = 0;
-                     for (i = 0; i < value.length; i++) {
-                       scope.model.push(value[i]);
-                     }
-                   }
-                   watchModel();
-
-                 }
-               }, true);
-             },
-             /**
-              * Takes a raw model value and returns something suitable
-              * to assign to scope.tags
-              * @param value
-              */
-               format = function format(value) {
-               var arr = [],
-                 sanitize = function sanitize(tag) {
-                   return tag
-                     .replace(/&/g, '&amp;')
-                     .replace(/</g, '&lt;')
-                     .replace(/>/g, '&gt;')
-                     .replace(/'/g, '&#39;')
-                     .replace(/"/g, '&quot;');
-                 };
-               if (angular.isUndefined(value)) {
-                 return;
-               }
-               if (angular.isString(value)) {
-                 arr = value
-                   .split(scope.options.delimiter)
-                   .map(function (item) {
-                     return {
-                       name: sanitize(item.trim())
-                     };
-                   });
-               }
-               else if (angular.isArray(value)) {
-                 arr = value.map(function (item) {
-                   if (angular.isString(item)) {
-                     return {
-                       name: sanitize(item.trim())
-                     };
-                   }
-                   else if (item.name) {
-                     item.name = sanitize(item.name.trim());
-                   }
-                   return item;
-                 });
-               }
-               else if (angular.isDefined(value)) {
-                 throw 'list of tags must be an array or delimited string';
-               }
-               return arr;
-             },
-             /**
-              * Updates the source tag information.  Sets a watch so we
-              * know if the source values change.
-              */
-               updateSrc = function updateSrc() {
-               var locals,
-                 i,
-                 o,
-                 obj;
-               // default to NOT letting users add new tags in this case.
-               scope.options.addable = scope.options.addable || false;
-               scope.srcTags = [];
-               srcResult = parse(attrs.src);
-               source = srcResult.source(scope.$parent);
-               if (angular.isUndefined(source)) {
-                 return;
-               }
-               if (angular.isFunction(srcWatch)) {
-                 srcWatch();
-               }
-               locals = {};
-               if (angular.isDefined(source)) {
-                 for (i = 0; i < source.length; i++) {
-                   locals[srcResult.itemName] = source[i];
-                   obj = {};
-                   obj.value = srcResult.modelMapper(scope.$parent, locals);
-                   o = {};
-                   if (angular.isObject(obj.value)) {
-                     o = angular.extend(obj.value, {
-                       name: srcResult.viewMapper(scope.$parent, locals),
-                       value: obj.value.value,
-                       group: obj.value.group
-                     });
-                   }
-                   else {
-                     o = {
-                       name: srcResult.viewMapper(scope.$parent, locals),
-                       value: obj.value,
-                       group: group
-                     };
-                   }
-                   scope.srcTags.push(o);
-                 }
-               }
-
-               srcWatch =
-               scope.$parent.$watch(srcResult.sourceName,
-                 function (newVal, oldVal) {
-                   if (newVal !== oldVal) {
-                     updateSrc();
-                   }
-                 }, true);
-             };
-
-           // merge options
-           scope.options = angular.extend(defaults,
-             angular.extend(userDefaults, scope.$eval(attrs.options)));
-           // break out orderBy for view
-           scope.orderBy = scope.options.orderBy;
-
-           // this should be named something else since it's just a collection
-           // of random shit.
-           scope.toggles = {
-             inputActive: false
-           };
-
-           /**
-            * When we receive this event, sort.
-            */
-           scope.$on('decipher.tags.sort', function (evt, data) {
-             scope.orderBy = data;
-           });
-
-           // pass typeahead options through
-           attrs.$observe('typeaheadOptions', function (newVal) {
-             if (newVal) {
-               scope.typeaheadOptions = $parse(newVal)(scope.$parent);
-             } else {
-               scope.typeaheadOptions = {};
-             }
-           });
-
-           // determine what format we're in
-           model = scope.model;
-           if (angular.isString(model)) {
-             pureStrings = true;
-           }
-           else if (angular.isArray(model)) {
-             stringArray = true;
-             i = model.length;
-             while (i--) {
-               if (!angular.isString(model[i])) {
-                 stringArray = false;
-                 break;
-               }
-             }
-           }
-
-           // watch model for changes and update tags as appropriate
-           scope.tags = [];
-           scope._deletedSrcTags = [];
-           watchTags();
-           watchModel();
-
-           // this stuff takes the parsed comprehension expression and
-           // makes a srcTags array full of tag objects out of it.
-           scope.srcTags = [];
-           if (angular.isDefined(attrs.src)) {
-             updateSrc();
-           } else {
-             // if you didn't specify a src, you must be able to type in new tags.
-             scope.options.addable = true;
-           }
-
-           // emit identifier
-           scope.$id = ++id;
-           scope.$emit('decipher.tags.initialized', {
-             $id: scope.$id,
-             model: scope.model
-           });
-         }
-       };
-     }]);
-
-})();
