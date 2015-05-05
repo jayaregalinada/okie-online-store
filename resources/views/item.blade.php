@@ -11,7 +11,7 @@
 @foreach ( $product->images as $key => $value)
 <meta property="og:image" content="{{ $value->sizes[2]['url'] }}" />
 @endforeach
-<meta property="og:description" content="{!! str_replace( ['</p><p>','<br/>','<p>','</p>'], ["\r\n","\r\n",'',''], strip_tags( $product->description, '<br><p>' ) ) !!}" />
+<meta property="og:description" content="{!! str_replace( ['</p><p>','<br/>','<p>','</p>'], ["\r\n","\r\n",'',''], preg_replace("/<([a-z][a-z0-9]*)[^>]*?(\/?)>/i",'<$1$2>',strip_tags( $product->description, '<br><p>' ) ) ) !!}" />
 <meta property="og:updated_time" content="{{ $product->updated_at }}" />
 @foreach ( $product->related as $key => $value)
 <meta property="og:see_also" content="{{ route('item.show', $value->id) }}" />
