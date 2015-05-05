@@ -11,7 +11,7 @@
  *
  * @type {object}
 ###
-window._okie = angular.module( 'Okie', [ 'ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'decipher.tags' ])
+window._okie = angular.module( 'Okie', [ 'ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'colorpicker.module' ])
 
 ###*
  * OKIE Configuration

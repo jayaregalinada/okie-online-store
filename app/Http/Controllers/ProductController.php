@@ -369,7 +369,8 @@ class ProductController extends Controller {
 			'title'       => $request->input( 'title' ),
 			'description' => $request->input( 'description' ),
 			'slug'        => $request->input( 'title' ),
-			'class'       => $request->input( 'class' )
+			'class'       => $request->input( 'class' ),
+			'color'       => $request->input( 'color' )
 		] );
 
 		return $this->responseSuccess( 'Successfully update product badge', Product::find( $id ) );

@@ -145,36 +145,40 @@
             </div>
             <div class="panel-body" ng-hide="editStateBadge">
                 <div ng-if="!product.badge.title" class="label label-warning font-light"><i class="fa fa-exclamation-circle"></i> DO NOT HAVE BADGE YET</div>
-                <div ng-if="product.badge.title" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
+                <div ng-style="{ 'background-color': product.badge.color }" ng-if="product.badge.title" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
                     <span>{# product.badge.title #}</span>
                 </div>
             </div>
             @if ( Auth::user()->isAdmin() )
             <ul class="list-group" ng-show="editStateBadge">
                 <li class="preview list-group-item">
-                    <div ng-if="product.badge" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
+                    <div ng-style="{ 'background-color': product.badge.color }" ng-if="product.badge" class="ribbon ribbon-relative ribbon-default {# product.badge.class #}">
                         <span>{# product.badge.title || 'INSERT BADGE' #}</span>
                     </div>
                 </li>
                 {!! Form::open( [ 'route' => [ 'product.update.badge', $product->id ], 'method' => 'PUT', 'ng-submit' => 'form_product_badge.$valid && updateProductBadge( $event, form_product_badge )', 'name' => 'form_product_badge' ] ) !!}
                 <li class="list-group-item">
-                    <div class="has-feedback" ng-class="{ 'has-success': form_product_badge.title.$valid, 'has-error': form_product_badge.title.$invalid && form_product_badge.title.$touched }" >
+                    <div class="has-feedback" ng-class="{ 'has-success': form_product_badge.title.$valid, 'has-error': form_product_badge.title.$invalid && form_product_badge.title.$dirty }" >
                         <label for="badge_title" class="control-label sr-only">Title</label>
                         <input ng-required="true" required="required" type="text" ng-model="product.badge.title" name="title" placeholder="Badge Title" class="form-control" id="badge_title" />
-                        <span ng-class="{ 'glyphicon-ok': form_product_badge.title.$valid, 'glyphicon-remove': form_product_badge.title.$invalid && form_product_badge.title.$touched }" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <span ng-class="{ 'glyphicon-ok': form_product_badge.title.$valid, 'glyphicon-remove': form_product_badge.title.$invalid && form_product_badge.title.$dirty }" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <textarea style="resize:none;" rows="5" ng-model="product.badge.description" placeholder="Badge description" class="form-control" id="badge_description"></textarea>
                 </li>
                 <li class="list-group-item">
-                    <div class="has-feedback" ng-class="{ 'has-success': form_product_badge.class.$valid, 'has-error': form_product_badge.class.$invalid && form_product_badge.class.$touched }" >
+                    <label for="badge_color" class="control-label sr-only">COLOR</label>
+                    <input placeholder="Badge color hex (e.g #FFFFFF)" type="text" ng-model="product.badge.color" name="color" class="form-control" id="badge_color" colorpicker />
+                </li>
+                <li class="list-group-item">
+                    <div class="has-feedback" ng-class="{ 'has-success': form_product_badge.class.$valid, 'has-error': form_product_badge.class.$invalid && form_product_badge.class.$dirty }" >
                         <label for="badge_class" class="control-label sr-only">Class</label>
                         <tags-input min-length="3" placeholder="Add a custom class" class="bootstrap product-classes" ng-model="product.badge.class_array">
                             <auto-complete debounce-delay="500" min-length="3" source="loadClass( $query )"></auto-complete>
                         </tags-input>
                         {{-- <input badge-class-helper scope="classFactory.badgeClass" type="text" model="product.badge.class" ng-model="product.badge.class" name="class" placeholder="Badge class helper" class="form-control" id="badge_class" /> --}}
-                        <span ng-class="{ 'glyphicon-ok': form_product_badge.class.$valid, 'glyphicon-remove': form_product_badge.class.$invalid && form_product_badge.class.$touched }" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                        <span ng-class="{ 'glyphicon-ok': form_product_badge.class.$valid, 'glyphicon-remove': form_product_badge.class.$invalid && form_product_badge.class.$dirty }" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                     </div>
                 </li>
                 {!! Form::close() !!}

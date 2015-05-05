@@ -47,8 +47,7 @@ elixir(function(mix)
       paths.vendorDir + 'angular-ui-notification/src/angular-ui-notification.js',
       paths.vendorDir + 'angular-ui-select/dist/select.js',
       paths.vendorDir + 'ng-tags-input/ng-tags-input.js',
-      paths.vendorDir + 'angular-tags/dist/angular-tags-0.2.10.js',
-      paths.vendorDir + 'angular-tags/dist/angular-tags-0.2.10-tpls.js'
+      paths.vendorDir + 'angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js'
     ], 'public/js/vendor.js', paths.vendorDir )
 
   .scripts([

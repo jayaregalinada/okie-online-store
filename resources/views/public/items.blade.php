@@ -16,7 +16,7 @@
         data-product-code="{# product.code #}">
         
         <a class="product-item-container" href="#" ui-sref="item({ itemId: product.id })">
-            <div class="ribbon {# product.badge.class #} ribbon-default" ng-if="product.badge.title">
+            <div ng-style="{ 'background-color': product.badge.color }" class="ribbon {# product.badge.class #} ribbon-default" ng-if="product.badge.title">
                 <span>{# product.badge.title #}</span>
             </div>
             <div class="img">
