@@ -1,5 +1,8 @@
 @extends('home')
 
+@section('html.attr', 'prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# product: http://ogp.me/ns/product#"')
+
+
 @section('head.pre')
 
 <meta property="og:type" content="product" />
@@ -8,7 +11,7 @@
 @foreach ( $product->images as $key => $value)
 <meta property="og:image" content="{{ $value->sizes[2]['url'] }}" />
 @endforeach
-<meta property="og:description" content="{{ strip_tags( $product->description ) }}" />
+<meta property="og:description" content="{!! str_replace( ['</p><p>','<br/>','<p>','</p>'], ["\r\n","\r\n",'',''], strip_tags( $product->description, '<br><p>' ) ) !!}" />
 <meta property="og:updated_time" content="{{ $product->updated_at }}" />
 @foreach ( $product->related as $key => $value)
 <meta property="og:see_also" content="{{ route('item.show', $value->id) }}" />
@@ -17,6 +20,8 @@
 <meta property="product:original_price:amount" content="{{ $product->price }}" />
 <meta property="product:price:amount" content="{{ $product->price }}" />
 <meta property="product:sale_price:amount" content="{{ $product->sale_price }}" />
+
+
 @stop
 
 @section('main-content')
@@ -149,7 +154,7 @@
                 data-product-code="{# product.code #}">
                 
                 <a class="product-item-container" href="{{ route('index' ) }}{# $state.href('item', { itemId: product.id }) #}">
-                    <div class="ribbon {# product.badge.class #} ribbon-default" ng-if="product.badge.title">
+                    <div ng-style="{ 'background-color': product.badge.color }" class="ribbon {# product.badge.class #} ribbon-default" ng-if="product.badge.title">
                         <span>{# product.badge.title #}</span>
                     </div>
                     <div class="img">
