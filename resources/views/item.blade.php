@@ -40,7 +40,7 @@
         </div>
         <div class="col-md-7 item-right">
             <div class="page-header" id="header">
-                <h1>{{ $product->name }} <span class="small">{{ isset( $product->badge['title'] ) }}</span></h1>
+                <h1>{{ $product->name }} <span class="small">{# item.badge.title #}</span></h1>
                 <div class="item-rating">
                     <div class="rating-star"
                     @if( Auth::check() )
