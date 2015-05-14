@@ -2,9 +2,7 @@
 /node_modules
 .env
 /nbproject/private
-/public/vendor
 /.idea
-/vendor/bower_components
 /public/uploads
 _ide_helper.php
 .phpstorm.meta.php
