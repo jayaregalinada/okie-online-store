@@ -1,10 +1,10 @@
 <?php namespace Okie\Http\Controllers;
 
-use Illuminate\Foundation\Bus\DispatchesCommands;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
-use Okie\Services\HTMLSanitizer;
 use Request;
+use Okie\Services\HTMLSanitizer;
+use Illuminate\Foundation\Bus\DispatchesCommands;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 abstract class Controller extends BaseController {
 
@@ -15,120 +15,120 @@ abstract class Controller extends BaseController {
 	 */
 	public $smileys = [
 		// SMILEYS
-		'&lt;3'       => '<i class="fa fa-heart"></i>',
-		':heart'      => '<i class="fa fa-heart"></i>',
-		':like'       => '<i class="fa fa-thumbs-up"></i>',
-		':thumbsup:'  => '<i class="fontelico-emo-thumbsup"></i>',
-		'(y)'         => '<i class="fontelico-emo-thumbsup"></i>',
-		':boo'        => '<i class="fa fa-thumbs-down"></i>',
-		':)'          => '<i class="fontelico-emo-happy"></i>',
-		':/'          => '<i class="fontelico-emo-displeased"></i>',
-		'>:)'         => '<i class="fontelico-emo-devil"></i>',
-		'}:-)'        => '<i class="fontelico-emo-devil"></i>',
-		':_('         => '<i class="fontelico-emo-cry"></i>',
-		':\'('        => '<i class="fontelico-emo-cry"></i>',
-		'T_T'         => '<i class="fontelico-emo-cry"></i>',
-		';_;'         => '<i class="fontelico-emo-cry"></i>',
-		':-D'         => '<i class="fontelico-emo-grin"></i>',
-		':D'          => '<i class="fontelico-emo-grin"></i>',
-		'XD'          => '<i class="fontelico-emo-laugh"></i>',
-		':))'         => '<i class="fontelico-emo-laugh"></i>',
-		'0:-)'        => '<i class="fontelico-emo-saint"></i>',
-		'O:-)'        => '<i class="fontelico-emo-saint"></i>',
-		'0=)'         => '<i class="fontelico-emo-saint"></i>',
-		'O=)'         => '<i class="fontelico-emo-saint"></i>',
-		'0:)'         => '<i class="fontelico-emo-saint"></i>',
-		'O:)'         => '<i class="fontelico-emo-saint"></i>',
-		':|'          => '<i class="fontelico-emo-sleep"></i>',
-		'8-)'         => '<i class="fontelico-emo-sunglasses"></i>',
-		'-o-o-'       => '<i class="fontelico-emo-sunglasses"></i>',
-		'\o-o/'       => '<i class="fontelico-emo-sunglasses"></i>',
-		'()-()'       => '<i class="fontelico-emo-sunglasses"></i>',
-		':o'          => '<i class="fontelico-emo-surprised"></i>',
-		':-O'         => '<i class="fontelico-emo-surprised"></i>',
-		':O'          => '<i class="fontelico-emo-surprised"></i>',
-		'*SURPRISED*' => '<i class="fontelico-emo-surprised"></i>',
-		':P'          => '<i class="fontelico-emo-tongue"></i>',
-		':p'          => '<i class="fontelico-emo-tongue"></i>',
-		':-P'         => '<i class="fontelico-emo-tongue"></i>',
-		':-p'         => '<i class="fontelico-emo-tongue"></i>',
-		'=('          => '<i class="fontelico-emo-unhappy"></i>',
-		':-('         => '<i class="fontelico-emo-unhappy"></i>',
-		':('          => '<i class="fontelico-emo-unhappy"></i>',
-		';-)'         => '<i class="fontelico-emo-wink"></i>',
-		';)'          => '<i class="fontelico-emo-wink"></i>',
-		'~_^'         => '<i class="fontelico-emo-wink2"></i>',
+		'&lt;3'                => '<i class="fa fa-heart"></i>',
+		':heart'               => '<i class="fa fa-heart"></i>',
+		':like'                => '<i class="fa fa-thumbs-up"></i>',
+		':thumbsup:'           => '<i class="fontelico-emo-thumbsup"></i>',
+		'(y)'                  => '<i class="fontelico-emo-thumbsup"></i>',
+		':boo'                 => '<i class="fa fa-thumbs-down"></i>',
+		':)'                   => '<i class="fontelico-emo-happy"></i>',
+		':/'                   => '<i class="fontelico-emo-displeased"></i>',
+		'>:)'                  => '<i class="fontelico-emo-devil"></i>',
+		'}:-)'                 => '<i class="fontelico-emo-devil"></i>',
+		':_('                  => '<i class="fontelico-emo-cry"></i>',
+		':\'('                 => '<i class="fontelico-emo-cry"></i>',
+		'T_T'                  => '<i class="fontelico-emo-cry"></i>',
+		';_;'                  => '<i class="fontelico-emo-cry"></i>',
+		':-D'                  => '<i class="fontelico-emo-grin"></i>',
+		':D'                   => '<i class="fontelico-emo-grin"></i>',
+		'XD'                   => '<i class="fontelico-emo-laugh"></i>',
+		':))'                  => '<i class="fontelico-emo-laugh"></i>',
+		'0:-)'                 => '<i class="fontelico-emo-saint"></i>',
+		'O:-)'                 => '<i class="fontelico-emo-saint"></i>',
+		'0=)'                  => '<i class="fontelico-emo-saint"></i>',
+		'O=)'                  => '<i class="fontelico-emo-saint"></i>',
+		'0:)'                  => '<i class="fontelico-emo-saint"></i>',
+		'O:)'                  => '<i class="fontelico-emo-saint"></i>',
+		':|'                   => '<i class="fontelico-emo-sleep"></i>',
+		'8-)'                  => '<i class="fontelico-emo-sunglasses"></i>',
+		'-o-o-'                => '<i class="fontelico-emo-sunglasses"></i>',
+		'\o-o/'                => '<i class="fontelico-emo-sunglasses"></i>',
+		'()-()'                => '<i class="fontelico-emo-sunglasses"></i>',
+		':o'                   => '<i class="fontelico-emo-surprised"></i>',
+		':-O'                  => '<i class="fontelico-emo-surprised"></i>',
+		':O'                   => '<i class="fontelico-emo-surprised"></i>',
+		'*SURPRISED*'          => '<i class="fontelico-emo-surprised"></i>',
+		':P'                   => '<i class="fontelico-emo-tongue"></i>',
+		':p'                   => '<i class="fontelico-emo-tongue"></i>',
+		':-P'                  => '<i class="fontelico-emo-tongue"></i>',
+		':-p'                  => '<i class="fontelico-emo-tongue"></i>',
+		'=('                   => '<i class="fontelico-emo-unhappy"></i>',
+		':-('                  => '<i class="fontelico-emo-unhappy"></i>',
+		':('                   => '<i class="fontelico-emo-unhappy"></i>',
+		';-)'                  => '<i class="fontelico-emo-wink"></i>',
+		';)'                   => '<i class="fontelico-emo-wink"></i>',
+		'~_^'                  => '<i class="fontelico-emo-wink2"></i>',
 		// STICKERS
-		':lol:'       => '<img src="/images/stickers/lol.png" alt=":lol:" />',
+		':lol:'                => '<img src="/images/stickers/lol.png" alt=":lol:" />',
 		':challenge-accepted:' => '<img src="/images/stickers/challenge-accepted.png" alt=":challenge-accepted:" />',
-		'challenge accepted' => '<img src="/images/stickers/challenge-accepted.png" alt=":challenge-accepted:" />',
-		':how-about-a-no:' => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
-		':NO:' => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
-		'how about a no' => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
-		'okay' => '<img src="/images/stickers/okay.png" alt="okay" />',
-		'WHY' => '<img src="/images/stickers/why.png" alt="WHY" />',
-		':fuck-yeah:' => '<img src="/images/stickers/yeah.png" alt=":fuck-yeah:" />',
-		'fuck yeah' => '<img src="/images/stickers/yeah.png" alt=":fuck-yeah:" />',
+		'challenge accepted'   => '<img src="/images/stickers/challenge-accepted.png" alt=":challenge-accepted:" />',
+		':how-about-a-no:'     => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
+		':NO:'                 => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
+		'how about a no'       => '<img src="/images/stickers/how-about-a-no.png" alt=":how-about-a-no:" />',
+		'okay'                 => '<img src="/images/stickers/okay.png" alt="okay" />',
+		'WHY'                  => '<img src="/images/stickers/why.png" alt="WHY" />',
+		':fuck-yeah:'          => '<img src="/images/stickers/yeah.png" alt=":fuck-yeah:" />',
+		'fuck yeah'            => '<img src="/images/stickers/yeah.png" alt=":fuck-yeah:" />',
 	];
 
 	public function __construct()
 	{
 		$this->smileys = [
 			// SMILEYS
-			'&lt;3'       => '<i class="fa fa-heart"></i>',
-			':heart'      => '<i class="fa fa-heart"></i>',
-			':like'       => '<i class="fa fa-thumbs-up"></i>',
-			':thumbsup:'  => '<i class="fontelico-emo-thumbsup"></i>',
-			'(y)'         => '<i class="fontelico-emo-thumbsup"></i>',
-			':boo'        => '<i class="fa fa-thumbs-down"></i>',
-			':)'          => '<i class="fontelico-emo-happy"></i>',
-			':/'          => '<i class="fontelico-emo-displeased"></i>',
-			'>:)'         => '<i class="fontelico-emo-devil"></i>',
-			'}:-)'        => '<i class="fontelico-emo-devil"></i>',
-			':_('         => '<i class="fontelico-emo-cry"></i>',
-			':\'('        => '<i class="fontelico-emo-cry"></i>',
-			'T_T'         => '<i class="fontelico-emo-cry"></i>',
-			';_;'         => '<i class="fontelico-emo-cry"></i>',
-			':-D'         => '<i class="fontelico-emo-grin"></i>',
-			':D'          => '<i class="fontelico-emo-grin"></i>',
-			'XD'          => '<i class="fontelico-emo-laugh"></i>',
-			':))'         => '<i class="fontelico-emo-laugh"></i>',
-			'0:-)'        => '<i class="fontelico-emo-saint"></i>',
-			'O:-)'        => '<i class="fontelico-emo-saint"></i>',
-			'0=)'         => '<i class="fontelico-emo-saint"></i>',
-			'O=)'         => '<i class="fontelico-emo-saint"></i>',
-			'0:)'         => '<i class="fontelico-emo-saint"></i>',
-			'O:)'         => '<i class="fontelico-emo-saint"></i>',
-			':|'          => '<i class="fontelico-emo-sleep"></i>',
-			'8-)'         => '<i class="fontelico-emo-sunglasses"></i>',
-			'-o-o-'       => '<i class="fontelico-emo-sunglasses"></i>',
-			'\o-o/'       => '<i class="fontelico-emo-sunglasses"></i>',
-			'()-()'       => '<i class="fontelico-emo-sunglasses"></i>',
-			':o'          => '<i class="fontelico-emo-surprised"></i>',
-			':-O'         => '<i class="fontelico-emo-surprised"></i>',
-			':O'          => '<i class="fontelico-emo-surprised"></i>',
-			'*SURPRISED*' => '<i class="fontelico-emo-surprised"></i>',
-			':P'          => '<i class="fontelico-emo-tongue"></i>',
-			':p'          => '<i class="fontelico-emo-tongue"></i>',
-			':-P'         => '<i class="fontelico-emo-tongue"></i>',
-			':-p'         => '<i class="fontelico-emo-tongue"></i>',
-			'=('          => '<i class="fontelico-emo-unhappy"></i>',
-			':-('         => '<i class="fontelico-emo-unhappy"></i>',
-			':('          => '<i class="fontelico-emo-unhappy"></i>',
-			';-)'         => '<i class="fontelico-emo-wink"></i>',
-			';)'          => '<i class="fontelico-emo-wink"></i>',
-			'~_^'         => '<i class="fontelico-emo-wink2"></i>',
+			'&lt;3'                => '<i class="fa fa-heart"></i>',
+			':heart'               => '<i class="fa fa-heart"></i>',
+			':like'                => '<i class="fa fa-thumbs-up"></i>',
+			':thumbsup:'           => '<i class="fontelico-emo-thumbsup"></i>',
+			'(y)'                  => '<i class="fontelico-emo-thumbsup"></i>',
+			':boo'                 => '<i class="fa fa-thumbs-down"></i>',
+			':)'                   => '<i class="fontelico-emo-happy"></i>',
+			':/'                   => '<i class="fontelico-emo-displeased"></i>',
+			'>:)'                  => '<i class="fontelico-emo-devil"></i>',
+			'}:-)'                 => '<i class="fontelico-emo-devil"></i>',
+			':_('                  => '<i class="fontelico-emo-cry"></i>',
+			':\'('                 => '<i class="fontelico-emo-cry"></i>',
+			'T_T'                  => '<i class="fontelico-emo-cry"></i>',
+			';_;'                  => '<i class="fontelico-emo-cry"></i>',
+			':-D'                  => '<i class="fontelico-emo-grin"></i>',
+			':D'                   => '<i class="fontelico-emo-grin"></i>',
+			'XD'                   => '<i class="fontelico-emo-laugh"></i>',
+			':))'                  => '<i class="fontelico-emo-laugh"></i>',
+			'0:-)'                 => '<i class="fontelico-emo-saint"></i>',
+			'O:-)'                 => '<i class="fontelico-emo-saint"></i>',
+			'0=)'                  => '<i class="fontelico-emo-saint"></i>',
+			'O=)'                  => '<i class="fontelico-emo-saint"></i>',
+			'0:)'                  => '<i class="fontelico-emo-saint"></i>',
+			'O:)'                  => '<i class="fontelico-emo-saint"></i>',
+			':|'                   => '<i class="fontelico-emo-sleep"></i>',
+			'8-)'                  => '<i class="fontelico-emo-sunglasses"></i>',
+			'-o-o-'                => '<i class="fontelico-emo-sunglasses"></i>',
+			'\o-o/'                => '<i class="fontelico-emo-sunglasses"></i>',
+			'()-()'                => '<i class="fontelico-emo-sunglasses"></i>',
+			':o'                   => '<i class="fontelico-emo-surprised"></i>',
+			':-O'                  => '<i class="fontelico-emo-surprised"></i>',
+			':O'                   => '<i class="fontelico-emo-surprised"></i>',
+			'*SURPRISED*'          => '<i class="fontelico-emo-surprised"></i>',
+			':P'                   => '<i class="fontelico-emo-tongue"></i>',
+			':p'                   => '<i class="fontelico-emo-tongue"></i>',
+			':-P'                  => '<i class="fontelico-emo-tongue"></i>',
+			':-p'                  => '<i class="fontelico-emo-tongue"></i>',
+			'=('                   => '<i class="fontelico-emo-unhappy"></i>',
+			':-('                  => '<i class="fontelico-emo-unhappy"></i>',
+			':('                   => '<i class="fontelico-emo-unhappy"></i>',
+			';-)'                  => '<i class="fontelico-emo-wink"></i>',
+			';)'                   => '<i class="fontelico-emo-wink"></i>',
+			'~_^'                  => '<i class="fontelico-emo-wink2"></i>',
 			// STICKERS
-			':lol:'       => '<img src="' . asset("/images/stickers/lol.png") . '" alt=":lol:" />',
+			':lol:'                => '<img src="' . asset("/images/stickers/lol.png") . '" alt=":lol:" />',
 			':challenge-accepted:' => '<img src="' . asset("/images/stickers/challenge-accepted.png") . '" alt=":challenge-accepted:" />',
-			'challenge accepted' => '<img src="' . asset("/images/stickers/challenge-accepted.png") . '" alt=":challenge-accepted:" />',
-			':how-about-a-no:' => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
-			':NO:' => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
-			'how about a no' => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
-			'okay' => '<img src="' . asset("/images/stickers/okay.png") . '" alt="okay" />',
-			'WHY' => '<img src="' . asset("/images/stickers/why.png") . '" alt="WHY" />',
-			':fuck-yeah:' => '<img src="' . asset("/images/stickers/yeah.png") . '" alt=":fuck-yeah:" />',
-			'fuck yeah' => '<img src="' . asset("/images/stickers/yeah.png") . '" alt=":fuck-yeah:" />',
+			'challenge accepted'   => '<img src="' . asset("/images/stickers/challenge-accepted.png") . '" alt=":challenge-accepted:" />',
+			':how-about-a-no:'     => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
+			':NO:'                 => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
+			'how about a no'       => '<img src="' . asset("/images/stickers/how-about-a-no.png") . '" alt=":how-about-a-no:" />',
+			'okay'                 => '<img src="' . asset("/images/stickers/okay.png") . '" alt="okay" />',
+			'WHY'                  => '<img src="' . asset("/images/stickers/why.png") . '" alt="WHY" />',
+			':fuck-yeah:'          => '<img src="' . asset("/images/stickers/yeah.png") . '" alt=":fuck-yeah:" />',
+			'fuck yeah'            => '<img src="' . asset("/images/stickers/yeah.png") . '" alt=":fuck-yeah:" />',
 		];
 	}
 
@@ -186,7 +186,7 @@ abstract class Controller extends BaseController {
 	public function responseSuccess( $message = '', $data = [], $status = 200, $callback = 'callback' )
 	{
 		return $this->responseInJSON( [ 'success' => [
-			'title' => 'Nice!',
+			'title'   => 'Nice!',
 			'message' => $message,
 			'data'    => $data
 		] ], $status, $callback );
@@ -203,7 +203,7 @@ abstract class Controller extends BaseController {
 	public function responseError( $message = '', $data = [], $status = 404, $callback = 'callback' )
 	{
 		return $this->responseInJSON( [ 'error' => [
-			'title', 'Whoops!',
+			'title'   => 'Whoops!',
 			'message' => $message,
 			'data'    => $data
 		] ], $status, $callback );
@@ -218,7 +218,7 @@ abstract class Controller extends BaseController {
 	public function filterBody( $strings, $allowedTags = [ 'p', 'b', 'em', 'img', 'u', 'i' ] )
 	{
 		$sanitizer = new HTMLSanitizer;
-		$allowed = $this->filterBodyAllowedTags( $allowedTags );
+		$allowed   = $this->filterBodyAllowedTags( $allowedTags );
 
 		return $this->smiley( $sanitizer->sanitize( $this->singleBreak( strip_tags( $strings, $allowed ) ) ) );
 	}
@@ -234,7 +234,7 @@ abstract class Controller extends BaseController {
 	public function filterBodyOnly( $strings, $allowedTags = [ 'p', 'b', 'em', 'img', 'u', 'i' ] )
 	{
 		$sanitizer = new HTMLSanitizer;
-		$allowed = $this->filterBodyAllowedTags( $allowedTags );
+		$allowed   = $this->filterBodyAllowedTags( $allowedTags );
 
 		return $sanitizer->sanitize( $this->singleBreak( strip_tags( $strings, $allowed ) ) );
 	}

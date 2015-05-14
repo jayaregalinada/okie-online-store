@@ -1,12 +1,12 @@
 <?php namespace Okie\Http\Controllers\Auth;
 
-use Okie\Http\Controllers\Controller;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\Registrar;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Illuminate\Http\Request;
-use Okie\Services\User\AuthenticateUser;
 use Session;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
+use Okie\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\Registrar;
+use Okie\Services\User\AuthenticateUser;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Controller {
 

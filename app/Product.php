@@ -77,11 +77,13 @@ class Product extends Model {
      * @type array
      */
     protected $casts = [
-        'id' => 'integer',
-        'unit' => 'integer',
-        'user_id' => 'integer',
+        'id'           => 'integer',
+        'unit'         => 'integer',
+        'user_id'      => 'integer',
         'thumbnail_id' => 'integer',
-        'featured' => 'boolean'
+        'featured'     => 'boolean',
+        'price'        => 'double',
+        'sale_price'   => 'double'
     ];
 
     /**

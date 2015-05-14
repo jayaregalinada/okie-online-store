@@ -1,8 +1,8 @@
 <?php namespace Okie\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Auth;
 use Okie\MessageStatus;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller {
 

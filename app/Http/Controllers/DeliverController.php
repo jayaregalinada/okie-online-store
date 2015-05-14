@@ -1,14 +1,14 @@
 <?php namespace Okie\Http\Controllers;
 
 use Auth;
+use View;
 use Okie\Deliver;
-use Okie\Conversation;
 use Okie\Inquiry;
+use Okie\Conversation;
 use Okie\Http\Requests;
-use Okie\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Okie\Exceptions\ThreadException;
-use View;
+use Okie\Http\Controllers\Controller;
 
 class DeliverController extends Controller {
 
@@ -56,7 +56,7 @@ class DeliverController extends Controller {
 		}
 
 		return $this->responseSuccess( 'Successfully moved to delivered', [
-			'deliver' => $deliver,
+			'deliver'      => $deliver,
 			'conversation' => $deliver->conversations
 		] );
 	}

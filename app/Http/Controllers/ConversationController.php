@@ -1,13 +1,13 @@
 <?php namespace Okie\Http\Controllers;
 
 use Auth;
-use Okie\Product;
-use Okie\Conversation;
 use Okie\Inbox;
 use Okie\Order;
-use Okie\Http\Requests;
+use Okie\Product;
 use Okie\Inquiry;
 use Okie\Deliver;
+use Okie\Conversation;
+use Okie\Http\Requests;
 use Illuminate\Http\Request;
 use Okie\Http\Controllers\Controller;
 

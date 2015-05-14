@@ -1,10 +1,10 @@
 <?php namespace Okie\Http\Controllers;
 
 use Okie\Http\Requests;
-use Okie\Http\Controllers\Controller;
-use Composer\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
 use Illuminate\Http\Request;
+use Composer\Console\Application;
+use Okie\Http\Controllers\Controller;
+use Symfony\Component\Console\Input\ArrayInput;
 
 class AdminSettingController extends Controller {
 

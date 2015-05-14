@@ -1,12 +1,12 @@
 <?php namespace Okie\Http\Controllers;
 
 use Auth;
-use Illuminate\Http\Request;
-use Okie\Conversation;
-use Okie\Exceptions\ThreadException;
-use Okie\Http\Requests;
-use Okie\Inbox;
 use Okie\User;
+use Okie\Inbox;
+use Okie\Conversation;
+use Okie\Http\Requests;
+use Illuminate\Http\Request;
+use Okie\Exceptions\ThreadException;
 use Okie\Repositories\ThreadInterface;
 
 class InboxController extends Controller {

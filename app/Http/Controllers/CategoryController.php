@@ -1,11 +1,11 @@
 <?php namespace Okie\Http\Controllers;
 
-use Okie\Http\Requests;
-use Okie\Http\Controllers\Controller;
-use Okie\Category;
 use Okie\Product;
-use Okie\Exceptions\ProductException;
+use Okie\Category;
+use Okie\Http\Requests;
 use Illuminate\Http\Request;
+use Okie\Http\Controllers\Controller;
+use Okie\Exceptions\ProductException;
 
 class CategoryController extends Controller {
 
