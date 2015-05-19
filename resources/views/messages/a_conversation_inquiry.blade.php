@@ -69,11 +69,13 @@
             <div class="buttons">
                 {{-- <span>Please enter to send <input ng-change="autoSubmit()" type="checkbox" ng-checked="autoSubmitConversation" ng-model="autoSubmitConversation"></span>&nbsp;&nbsp; --}}
                 <input id="conversation_submit" ng-hide="replySubmitButton.state" type="submit" ng-class="{ 'btn-success': form_reply.$valid }" class="btn btn-primary" ng-disabled="form_reply.$invalid" value="SUBMIT" />
-                <button ng-if="inquiryInfo.uploads" type="button" class="disabled btn btn-info" ng-hide="replySubmitButton.state">YOU CAN UPLOAD YOUR RECEIPT. DRAG AND DROP ANYWHERE</button>
                 <button ng-if="inquiryInfo.uploads" type="button" class="btn btn-info" ng-hide="replySubmitButton.state" id="inquiryUploadReceiptButton">UPLOAD RECEIPT</button>
                 <button ng-show="replySubmitButton.state" type="button" class="btn btn-success"><i class="fa fa-circle-o-notch fa-spin" ng-show="replySubmitButton.state"></i> SUBMITTING</button>
             </div>
         {!! Form::close() !!}
+        <div ng-if="inquiryInfo.uploads">
+            <p><em><small>* You may upload your receipt if you're already paid. Please click the "Upload Receipt" button, or you may simply drag and drop the picture of the receipt here.</small></em></p>
+        </div>
     </div>
 
     
