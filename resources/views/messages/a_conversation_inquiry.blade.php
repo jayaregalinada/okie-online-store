@@ -61,7 +61,7 @@
             <div class="upload-preview"></div>
         </div>
         <div class="upload" ng-if="inquiryInfo.uploads">
-            <div ng-init="initializeInquiryUpload( inquiryInfo.id, '{{ csrf_token() }}' )"></div>
+            <div ng-init="initializingDropzoneButton( inquiryInfo.id, '{{ csrf_token() }}' )"></div>
         </div>
         {!! Form::open(['route' => 'inquiry.reply', 'name' => 'form_reply', 'ng-submit' => 'form_reply.$valid && inquiryReplySubmit( $event, form_reply )']) !!}
             <div id="inquiry_reply_ta" ng-keyup="conversationShortcuts( $event, form_reply )" serial="r3p1y" name="reply" class="content-description" ta-toolbar="[['bold', 'italics', 'underline', 'undo', 'redo', 'clear']]" ng-minlength="5" required ng-required="true" placeholder="Write a reply {{ Auth::user()->first_name }}" text-angular ng-model="reply"></div>
@@ -70,6 +70,7 @@
                 {{-- <span>Please enter to send <input ng-change="autoSubmit()" type="checkbox" ng-checked="autoSubmitConversation" ng-model="autoSubmitConversation"></span>&nbsp;&nbsp; --}}
                 <input id="conversation_submit" ng-hide="replySubmitButton.state" type="submit" ng-class="{ 'btn-success': form_reply.$valid }" class="btn btn-primary" ng-disabled="form_reply.$invalid" value="SUBMIT" />
                 <button ng-if="inquiryInfo.uploads" type="button" class="disabled btn btn-info" ng-hide="replySubmitButton.state">YOU CAN UPLOAD YOUR RECEIPT. DRAG AND DROP ANYWHERE</button>
+                <button ng-if="inquiryInfo.uploads" type="button" class="btn btn-info" ng-hide="replySubmitButton.state" id="inquiryUploadReceiptButton">UPLOAD RECEIPT</button>
                 <button ng-show="replySubmitButton.state" type="button" class="btn btn-success"><i class="fa fa-circle-o-notch fa-spin" ng-show="replySubmitButton.state"></i> SUBMITTING</button>
             </div>
         {!! Form::close() !!}

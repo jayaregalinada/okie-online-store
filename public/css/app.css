@@ -7076,6 +7076,11 @@ a.list-group-item-danger.active:focus {
   transition: all 0.3s;
   opacity: 0;
 }
+.message-container.conversation .message.message-mine .media-left {
+  float: right;
+  padding-left: 10px;
+  padding-right: 0;
+}
 .message-container.conversation .message.message-mine .media-body .message-body {
   background-color: #e6e6e6 !important;
 }
@@ -7181,6 +7186,28 @@ a.list-group-item-danger.active:focus {
 }
 .message-container.create .ta-toolbar > .btn-group {
   margin-left: 0;
+}
+.modal.lightbox-receipt .modal-content:hover .modal-header {
+  opacity: 1;
+}
+.modal.lightbox-receipt .modal-header {
+  border-bottom: none;
+  position: absolute;
+  width: 100%;
+  z-index: 99999;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=0);
+  opacity: 0;
+  transition: all 0.3s;
+}
+.modal.lightbox-receipt .modal-header .close {
+  font-size: 3em;
+  -webkit-transform: translate(0, -35%);
+  -ms-transform: translate(0, -35%);
+  transform: translate(0, -35%);
+  color: #FFF;
+  opacity: .7;
 }
 .profile-container .profile-photo {
   width: 150px;

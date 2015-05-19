@@ -22,6 +22,7 @@
     $scope.inquiryStateReserve = false;
     $scope.reserve = 0;
     $scope.inquiryProduct = {};
+    $scope.inquiryDropzoneState = false;
     $scope.inbox = [];
     $scope.inboxConversations = [];
     $scope.inboxInfo = {};
@@ -312,7 +313,7 @@
                 };
                 $rootScope.receiptUrl = $scope.item.target.alt;
               },
-              windowClass: 'lightbox-modal',
+              windowClass: 'lightbox-modal lightbox-receipt',
               resolve: {
                 item: function() {
                   return $scope.receiptUrl;
@@ -675,11 +676,17 @@
         $scope.pushToInquiries(data.data.success.data.inquiries.data);
       });
     };
+    $scope.initializingDropzoneButton = function(inquiry, token) {
+      $timeout(function() {
+        return $scope.initializeInquiryUpload(inquiry, token);
+      }, 2000);
+    };
     $scope.initializeInquiryUpload = function(inquiry, token) {
+      $scope.inquiryDropzoneState = !$scope.inquiryDropzoneState;
       $scope.dropzoneInit = new Dropzone(document.body, {
         url: $window._url.inquiry.replyReceipt,
         previewsContainer: '#uploadPreview .upload-preview',
-        clickable: false,
+        clickable: '#inquiryUploadReceiptButton',
         acceptedFiles: 'image/*',
         params: {
           '_token': token,

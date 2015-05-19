@@ -21,6 +21,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
     $scope.inquiryStateReserve = false
     $scope.reserve = 0
     $scope.inquiryProduct = {}
+    $scope.inquiryDropzoneState = false
 
     ## INBOX
     $scope.inbox = []
@@ -338,7 +339,7 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
                                 $rootScope.receiptUrl = $scope.item.target.alt
 
                                 return
-                            windowClass: 'lightbox-modal'
+                            windowClass: 'lightbox-modal lightbox-receipt'
                             resolve: 
                                 item: ->
                                     $scope.receiptUrl
@@ -779,11 +780,19 @@ _okie.controller 'MessageController', ( $scope, $document, $window, $log, $inter
 
         return
 
+    $scope.initializingDropzoneButton = ( inquiry, token )->
+        $timeout ->
+            $scope.initializeInquiryUpload inquiry, token
+        , 2000
+
+        return
+
     $scope.initializeInquiryUpload = ( inquiry, token )->
+        $scope.inquiryDropzoneState = !$scope.inquiryDropzoneState
         $scope.dropzoneInit = new Dropzone( document.body,
             url: $window._url.inquiry.replyReceipt
             previewsContainer: '#uploadPreview .upload-preview'
-            clickable: false
+            clickable: '#inquiryUploadReceiptButton' 
             acceptedFiles: 'image/*'
             params: 
                 '_token': token

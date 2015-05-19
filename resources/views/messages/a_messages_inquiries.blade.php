@@ -24,7 +24,9 @@
                 <span class="small font-light">{# message.latest.time #}</span></small>
             </h4>
             <div class="message-body clearfix">
-                <em ng-if="me.user.is_permitted" class="pull-left">{# (message.latest.user.id === me.user.id ) ? 'You' : message.latest.user.first_name #}: &nbsp;&nbsp;</em>
+                @if( Auth::user()->isPermitted() )
+                <em class="pull-left">{# (message.latest.user.id === me.user.id ) ? 'You' : message.latest.user.first_name #}: &nbsp;&nbsp;</em>
+                @endif
                 <div ng-bind-html="message.latest.body"></div>
             </div>
         </div>

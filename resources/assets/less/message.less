@@ -162,6 +162,11 @@
                 }
             }
             &.message-mine {
+                .media-left {
+                    float: right;
+                    padding-left: 10px;
+                    padding-right: 0;
+                }
                 .media-body {
                     .message-body {
                         background-color: darken( @conversation-body-background, 10% )!important;
@@ -284,6 +289,30 @@
                     // .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-large; @line-height-large; @border-radius-large);
                 }
             }
+        }
+    }
+}
+.modal.lightbox-receipt {
+    .modal-content {
+        &:hover {
+            .modal-header {
+                opacity: 1;
+            }
+        }
+    }
+    .modal-header {
+        border-bottom: none;
+        position: absolute;
+        width: 100%;
+        z-index: 99999;
+        #gradient > .vertical( fade( #000, 50%), transparent );
+        opacity: 0;
+        .transition( all .3s );
+        .close {
+            font-size: 3em;
+            .translate( 0, -35% );
+            color: #FFF;
+            opacity: .7;
         }
     }
 }
