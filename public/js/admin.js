@@ -608,11 +608,16 @@
         return;
       }
     };
-    $scope.getProducts = function(pageNumber) {
+    $scope.gettingProducts = function() {
       $scope.changeHeading('Products');
-      $scope.condition.products.loading = true;
-      $scope.condition.products.error = false;
+      $scope.condition.products = {
+        loading: true,
+        error: false
+      };
       $scope.products = [];
+      $scope.getProducts(1);
+    };
+    $scope.getProducts = function(pageNumber) {
       ProductFactory.getAllProducts(pageNumber).success(function(response, xhr) {
         $scope.condition.products.error = false;
         if (Boolean(response.next_page_url)) {

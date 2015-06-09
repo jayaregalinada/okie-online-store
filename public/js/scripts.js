@@ -6,14 +6,14 @@
  */
 
 (function() {
-  window._okie = angular.module('Okie', ['ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'colorpicker.module']);
+  window._okie = angular.module('Okie', ['ui.bootstrap', 'ngAnimate', 'ui.router', 'ng-currency', 'bootstrapLightbox', 'LocalStorageModule', 'slugifier', 'textAngular', 'ui-notification', 'ui.select', 'ngTagsInput', 'colorpicker.module', 'uiGmapgoogle-maps']);
 
 
   /**
    * OKIE Configuration
    */
 
-  window._okie.config(function($interpolateProvider, $locationProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider) {
+  window._okie.config(function($interpolateProvider, $locationProvider, LightboxProvider, localStorageServiceProvider, $httpProvider, $animateProvider, uiGmapGoogleMapApiProvider) {
     $interpolateProvider.startSymbol('{#');
     $interpolateProvider.endSymbol('#}');
     LightboxProvider.getImageUrl = function(image) {
@@ -37,6 +37,9 @@
     localStorageServiceProvider.setPrefix('okie');
     $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
     $animateProvider.classNameFilter(/carousel|animate/);
+    uiGmapGoogleMapApiProvider.configure({
+      v: '3.17'
+    });
   });
 
   window._okie.run(function($rootScope, $state, $stateParams, UserFactory, $templateCache, Notification, $window, $location, $log) {
@@ -47,8 +50,31 @@
     $rootScope.notification = Notification;
     $window.Notification = Notification;
     $rootScope.location = $window.location;
+    $rootScope.state = {
+      addToCart: false
+    };
     $rootScope.collapseToggle = function() {
       $('#navbar_navigation .dropdown .collapse').collapse('hide');
+    };
+    $rootScope.toggleAddToCart = function() {
+      $rootScope.state.addToCart = !$rootScope.state.addToCart;
+      if ($('body').hasClass('add-to-cart-show')) {
+        $('body > *').not('#add_to_cart').transition({
+          x: 0
+        });
+        $('#add_to_cart').transition({
+          x: '400px'
+        });
+        $('body').removeClass('add-to-cart-show');
+      } else {
+        $('body > *').not('#add_to_cart').transition({
+          x: '-400px'
+        });
+        $('#add_to_cart').transition({
+          x: 0
+        });
+        $('body').addClass('add-to-cart-show');
+      }
     };
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       UserFactory.getNotify();
@@ -68,7 +94,7 @@
 
   /**
    * For Dropzone autodiscovery
-   * 
+   *
    * @type {boolean}
    */
 
@@ -144,7 +170,7 @@
       templateUrl: '/views/products/index.html',
       controller: function($scope) {
         $scope.header = 'Products';
-        $scope.getProducts();
+        $scope.gettingProducts();
       }
     });
     $stateProvider.state('messages', {
@@ -435,6 +461,11 @@
 }).call(this);
 
 (function() {
+  _okie.controller('CartController', function($scope, $modal, $http, $window, $log, $rootScope) {});
+
+}).call(this);
+
+(function() {
   _okie.controller('ItemController', function($rootScope, $scope, $log, $http, $window, ItemFactory, $state, $stateParams, localStorageService, $timeout, RatingFactory, Notification, Lightbox) {
     $scope.items = [];
     $scope.item = {};
@@ -460,6 +491,7 @@
     $scope.ratingState = false;
     $scope.featured = {};
     $scope.banads = [];
+    $scope.cart = {};
     $scope.clickImage = function(index) {
       $log.info('clickImage', index);
       Lightbox.openModal($scope.item.images, index);
@@ -624,6 +656,27 @@
           $scope.banners.push(val);
         });
       });
+    };
+    $scope.addToCart = function(url, quantity) {
+      url = url.replace('_ITEM_ID_', $scope.item.id);
+      $rootScope.toggleAddToCart();
+      if ($rootScope.state.addToCart) {
+        $rootScope.$broadcast('item:addingToCart', {
+          item: $scope.item,
+          quantity: quantity
+        });
+        return $http({
+          url: url,
+          params: {
+            quantity: quantity
+          },
+          method: 'POST'
+        }).success(function(successData) {
+          $log.log('ItemController@addToCart::successData', successData);
+        }).error(function(errorData) {
+          $log.error('ItemController@addToCart::errorData', errorData);
+        });
+      }
     };
     $scope.checkState();
   });
